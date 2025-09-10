@@ -1,0 +1,32 @@
+const express = require('express');
+const morgan = require('morgan');
+const cors = require('cors');
+const path = require('path');
+const config = require('./config');
+const routes = require('./routes');
+
+const app = express();
+
+// Middlewares
+app.use(morgan('combined'));
+app.use(cors());
+app.use(express.json());
+app.use("/hls/videos", express.static(path.join(__dirname, "../../public/hls/videos")));
+app.use("/hls/lives", express.static(path.join(__dirname, "../../public/hls/lives")));
+
+// Rutas
+app.use('/', routes);
+
+// Manejo de errores
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Error interno del servidor');
+});
+
+// Iniciar servidor
+app.listen(config.port, () => {
+    console.log(`Servidor de streaming ejecutándose en http://localhost:${config.port}`);
+    console.log(`Directorio de videos: ${config.videosPath}`);
+});
+
+module.exports = app;

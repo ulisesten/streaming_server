@@ -1,0 +1,9 @@
+/node_modules
+/build
+
+/public/hls/videos
+/public/hls/lives
+
+/videos
+
+package-lock.json
