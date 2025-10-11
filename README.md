@@ -18,15 +18,21 @@ Este proyecto implementa un **servidor de streaming de video** que convierte arc
 ```bash
 streaming_server/
 ├── public/
-│ ├── hls/ # Archivos HLS generados (playlist + segmentos)
+│ ├── hls/
+| | ├── videos/ # Archivos HLS generados (playlist + segmentos) para videos
+| | └── lives/  # Archivos HLS generados (playlist + segmentos) para lives
 │ ├── css/
 │ │ └── style.css # Estilos del reproductor
 │ ├── js/
 │ │ └── player.js # Lógica del reproductor con hls.js
 │ └── index.html # Página principal
 ├── src/
-│ ├── VideoProcessor.cpp # Clase en C++ que convierte a HLS
-│ └── VideoProcessor.h
+| ├── native/
+| | ├── straming_module.cpp
+│ | ├── video_processor.cpp # Clase en C++ que convierte a HLS
+│ | └── video_processor.h
+| └── server/
+| 
 ├── server.js # Servidor Express que expone los videos
 ├── binding.gyp # Configuración para compilar el addon de Node.js
 ├── package.json

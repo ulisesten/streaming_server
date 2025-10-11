@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subir Video</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    #status {
+      margin-top: 15px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h2>Subir Video</h2>
+  <form id="uploadForm">
+    <label>Nombre del video</label>
+    <input type="text" name="vid_nombre" required />
+
+    <label>Descripción</label>
+    <textarea name="vid_descripcion"></textarea>
+
+    <label>Tags</label>
+    <input type="text" name="vid_tags" placeholder="ej. acción, anime, comedia" />
+
+    <label>ID de usuario</label>
+    <input type="number" name="vid_id_usuario" required />
+
+    <label>Archivo de video</label>
+    <input type="file" name="video" accept="video/*" required />
+
+    <button type="submit">Subir</button>
+  </form>
+
+  <div id="status"></div>
+
+  <script src="/pages/videos_subir/functions/constants.js"></script>
+  <script src="/pages/videos_subir/functions/functions.js"></script>
+</body>
+</html>

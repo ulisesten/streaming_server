@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const config = require('./config');
 const routes = require('./routes');
+const videos = require('./app/routes/api/v1/videos/');
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.use("/hls/lives", express.static(path.join(__dirname, "../../public/hls/live
 
 // Rutas
 app.use('/', routes);
+
+app.use('/api/v1/videos',videos);
 
 // Manejo de errores
 app.use((err, req, res, next) => {

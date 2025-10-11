@@ -71,7 +71,7 @@ router.get('/videos', (req, res) => {
 
 
 
-router.get('/stream/:video', async (req, res) => {
+router.get('/stream_sync/:video', async (req, res) => {
     if (!nativeModule) {
         return res.status(500).json({ error: 'Fallo al iniciar proceso de streaming.' });
     }
@@ -109,12 +109,66 @@ router.get('/stream/:video', async (req, res) => {
 });
 
 
+router.get('/stream/:video', async (req, res) => {
+    if (!nativeModule) {
+        return res.status(500).json({ error: 'Fallo al iniciar proceso de streaming.' });
+    }
+
+    const videoName = req.params.video;                 // el nombre tal cual viene del /videos (con extensión)
+    const inputPath = path.join(config.videosPath, videoName);
+
+    if (!fs.existsSync(inputPath)) {
+      return res.status(404).json({ error: 'Video no encontrado' });
+    }
+  
+    // Carpeta única y segura para este video
+    const safeName = videoName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    const outDir   = path.join(hlsBaseDir,'videos', path.parse(safeName).name);
+    const playlistDisk = path.join(outDir, 'playlist.m3u8');
+    const streaming_path = config.video_streaming_path;
+    const url = `${streaming_path}/${path.parse(safeName).name}/playlist.m3u8`;
+  
+    if (!fs.existsSync(outDir))
+        fs.mkdirSync(outDir, { recursive: true });
+
+    if (fs.existsSync(playlistDisk)){
+        res.json({ url });
+        return;
+    }
+  
+    // Generar HLS (playlist + segmentos) en outDir
+    nativeModule.convertToHLSAsync(inputPath, outDir, (err, success) => {
+        if (err) {
+            console.error("Error en conversión:", err);
+            return res.status(500).json({ error: "Error al convertir video" });
+        }
+
+        // Verifica que se creó la playlist
+        if (!fs.existsSync(playlistDisk)) {
+            return res.status(500).json({ error: 'No se generó playlist.m3u8' });
+        }
+
+        res.json({ url });
+    });
+});
+
 
 // Ruta principal - servir el reproductor
 router.get('/', (req, res) => {
-    res.sendFile(path.join(config.publicPath, 'index.html'));
+    res.sendFile(path.join(config.publicPath, 'html/index.html'));
 });
 
+router.get('/upload', (req, res) => {
+    res.sendFile(path.join(config.publicPath, 'pages/videos_subir/index.html'));
+});
+
+router.get('/video/:video', (req, res) => {
+    res.sendFile(path.join(config.publicPath, 'html/ver_video.html'));
+});
+
+router.get('/feed', (req, res) => {
+    res.sendFile(path.join(config.publicPath, 'pages/videos_feed/index.html'));
+});
 
 
 module.exports = router;
