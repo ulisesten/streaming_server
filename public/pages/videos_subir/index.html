@@ -7,21 +7,27 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      background: #121212;
+      color: #fff;
       padding: 20px;
     }
     form {
-      background: white;
+      background: #1c1c1c;
+      color: #fff;
       padding: 20px;
       border-radius: 8px;
-      max-width: 400px;
+      max-width: 600px;
       margin: auto;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
     input, textarea {
-      width: 100%;
+      background: #1c1c1c;
+      color: #fff;
+      width: 95%;
       margin-bottom: 10px;
       padding: 8px;
+      border: solid 1px gray;
+      border-radius: 6px;
     }
     button {
       background: #007bff;
@@ -30,6 +36,7 @@
       padding: 10px 15px;
       cursor: pointer;
       border-radius: 4px;
+      align-items: right;
     }
     #status {
       margin-top: 15px;
@@ -55,9 +62,17 @@
     <label>Archivo de video</label>
     <input type="file" name="video" accept="video/*" required />
 
-    <button type="submit">Subir</button>
-    <div id="status"></div>
+    <button type="submit">Subir Video</button>
   </form>
+  <div id="status"></div>
+  <br/>
+  <form id="uploadThumb">
+    <input id="frm_id_video" type="text" name="vid_id" value="${data.data.vid_id}" hidden required/>
+    <label>Miniatura</label>
+    <input type="file" name="image" accept="image/*" required />
+    <button type="submit">Subir Miniatura</button>
+  </form>
+  <div id="img_status"></div>
 
 
   <script src="/pages/videos_subir/functions/constants.js"></script>

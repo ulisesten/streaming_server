@@ -91,7 +91,7 @@ videos.post('/', videos_service.upload_video.single("video"),async (req, res)=> 
         vid_path: `/hls/videos/${path.parse(fileName).name}/playlist.m3u8`,
     });
   
-    res.json(videos_dto.general_response(result));
+    res.json(videos_dto.subir_video_response(result));
 })
 
 
