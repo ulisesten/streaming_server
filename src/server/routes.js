@@ -154,7 +154,7 @@ router.get('/stream/:video', async (req, res) => {
 
 
 // Ruta principal - servir el reproductor
-router.get('/', (req, res) => {
+router.get('/feed', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'html/index.html'));
 });
 
@@ -166,7 +166,7 @@ router.get('/video/:video', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'html/ver_video.html'));
 });
 
-router.get('/feed', (req, res) => {
+router.get('/', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/videos_feed/index.html'));
 });
 

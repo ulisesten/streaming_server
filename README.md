@@ -18,21 +18,40 @@ Este proyecto implementa un **servidor de streaming de video** que convierte arc
 ```bash
 streaming_server/
 ├── public/
-│ ├── hls/
-| | ├── videos/ # Archivos HLS generados (playlist + segmentos) para videos
-| | └── lives/  # Archivos HLS generados (playlist + segmentos) para lives
-│ ├── css/
-│ │ └── style.css # Estilos del reproductor
-│ ├── js/
-│ │ └── player.js # Lógica del reproductor con hls.js
-│ └── index.html # Página principal
+│  ├── hls/
+|  |  ├── videos/ # Archivos HLS generados (playlist + segmentos) para videos
+|  |  └── lives/  # Archivos HLS generados (playlist + segmentos) para lives
+│  ├── css/
+│  │  └── style.css # Estilos del reproductor
+│  ├── js/
+│  │  └── player.js # Lógica del reproductor con hls.js
+│  └── index.html # Página principal
 ├── src/
-| ├── native/
-| | ├── straming_module.cpp
-│ | ├── video_processor.cpp # Clase en C++ que convierte a HLS
-│ | └── video_processor.h
-| └── server/
-| 
+|  ├── native/
+|  |  ├── straming_module.cpp
+│  |  ├── video_processor.cpp # Clase en C++ que convierte a HLS
+│  |  └── video_processor.h
+|  └── server/
+|       └── app/
+|           ├── core/
+|           |   └── configuration.js
+|           ├── librerias/
+|           |   ├── authorization/
+|           |   |       └── authorization.js 
+|           |   ├── common/
+|           |   |       └── images.js
+|           |   ├── encrypt/
+|           |   |       └── encrypt.js
+|           |   ├── jwt/
+|           |   |       └── jwt.js
+|           |   └── sql_server/
+|           |           └── sql_eject.js
+|           └── routes/
+|                   └── api/
+|                       └── v1/
+|                           ├── users/
+|                           ├── videos/
+|
 ├── server.js # Servidor Express que expone los videos
 ├── binding.gyp # Configuración para compilar el addon de Node.js
 ├── package.json
@@ -47,7 +66,7 @@ streaming_server/
 - **Node.js** ≥ 18
 - **FFmpeg (libav)** con desarrollo (`libavformat`, `libavcodec`, `libavutil`, `libavfilter`)
 - **npm** o **yarn**
-- Compilador C++17 (g++, clang o MSVC)
+- **Compilador C++17 (g++, clang o MSVC)**
 
 En Ubuntu/Debian puedes instalar dependencias con:
 
@@ -59,6 +78,31 @@ sudo apt install ffmpeg libavformat-dev libavcodec-dev libavutil-dev libavfilter
 En Fedora
 ```bash
 sudo dnf install ffmpeg ffmpeg-devel gcc-c++
+```
+
+Variables de entorno
+```bash
+DB_USER=mi_usuario
+DB_PASSWORD=mi_contrasena
+DB_SERVER=mi_server
+DB_DATABASE=soda_stream
+DB_ENCRYPT=true
+DB_TRUST_CERTIFICATE=true
+
+SERVER_HOST="http://127.0.0.1"
+SERVER_PORT="3000"
+BACKEND_CORS_ORIGINS="http://localhost:3000"
+
+SECRET_KEY="mi_secret"
+EXPIRATION_DAYS=30
+
+USU_ID=53345
+USU_CORREO="mi_correo@gmail.com"
+USU_NOMBRE="Nombre Usuario"
+
+API_NAS = '/apinas/images/videos'
+
+PUBLIC_ID_LENGTH=11
 ```
 ---
 

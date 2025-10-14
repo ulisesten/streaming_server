@@ -5,7 +5,7 @@ const {nanoid} = require('nanoid');
 const config = require("../../../../../../config");
 const settings = require('../../../../../core/configuration')
 
-const id_length = 12;
+const id_length = settings.getPublicIdLength();
 
 const video_storage = multer.diskStorage({
     destination: (req, file, cb) => {

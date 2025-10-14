@@ -14,14 +14,19 @@ const form = document.getElementById('uploadForm');
             });
             const data = await res.json();
 
-            if (data.error == 0) {
-                status.innerHTML = `
+            if (data.error > 0) {
+                console.error(err);
+                status.textContent = `⚠️ Error: ${data.msg}`;
+                return;
+            }
+                /* status.innerHTML = `
                 ✅ ${data.msg}<br>
                 <a href="${data.data.playlist}" target="_blank">Ver playlist .m3u8</a>
-                `;
-            } else {
-                status.textContent = `⚠️ Error: ${data.msg}`;
-            }
+                `; */
+
+            
+            status.textContent = `✅  ${data.msg}`;
+            
     } catch (err) {
         console.error(err);
         status.textContent = "❌ Error al subir el video.";

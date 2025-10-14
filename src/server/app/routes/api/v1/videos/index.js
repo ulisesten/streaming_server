@@ -54,6 +54,8 @@ videos.get("/:vid_id",async function (req, res) {
     res.json(videos_dto.get_by_id_response(query));
 });
 
+
+/// Subir videos
 videos.post('/', videos_service.upload_video.single("video"),async (req, res)=> {
     if (!req.file) {
         return res.status(400).json({ msg: "No se recibió archivo" });

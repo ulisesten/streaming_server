@@ -47,11 +47,17 @@ body {
     margin: 0 0 5px;
     font-size: 1.2em;
   }
+
+  .video-info a {
+    color: #fff;
+    overflow: hidden;
+    text-decoration: none;
+  }
   
   .video-info p {
-    color: #bbb;
-    font-size: 0.9em;
-    height: 2.7em;
+    color: #888;
+    font-size: 1em;
+    height: 2.5em;
     overflow: hidden;
   }
   

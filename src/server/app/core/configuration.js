@@ -15,6 +15,7 @@ class Settings extends BaseConfig {
     SERVER_PORT = process.env.SERVER_PORT
     SECRET_KEY  = process.env.SECRET_KEY
     API_NAS     = process.env.API_NAS
+    PUBLIC_ID_LENGTH = process.env.PUBLIC_ID_LENGTH
     
 
     getDatabaseConfig() {
@@ -53,6 +54,10 @@ class Settings extends BaseConfig {
 
     getApiNAS() {
         return this.API_NAS;
+    }
+
+    getPublicIdLength(){
+        return  this.PUBLIC_ID_LENGTH;
     }
 }
 
