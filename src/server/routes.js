@@ -163,7 +163,7 @@ router.get('/upload', (req, res) => {
 });
 
 router.get('/video/:video', (req, res) => {
-    res.sendFile(path.join(config.publicPath, 'html/ver_video.html'));
+    res.sendFile(path.join(config.publicPath, 'pages/videos_ver/index.html'));
 });
 
 router.get('/', (req, res) => {

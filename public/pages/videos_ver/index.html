@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reproductor de Video</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
+  <link rel="stylesheet" href="/pages/videos_ver/styles/style.videos_ver.css" />
+</head>
+<body>
+  <div class="video-container">
+    <video id="video_player" controls></video>
+  </div>
+
+  <h1 id="video_title">Cargando...</h1>
+  <div class="meta" id="videoDesc"></div>
+  <div class="tags" id="videoTags"></div>
+  <p id="video_description"></p>
+  <div class="likes">
+    <span id="video_likes">👍 0</span>
+    <span id="video_dislikes">0 👎</span>
+  </div>
+
+  <script src="/pages/videos_ver/functions/constants.js"></script>
+  <script src="/pages/videos_ver/functions/functions.js"></script>
+</body>
+</html>

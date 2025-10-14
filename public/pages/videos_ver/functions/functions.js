@@ -16,8 +16,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Mostrar info del video
       document.getElementById("video_title").textContent = videoData.vid_nombre;
       document.getElementById("video_description").textContent = videoData.vid_descripcion;
-      document.getElementById("video_likes").textContent = videoData.vid_likes || 0;
-      document.getElementById("video_dislikes").textContent = videoData.vid_dislikes || 0;
+      document.getElementById("video_likes").textContent = `👍 ${videoData.vid_likes || 0}`;
+      document.getElementById("video_dislikes").textContent = `${videoData.vid_dislikes || 0} 👎`;
   
       // Reproducir video con HLS.js
       const video = document.getElementById("video_player");

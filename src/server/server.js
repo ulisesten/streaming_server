@@ -5,7 +5,7 @@ const path = require('path');
 const config = require('./config');
 const routes = require('./routes');
 const videos = require('./app/routes/api/v1/videos/');
-
+const PORT = process.env.PORT || config.port;
 const app = express();
 
 // Middlewares
@@ -27,8 +27,8 @@ app.use((err, req, res, next) => {
 });
 
 // Iniciar servidor
-app.listen(config.port, () => {
-    console.log(`Servidor de streaming ejecutándose en http://localhost:${config.port}`);
+app.listen(PORT, () => {
+    console.log(`Servidor de streaming ejecutándose en http://localhost:${PORT}`);
     console.log(`Directorio de videos: ${config.videosPath}`);
 });
 
