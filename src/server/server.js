@@ -27,8 +27,8 @@ app.use((err, req, res, next) => {
 });
 
 // Iniciar servidor
-app.listen(PORT, () => {
-    console.log(`Servidor de streaming ejecutándose en http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor de streaming ejecutándose en el puerto${PORT}`);
     console.log(`Directorio de videos: ${config.videosPath}`);
 });
 
