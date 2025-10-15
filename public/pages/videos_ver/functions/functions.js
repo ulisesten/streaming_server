@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const videoId = window.location.pathname.split("/").pop();
-    const apiUrl = `http://localhost:3000/api/v1/videos/${videoId}`;
+    const apiUrl = `/api/v1/videos/${videoId}`;
   
     try {
       const response = await fetch(apiUrl);
