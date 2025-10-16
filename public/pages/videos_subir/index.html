@@ -29,6 +29,11 @@
       border: solid 1px gray;
       border-radius: 6px;
     }
+
+    textarea {
+      min-height: 200px;
+    }
+
     button {
       background: #007bff;
       color: white;
@@ -64,7 +69,11 @@
 
     <button type="submit">Subir Video</button>
   </form>
-  <div id="status"></div>
+  <div>  
+    <span id="progress-text">0%</span>
+    <div id="progress-details"></div>
+    <div id="status"></div>
+  </div>
   <br/>
   <form id="uploadThumb">
     <input id="frm_id_video" type="text" name="vid_id" value="${data.data.vid_id}" hidden required/>

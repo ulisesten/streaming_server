@@ -56,7 +56,11 @@ videos.get("/:vid_id",async function (req, res) {
 
 
 /// Subir videos
-videos.post('/', videos_service.upload_video.single("video"),async (req, res)=> {
+videos.post('/',
+        videos_service.progress_handler,
+        videos_service.upload_video.single("video"),
+    async (req, res)=> {
+
     if (!req.file) {
         return res.status(400).json({ msg: "No se recibió archivo" });
     }
@@ -92,6 +96,19 @@ videos.post('/', videos_service.upload_video.single("video"),async (req, res)=> 
     });
   
     res.json(videos_dto.subir_video_response(result));
+})
+
+videos.get('/progress/:session_id', (req, res) => {
+    const { session_id } = req.params;
+    const progress = videos_service.getProgress().get(session_id) || { progress: 0, status: 'unknown' };
+    
+    res.json({
+        sessionId: session_id,
+        progress: progress.progress,
+        loaded: progress.loaded,
+        total: progress.total,
+        status: progress.status
+    });
 })
 
 

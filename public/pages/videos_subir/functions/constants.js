@@ -1,0 +1,1 @@
+const urlVideos = '/api/v1/videos/';

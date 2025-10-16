@@ -20,6 +20,7 @@ const video_storage = multer.diskStorage({
         const vid_name = "vid-" + vid_id + "." + name_arr[name_arr.length - 1];
 
         req.vid_id_public = vid_id;
+        req.uploadSessionId = `upload_${vid_id}`;
 
         cb(null, vid_name);
     },
@@ -48,6 +49,7 @@ class VideosService {
     constructor(){
         this.upload_video = multer({ storage: video_storage });
         this.upload_thumbnail = multer({ storage: thumb_storage });
+        this.upload_progress = new Map();
     }
 
     async processToHLS(inputPath, outputDir) {
@@ -61,6 +63,61 @@ class VideosService {
                 resolve(false);
             }
         });
+    }
+
+    progress_handler = (req, res, next) => {
+        const sessionId = req.headers['x-upload-session'] || req.uploadSessionId;
+        
+        if (sessionId) {
+            this.upload_progress.set(sessionId, { progress: 0, loaded: 0, total: 0 });
+            
+            // Escuchar el evento 'data' del request para trackear progreso
+            let loaded = 0;
+            const contentLength = parseInt(req.headers['content-length']);
+            
+            req.on('data', (chunk) => {
+                loaded += chunk.length;
+                const progress = Math.round((loaded / contentLength) * 100);
+                
+                this.upload_progress.set(sessionId, {
+                    progress: progress,
+                    loaded: loaded,
+                    total: contentLength,
+                    status: 'uploading'
+                });
+                
+                console.log(`Upload ${sessionId}: ${progress}%`);
+            });
+            
+            req.on('end', () => {
+                this.upload_progress.set(sessionId, {
+                    progress: 100,
+                    loaded: contentLength,
+                    total: contentLength,
+                    status: 'completed'
+                });
+                
+                // Limpiar después de 30 segundos
+                setTimeout(() => {
+                    this.upload_progress.delete(sessionId);
+                }, 30000);
+            });
+            
+            req.on('error', () => {
+                this.upload_progress.set(sessionId, {
+                    progress: 0,
+                    loaded: 0,
+                    total: contentLength,
+                    status: 'error'
+                });
+            });
+        }
+        
+        next();
+    };
+
+    getProgress() {
+        return this.upload_progress;
     }
 }
 
