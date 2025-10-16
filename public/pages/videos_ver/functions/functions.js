@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
   const incrementViews = async () => {
+    const videoId = window.location.pathname.split("/").pop();
     try {
         await fetch(`/api/v1/videos/${videoId}/views`, {
             method: 'PUT'
