@@ -1,8 +1,7 @@
 const dateFormat = function(prm_date) {
-    const date_array = prm_date.split('/')
-    const month_number = parseInt(date_array[1]);
-    const month_name = month_names.ES[month_number - 1];
-    return `${date_array[0]}/${month_name}/${date_array[2]}`
+    const date = new Date(prm_date)
+    const month_name = month_names.ES[date.getMonth()];
+    return `${date.getDate()}/${month_name}/${date.getFullYear()} a las ${date.getHours()}:${date.getMinutes()} hrs.`
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -37,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <div class="video-info">
             <h3><a href="${videoLink}">${video.vid_nombre}</a></h3>
             <p>${video.vid_descripcion || "Sin descripción"}</p>
-            <small>${dateFormat(new Date(video.vid_fecha).toLocaleString())}</small>
+            <small>${dateFormat(video.vid_fecha)}</small>
           </div>
         `;
   
