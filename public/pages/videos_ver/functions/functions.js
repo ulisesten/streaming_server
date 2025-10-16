@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
   
       const videoData = result.data[0];
+      const vid_id = videoData.vid_id;
   
       // Mostrar info del video
       document.getElementById("video_title").textContent = videoData.vid_nombre;
@@ -33,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
             video.play()
             if (!viewsCounted){
-                incrementViews();
+                incrementViews(vid_id);
                 viewsCounted = true;
             }
         });
@@ -42,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         video.addEventListener("loadedmetadata", () => video.play());
         video.addEventListener('play', function() {
             if (!viewsCounted){
-                incrementViews();
+                incrementViews(vid_id);
                 viewsCounted = true;
             }
         });
@@ -54,10 +55,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
 
-  const incrementViews = async () => {
-    const videoId = window.location.pathname.split("/").pop();
+  const incrementViews = async (prm_vid_id) => {
+    
     try {
-        await fetch(`/api/v1/videos/${videoId}/views`, {
+        await fetch(`/api/v1/videos/${prm_vid_id}/views`, {
             method: 'PUT'
         });
     } catch (error) {
