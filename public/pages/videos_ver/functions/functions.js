@@ -30,7 +30,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const hls = new Hls();
         hls.loadSource(videoSrc);
         hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            video.play()
+            if (!viewsCounted){
+                incrementViews();
+                viewsCounted = true;
+            }
+        });
       } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
         video.src = videoSrc;
         video.addEventListener("loadedmetadata", () => video.play());
