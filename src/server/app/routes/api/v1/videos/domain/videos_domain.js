@@ -58,11 +58,17 @@ class VideosDomain {
             parametros,
             "soda_stream",
         );
-
-        
-
-        
     };
+
+
+    async insert_view(videoData) {
+        const parametros = {
+          tipoRegistro: "CAT_VIDEOS_VIEW",
+          vid_id: videoData.vid_id
+        };
+
+        return sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
+    }
 }
 
 module.exports = new VideosDomain();

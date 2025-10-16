@@ -98,7 +98,7 @@ videos.post('/',
     res.json(videos_dto.subir_video_response(result));
 })
 
-videos.get('/progress/:session_id', (req, res) => {
+videos.get('/progress/:session_id', async (req, res) => {
     const { session_id } = req.params;
     const progress = videos_service.getProgress().get(session_id) || { progress: 0, status: 'unknown' };
     
@@ -112,7 +112,33 @@ videos.get('/progress/:session_id', (req, res) => {
 })
 
 
-videos.post('/:vid_id/thumbnails', videos_service.upload_thumbnail.single("image"),async (req, res)=> {
+videos.put('/:vid_id/views', async (req, res) => {
+    const vid_id = req.params.vid_id;
+    //const { rep_nombre, rep_msg } = req.body;
+
+    const result = await videos_domain.insert_view({ vid_id: vid_id });
+  
+    res.json(videos_dto.general_response(result));
+})
+
+videos.post('/:vid_id/report', async (req, res) => {
+    const vid_id = req.params.vid_id;
+    const { rep_nombre, rep_msg } = req.body;
+
+    return res.status(200).json({ msg: "Under Maintenance" });
+    /* const result = await videos_domain.insert(
+        { 
+            rep_id_video: vid_id,
+            rep_nombre: rep_nombre,
+            rep_msg: rep_msg
+        }
+    );
+  
+    res.json(videos_dto.subir_video_response(result)); */
+})
+
+
+videos.post('/:vid_id/thumbnails', videos_service.upload_thumbnail.single("image"), async (req, res)=> {
     if (!req.file) {
         return res.status(400).json({ msg: "No se recibió archivo" });
     }
@@ -136,7 +162,7 @@ videos.post('/:vid_id/thumbnails', videos_service.upload_thumbnail.single("image
     res.json(videos_dto.general_response(result));
 })
 
-videos.get("/thumbnails/:thu_id_public", async function (req, res) {
+videos.get("/thumbnails/:thu_id_public", async function(req, res) {
 
     const thu_id_public = req.params.thu_id_public;
 
@@ -152,8 +178,6 @@ videos.get("/thumbnails/:thu_id_public", async function (req, res) {
     }
 
     const imagen = result[0];
-
-    //const filename = imagen.ima_arc_nombre;
     const imagePath = imagen.thu_path;
 
     // Verificar si la imagen existe

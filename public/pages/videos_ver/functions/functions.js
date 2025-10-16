@@ -1,3 +1,5 @@
+let viewsCounted = false;
+
 document.addEventListener("DOMContentLoaded", async () => {
     const videoId = window.location.pathname.split("/").pop();
     const apiUrl = `/api/v1/videos/${videoId}`;
@@ -31,10 +33,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
         video.src = videoSrc;
         video.addEventListener("loadedmetadata", () => video.play());
+        video.addEventListener('play', function() {
+            if (!viewsCounted){
+                incrementViews();
+                viewsCounted = true;
+            }
+        });
       }
     } catch (err) {
       console.error("Error al cargar el video:", err);
       document.getElementById("video_title").textContent = "Error al cargar el video.";
     }
   });
+
+
+  const incrementViews = async () => {
+    try {
+        await fetch(`/api/v1/videos/${videoId}/views`, {
+            method: 'PUT'
+        });
+    } catch (error) {
+        console.error('Error al incrementar vistas:', error);
+    }
+};
   
