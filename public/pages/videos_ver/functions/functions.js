@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Mostrar info del video
       document.getElementById("video_title").textContent = videoData.vid_nombre;
       document.getElementById("video_description").textContent = videoData.vid_descripcion;
+      document.getElementById("video_views").textContent = `${videoData.vid_views || 0} vistas `;
       document.getElementById("video_likes").textContent = `👍 ${videoData.vid_likes || 0}`;
       document.getElementById("video_dislikes").textContent = `${videoData.vid_dislikes || 0} 👎`;
   
