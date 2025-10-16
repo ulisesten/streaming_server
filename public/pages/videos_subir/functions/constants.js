@@ -1,1 +1,1 @@
-const urlVideos = '/api/v1/videos/';
+const urlVideos = '/api/v1/videos';
