@@ -31,7 +31,6 @@ class VideosDTO {
     }
 
     get_response(data) {
-        console.log('data', data)
         if (!data || data[0] == null)
             return {
               msg: "Sin resultados.",

@@ -53,11 +53,7 @@ class VideosDomain {
             thu_id_public: thu_id_public
         };
 
-        return sqlEject.store_eject(
-            "procCatVideosCons",
-            parametros,
-            "soda_stream",
-        );
+        return sqlEject.store_eject("procCatVideosCons", parametros, "soda_stream");
     };
 
 
