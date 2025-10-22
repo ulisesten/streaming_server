@@ -4,84 +4,67 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subir Video</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      padding: 20px;
-    }
-    form {
-      background: #1c1c1c;
-      color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 600px;
-      margin: auto;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    input, textarea {
-      background: #1c1c1c;
-      color: #fff;
-      width: 95%;
-      margin-bottom: 10px;
-      padding: 8px;
-      border: solid 1px gray;
-      border-radius: 6px;
-    }
-
-    textarea {
-      min-height: 200px;
-    }
-
-    button {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      cursor: pointer;
-      border-radius: 4px;
-      align-items: right;
-    }
-    #status {
-      margin-top: 15px;
-      text-align: center;
-    }
-  </style>
+  <link href='https://fonts.googleapis.com/css?family=Nunito:400,300' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/pages/videos_subir/styles/style.videos_subir.css" />
 </head>
 <body>
-  <h2>Subir Video</h2>
-  <form id="uploadForm">
-    <label>Nombre del video</label>
-    <input type="text" name="vid_nombre" required />
+  <header class="header">
+      <div class="header-content">
+          <a href="/"><h1>Soda Stream</h1></a>
+      </div>
+  </header>
+  <div class="main-container">
+    <h2>Subir Video</h2>
+    <form id="uploadForm">
+      <div class="video-box">
 
-    <label>Descripción</label>
-    <textarea name="vid_descripcion"></textarea>
-
-    <label>Tags</label>
-    <input type="text" name="vid_tags" placeholder="ej. acción, anime, comedia" />
-
-    <label>ID de usuario</label>
-    <input type="number" name="vid_id_usuario" required />
-
-    <label>Archivo de video</label>
-    <input type="file" name="video" accept="video/*" required />
-
-    <button type="submit">Subir Video</button>
-  </form>
-  <div>  
-    <div id="status"></div>
-    <span id="progress-text">0%</span>
-    <div id="progress-details"></div>
+        <div class="item-box">
+          <input type="text" name="vid_nombre" required />
+          <label>Nombre del video</label>
+        </div>
+        
+        <div class="item-box">
+          <textarea name="vid_descripcion"></textarea>
+          <label>Descripción</label>
+        </div>
+        
+        <div class="item-box">
+          <input type="text" name="vid_tags" placeholder="ej. acción, anime, comedia" />
+          <label>Tags</label>
+        </div>
+        
+        <div class="item-box">
+          <input type="number" name="vid_id_usuario" required />
+          <label>ID de usuario</label>
+        </div>
+        
+        <div class="item-file">
+          <label>Archivo de video</label>
+          <input class="custom-file-input" type="file" name="video" accept="video/*" required />
+        </div>
+        
+        <button type="submit">Subir Video</button>
+      </div>
+    </form>
+    <div>  
+      <div id="status"></div>
+      <div id="progress-details"></div>
+      <span id="progress-text">0%</span>
+    </div>
+    <br/>
+    <h3>Subir Miniatura</h3>
+    <form id="uploadThumb">
+      <div class="item-box">
+        <input id="frm_id_video" type="text" name="vid_id" value="${data.data.vid_id}" hidden required/>
+      </div>
+      <div class="item-file">
+        <label>Archivo de Miniatura</label>
+        <input class="custom-file-input" type="file" name="image" accept="image/*" required />
+      </div>
+      <button type="submit">Subir Miniatura</button>
+    </form>
+    <div id="img_status"></div>
   </div>
-  <br/>
-  <form id="uploadThumb">
-    <input id="frm_id_video" type="text" name="vid_id" value="${data.data.vid_id}" hidden required/>
-    <label>Miniatura</label>
-    <input type="file" name="image" accept="image/*" required />
-    <button type="submit">Subir Miniatura</button>
-  </form>
-  <div id="img_status"></div>
 
 
   <script src="/pages/videos_subir/functions/constants.js"></script>

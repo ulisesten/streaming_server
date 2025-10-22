@@ -3,7 +3,7 @@ body {
     padding: 0;
     background-color: #121212;
     color: #fff;
-    font-family: system-ui, sans-serif;
+    font-family: 'century gothic', 'system-ui';
   }
   
   header {
@@ -12,7 +12,11 @@ body {
     background: #1e1e1e;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
   }
-  
+
+h1 {
+    color: #ff6b6b;
+    font-size: 2.5rem;
+} 
   .feed-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -64,6 +68,15 @@ body {
     margin: 2px;
   }
   
-  .video-info small {
+  /* .video-info small {
     color: #555454;
+  } */
+
+  .card_date {
+    color: #fff;
+    background-color: #555454;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
   }
+

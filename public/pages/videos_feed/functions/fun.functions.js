@@ -12,10 +12,10 @@ const dateFormat = function(prm_date) {
         &&
         year == fechaActual.getFullYear()
       ) {
-          return 'Hoy';
+          return '<div class="card_date"><small>Hoy</small></div>';
       }
 
-    return `${day}/${month_name}/${year} a las ${date.getHours()}:${date.getMinutes()} hrs.`
+    return `<small>${day} ${month_name} ${year} a las ${date.getHours()}:${date.getMinutes()} hrs.</small>`
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <div class="video-info">
           <h3><a href="${videoLink}">${video.vid_nombre}</a></h3>
           <p>${video.vid_descripcion || "Sin descripción"}</p>
-          <small>${dateFormat(video.vid_fecha)}</small>
+          ${dateFormat(video.vid_fecha)}
         </div>
       `;
 
