@@ -1,35 +1,54 @@
+:root {
+  --primary-color: #1a222c;
+  --secondary-color: #43c464;
+  --tirtiary-color: #3c434c;
+  --background-color: #11161d;
+}
+
+* {
+  margin: 0;
+}
+a {
+  text-decoration: none;
+}
+.header {
+    width: 100%;
+    background-color: var(--primary-color);
+}
+.header-content {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+
 body {
     margin: 0;
     padding: 0;
-    background-color: #121212;
+    background-color: var(--background-color);
     color: #fff;
-    font-family: 'century gothic', 'system-ui';
+    font-family: 'Nunito', sans-serif;
   }
   
-  header {
-    text-align: center;
-    padding: 20px;
-    background: #1e1e1e;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-  }
 
 h1 {
-    color: #ff6b6b;
-    font-size: 2.5rem;
-} 
-  .feed-container {
+    color: var(--secondary-color);
+    font-size: 1.8rem;
+}
+
+.feed-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 20px;
     padding: 20px;
-  }
+}
   
-  .video-card {
-    /* background: #1c1c1c; */
-    border-radius: 8px 8px 0;
+.video-card {
+    background-color: var(--primary-color);
+    border-radius: 0 0 8px 8px;
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
+}
   
   .video-card:hover {
     transform: translateY(-2px);
@@ -41,11 +60,11 @@ h1 {
     height: 220px;
     object-fit: cover;
     display: block;
-    border-radius: 8px;
+    border-radius: 8px 8px 0 0;
   }
   
   .video-info {
-    padding: 2px;
+    padding: 8px;
   }
   
   .video-info h3 {
@@ -68,9 +87,9 @@ h1 {
     margin: 2px;
   }
   
-  /* .video-info small {
-    color: #555454;
-  } */
+  .video-info small {
+    color: #888;
+  }
 
   .card_date {
     color: #fff;
