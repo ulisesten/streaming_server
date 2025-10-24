@@ -46,7 +46,7 @@ class VideosDomain {
         return sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
     }
 
-    async images_get_one( thu_id_public ) {
+    async images_get_one( thu_id_public, cb ) {
         
         const parametros = {
             tipoConsulta: "CAT_VID_THUMNAIL_CONS",

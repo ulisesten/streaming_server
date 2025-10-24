@@ -166,31 +166,33 @@ videos.get("/thumbnails/:thu_id_public", async function(req, res) {
 
     const thu_id_public = req.params.thu_id_public;
 
-    videos_domain.images_get_one( thu_id_public, (result)=>{
-        if (!result || !result[0]){
-            res.json({
-                msg: "Ocurrió un error al consultar la imagen.",
-                success: false,
-                error: 1,
-            });
-            return;
-        }
-    
-        const imagePath = result[0].thu_path;
-    
-        // Verificar si la imagen existe
-        fs.stat(imagePath, (err/* , stats */) => {
-            if (err) {
-                return res.status(404).json({ msg: 'Imagen no encontrada' });
-            }
-    
-            const imageStream = fs.createReadStream(imagePath);
-    
-            //res.setHeader('Content-Type', 'image/jpg'); // Ajustar según el tipo de imagen
-    
-            imageStream.pipe(res);
+    const result = await videos_domain.images_get_one( thu_id_public );
+
+    if (!result || !result[0]){
+        res.json({
+            msg: "Ocurrió un error al consultar la imagen.",
+            success: false,
+            error: 1,
         });
+        return;
+    }
+
+    const imagen = result[0];
+    const imagePath = imagen.thu_path;
+
+    // Verificar si la imagen existe
+    fs.stat(imagePath, (err, stats) => {
+        if (err) {
+            return res.status(404).json({ msg: 'Imagen no encontrada' });
+        }
+
+        const imageStream = fs.createReadStream(imagePath);
+
+        //res.setHeader('Content-Type', 'image/jpg'); // Ajustar según el tipo de imagen
+
+        imageStream.pipe(res);
     });
+
 });
 
 module.exports = videos;
