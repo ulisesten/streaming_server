@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       videoCard.innerHTML = `
         <a href="${videoLink}" class="video-thumb">
-          <img src="${thumb}" alt="${video.vid_nombre}" />
+          <img id="${video.vid_thumbnail}" src="${thumb}" alt="${video.vid_nombre}" />
         </a>
         <div class="video-info">
           <h3><a href="${videoLink}">${video.vid_nombre}</a></h3>
@@ -53,8 +53,39 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
       `;
 
+      const thumb_container = document.getElementById(video.vid_thumbnail);
+
       feedContainer.appendChild(videoCard);
+
+      const img = new Image();
+      img.src = thumb;
+      
+      img.onload = function() {
+        // La imagen existe, proceder normalmente
+        thumb_container.src = `${url_videos_feed}/thumbnails/${video.vid_thumbnail}`
+      };
+      
+      img.onerror = function() {
+        // La imagen no existe, usar imagen por defecto
+        thumb_container.src = url_miniatura_default;
+      };
+
+      
     });
     
 });
+
+
+const createVideoCard = function(videoCard, videoLink, thumb, video) {
+    videoCard.innerHTML = `
+    <a href="${videoLink}" class="video-thumb">
+      <img src="${thumb}" alt="${video.vid_nombre}" />
+    </a>
+    <div class="video-info">
+      <h3><a href="${videoLink}">${video.vid_nombre}</a></h3>
+      <p>${video.vid_descripcion || "Sin descripción"}</p>
+      ${dateFormat(video.vid_fecha)}
+    </div>
+  `;
+}
 

@@ -1,7 +1,7 @@
 let urlApi = '';
 
 if(window.location.hostname === 'localhost')
-    urlApi = 'http://189.157.193.110:3000';
+    urlApi = 'http://189.157.200.136:3000';
 
 const url_videos_feed = `${urlApi}/api/v1/videos`;
 const url_miniatura_default = "https://placehold.co/400x225?text=Sin+Miniatura";
