@@ -31,15 +31,18 @@ a {
 .video-container {
     position: relative;
     width: 100%;
-    height: 80%;
+    /* height: 80%; */
+
     background: #000;
     overflow: hidden;
 }
 
 video {
     position: relative;
-    height: 100%;
-    display: block;
+    /* width: 100%; */
+    /* height: 100%; */
+    /* min-height: 900px; */
+    /* display: block; */
     left: 50%;
     transform: translate(-50%, 0);
 }
@@ -94,3 +97,63 @@ h1 {
     color: #88f;
     cursor: pointer;
   }
+
+  @media screen and (min-width: 200px) {
+    video {
+      width: 200px;
+    }
+  }
+
+  @media screen and (min-width: 400px) {
+    video {
+      width: 400px;
+    }
+  }
+
+  @media screen and (min-width: 600px) {
+    video {
+      width: 600px;
+    }
+  }
+
+  @media screen and (min-width: 800px) {
+    video {
+      width: 800px;
+    }
+  }
+
+  @media screen and (min-width: 1000px) {
+    video {
+      width: 1000px;
+    }
+  }
+
+  @media screen and (min-width: 1200px) {
+    video {
+      width: 1200px;
+    }
+  }
+
+  @media screen and (min-width: 1400px) {
+    video {
+      width: 1400px;
+    }
+  }
+
+  @media screen and (min-width: 1600px) {
+    video {
+      width: 1600px;
+    }
+  }
+
+  @media screen and (min-width: 1800px) {
+    video {
+      width: 1800px;
+    }
+  }
+
+  
+
+  
+
+  

@@ -32,4 +32,48 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`Directorio de videos: ${config.videosPath}`);
 });
 
+
+
+function startHttpsServer() {
+    try {
+        const sslOptions = {
+            key: fs.readFileSync(path.join(__dirname, 'ssl/soda-stream.abrdns.com-ec-key.pem')),
+            cert: fs.readFileSync(path.join(__dirname, 'ssl/soda-stream.abrdns.com-ec-certificate.crt')),
+            ciphers: [
+                'ECDHE-ECDSA-AES128-GCM-SHA256',
+                'ECDHE-ECDSA-AES256-GCM-SHA384', 
+                'ECDHE-ECDSA-CHACHA20-POLY1305',
+                'HIGH:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!3DES'
+            ].join(':'),
+            honorCipherOrder: true
+        };
+
+        https.createServer(sslOptions, app).listen(SSL_PORT, '0.0.0.0', () => {
+            console.log(`🔒 Servidor HTTPS ejecutándose en puerto ${SSL_PORT}`);
+            console.log(`📁 Directorio de videos: ${config.videosPath}`);
+            console.log(`🌍 Entorno: ${NODE_ENV}`);
+            console.log(`🔗 URL: https://localhost:${SSL_PORT}`);
+            console.log(`🔐 Algoritmo: ECDSA prime256v1`);
+        });
+
+        // También iniciar HTTP para redirección (opcional)
+        if (config.redirectHttpToHttps) {
+            const http = require('http');
+            http.createServer((req, res) => {
+                res.writeHead(301, { 
+                    Location: `https://${req.headers.host}${req.url}` 
+                });
+                res.end();
+            }).listen(PORT, '0.0.0.0', () => {
+                console.log(`🔄 Redirección HTTP→HTTPS en puerto ${PORT}`);
+            });
+        }
+
+    } catch (error) {
+        console.warn('❌ No se pudo iniciar HTTPS, usando HTTP:', error.message);
+        startHttpServer();
+    }
+}
+
+
 module.exports = app;
