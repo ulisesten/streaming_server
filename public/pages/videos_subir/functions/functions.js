@@ -5,7 +5,18 @@ const frm_id_video = document.getElementById('frm_id_video');
 let currentSessionId = null;
 
 // HTML para la barra de progreso (agrégalo a tu HTML existente)
-const progressHTML = `
+const progressHTML = `<div id="progress-container" style="display: none; margin: 15px 0;">
+<div class="progress_status">
+    <span id="progress-status">Subiendo...</span>
+    <span id="progress-percent">0%</span>
+</div>
+<div class="progress-bar progress_bar">
+    <div id="progress-fill"></div>
+</div>
+<div id="progress-details" class="progress_details">0 MB / 0 MB</div>
+</div>`;
+
+/* = `
 <div id="progress-container" style="display: none; margin: 15px 0;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
         <span id="progress-status">Subiendo...</span>
@@ -16,7 +27,7 @@ const progressHTML = `
     </div>
     <div id="progress-details" style="font-size: 12px; color: #666; margin-top: 5px;">0 MB / 0 MB</div>
 </div>
-`;
+`; */
 
 // Insertar la barra de progreso después del formulario
 form.insertAdjacentHTML('afterend', progressHTML);
