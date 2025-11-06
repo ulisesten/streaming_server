@@ -80,7 +80,85 @@ const funcCargarVideosRelacionados = async function(prm_vid_id) {
     const response = await fetch(urlSeriesVideos(prm_vid_id));
     const result = await response.json();
 
-    console.log(result)
+    const feedContainer = document.getElementById("related_videos");
+    result.data.forEach(video => {
+        funCrearVideoCard(prm_vid_id, video, feedContainer);
+    });
+}
+
+const funCrearVideoCard = async function(current_id, video, feedContainer) {
+    const videoCard = document.createElement("div");
+    videoCard.classList.add("video-card");
+
+    // Miniatura (usa placeholder si no hay thumb)
+    const thumb = `https://placehold.co/400x225?text=${video.vid_nombre}`;
+
+    const videoLink = `/video/${video.vid_id_public}`;
+
+    let videoThumbLink = document.createElement('a');
+    videoThumbLink.href = videoLink;
+    if(current_id === video.vid_id)
+        videoThumbLink = document.createElement('div');
+
+    videoThumbLink.className = 'video-thumb';
+
+    const thumbnailImg = document.createElement("div");
+    thumbnailImg.className = "video-thumb";
+  
+    // placeholder interior
+    const placeholder = document.createElement("div");
+    placeholder.className = "placeholder";
+  
+    // texto dentro del placeholder
+    const text = document.createElement("span");
+    text.className = "placeholder-text";
+    text.textContent = video.vid_nombre;
+  
+    // anidar elementos
+    placeholder.appendChild(text);
+    thumbnailImg.appendChild(placeholder);/* document.createElement('img');
+    thumbnailImg.src = thumb;
+    thumbnailImg.alt = video.vid_nombre;
+    thumbnailImg.onerror = ()=> {
+      thumbnailImg.src = url_miniatura_default;
+    } */
+
+    const videoInfo = document.createElement('div');
+    videoInfo.className = 'video-info';
+
+    const titleHeading = document.createElement('h3');
+    let titleLink = document.createElement('a');
+    titleLink.href = videoLink;
+
+    if(current_id === video.vid_id){
+        titleLink = {};
+        titleLink = document.createElement('div');
+    }
+
+    console.log(current_id, video.vid_id)
+
+    titleLink.textContent = video.vid_nombre;
+
+    const description = document.createElement('p');
+    description.textContent = video.vid_descripcion || "Sin descripción";
+
+    /* const dateElement = document.createElement('span');
+    dateElement.innerHTML = dateFormat(video.vid_fecha); */
+
+    // Ensamblar la estructura
+    videoThumbLink.appendChild(thumbnailImg);
+
+    titleHeading.appendChild(titleLink);
+
+    videoInfo.appendChild(titleHeading);
+    videoInfo.appendChild(description);
+    /* videoInfo.appendChild(dateElement); */
+
+    videoCard.appendChild(videoThumbLink);
+    /* videoCard.appendChild(videoInfo); */
+
+    
+    feedContainer.appendChild(videoCard);
 }
 
   

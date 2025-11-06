@@ -122,59 +122,106 @@ h1 {
     color: #fff;
   }
 
-  @media screen and (min-width: 200px) {
+
+/* Related Videos */
+#related_videos {
+  display: flex;
+  flex-direction: row;   /* coloca los elementos uno al lado del otro */
+  flex-wrap: nowrap;     /* evita que salten a nueva línea */
+  overflow-x: auto;      /* scroll horizontal si no caben */
+  gap: 16px;             /* separación entre las tarjetas */
+  padding: 16px;
+  scroll-behavior: smooth;
+}
+
+.video-card {
+  flex: 0 0 auto;        /* ancho fijo, sin crecimiento */
+  width: 200px;          /* ancho de cada card */
+  border-radius: 8px;
+  background: #222;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.video-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.video-thumb img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+}
+
+.placeholder {
+  width: 200px;
+  height: 120px;
+  background: #333;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+@media screen and (min-width: 200px) {
     video {
       width: 200px;
     }
-  }
+}
 
-  @media screen and (min-width: 400px) {
+@media screen and (min-width: 400px) {
     video {
       width: 400px;
     }
-  }
+}
 
-  @media screen and (min-width: 600px) {
+@media screen and (min-width: 600px) {
     video {
       width: 600px;
     }
-  }
+}
 
-  @media screen and (min-width: 800px) {
+@media screen and (min-width: 800px) {
     video {
       width: 800px;
     }
-  }
+}
 
-  @media screen and (min-width: 1000px) {
+@media screen and (min-width: 1000px) {
     video {
       width: 1000px;
     }
-  }
+}
 
-  @media screen and (min-width: 1200px) {
+@media screen and (min-width: 1200px) {
     video {
       width: 1200px;
     }
-  }
+}
 
-  @media screen and (min-width: 1400px) {
+@media screen and (min-width: 1400px) {
     video {
       width: 1400px;
     }
-  }
+}
 
-  @media screen and (min-width: 1600px) {
+@media screen and (min-width: 1600px) {
     video {
       width: 1600px;
     }
-  }
+}
 
-  @media screen and (min-width: 1800px) {
+@media screen and (min-width: 1800px) {
     video {
       width: 1800px;
     }
-  }
+}
 
   
 

@@ -5,3 +5,4 @@ if(window.location.hostname === 'localhost')
 
 const urlVideosVer = `${urlApi}/api/v1/videos`;
 const urlVideosViews = `${urlApi}/api/v1/videos`;
+const urlSeriesVideos = (vid_id) => { return `${urlApi}/api/v1/videos/${vid_id}/series/relacionados`;}
