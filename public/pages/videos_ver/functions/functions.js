@@ -40,6 +40,8 @@ const funCargarVideo = async function() {
         // Reproducir video con HLS.js
         const video = document.getElementById("video_player");
         const videoSrc = `${urlApi}${videoData.vid_path}`;
+
+        funcCargarVideosRelacionados(vid_id)
   
         /// Validando sopote nativo
         if (Hls.isSupported()) {
@@ -66,12 +68,19 @@ const funCargarVideo = async function() {
                 }
             });
         }
+
+        
     } catch (err) {
       console.error("Error al cargar el video:", err);
       document.getElementById("video_title").textContent = "Error al cargar el video.";
     }
 }
 
+const funcCargarVideosRelacionados = async function(prm_vid_id) {
+    const response = await fetch(urlSeriesVideos(prm_vid_id));
+    const result = await response.json();
 
+    console.log(result)
+}
 
   

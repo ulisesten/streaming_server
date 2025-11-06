@@ -42,11 +42,20 @@ users.get("/:usu_id/address", async function (req, res) {
     res.json(db_res);
 }); */
 
-
+//! Obtener videos para el feed
 videos.get("/",async function (req, res) {
-    const query = await videos_domain.get();
-    res.json(videos_dto.get_response(query));
+    const query = await videos_domain.get_videos();
+    res.json(videos_dto.get_videos_response(query));
 });
+
+
+//! Obtener videos de la serie relacionada al video
+videos.get("/:vid_id/series/relacionados",async function (req, res) {
+    const vid_id = req.params.vid_id;
+    const query = await videos_domain.get_series_videos({vid_id});
+    res.json(videos_dto.get_series_videos_response(query));
+});
+
 
 videos.get("/:vid_id",async function (req, res) {
     const vid_id = req.params.vid_id;

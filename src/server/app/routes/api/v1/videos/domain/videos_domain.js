@@ -2,9 +2,18 @@ const sqlEject = require("../../../../../librerias/sql_server/sql_eject");
 
 class VideosDomain {
 
-    async get(req) {
+    async get_videos(req) {
         const parametros = {
             tipoConsulta: "CAT_VIDEOS_CONS"
+        };
+
+        return sqlEject.store_eject("procCatVideosCons", parametros,"soda_stream");
+    }
+
+    async get_series_videos(params) {
+        const parametros = {
+            tipoConsulta: "CAT_SERIES_VIDEOS_CONS",
+            vid_id: params.vid_id
         };
 
         return sqlEject.store_eject("procCatVideosCons", parametros,"soda_stream");

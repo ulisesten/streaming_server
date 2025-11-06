@@ -30,7 +30,23 @@ class VideosDTO {
         };
     }
 
-    get_response(data) {
+    get_videos_response(data) {
+        if (!data || data[0] == null)
+            return {
+              msg: "Sin resultados.",
+              success: true,
+              error: 0,
+            };
+      
+        return {
+            msg: data[0].msg,
+            success: data[0].success,
+            error: data[0].error,
+            data: data
+        };
+    }
+
+    get_series_videos_response(data) {
         if (!data || data[0] == null)
             return {
               msg: "Sin resultados.",
