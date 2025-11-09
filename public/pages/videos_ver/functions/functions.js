@@ -97,8 +97,13 @@ const funCrearVideoCard = async function(current_id, video, feedContainer) {
 
     let videoThumbLink = document.createElement('a');
     videoThumbLink.href = videoLink;
-    if(current_id === video.vid_id)
+    if(current_id === video.vid_id){
         videoThumbLink = document.createElement('div');
+        const triangle = document.createElement("div");
+        triangle.className = "play-indicator";
+        videoThumbLink.appendChild(triangle);
+
+    }
 
     videoThumbLink.className = 'video-thumb';
 
@@ -116,12 +121,7 @@ const funCrearVideoCard = async function(current_id, video, feedContainer) {
   
     // anidar elementos
     placeholder.appendChild(text);
-    thumbnailImg.appendChild(placeholder);/* document.createElement('img');
-    thumbnailImg.src = thumb;
-    thumbnailImg.alt = video.vid_nombre;
-    thumbnailImg.onerror = ()=> {
-      thumbnailImg.src = url_miniatura_default;
-    } */
+    thumbnailImg.appendChild(placeholder);
 
     const videoInfo = document.createElement('div');
     videoInfo.className = 'video-info';

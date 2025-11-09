@@ -126,47 +126,56 @@ h1 {
 /* Related Videos */
 #related_videos {
   display: flex;
-  flex-direction: row;   /* coloca los elementos uno al lado del otro */
-  flex-wrap: nowrap;     /* evita que salten a nueva línea */
-  overflow-x: auto;      /* scroll horizontal si no caben */
-  gap: 16px;             /* separación entre las tarjetas */
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 16px;
   padding: 16px;
-  scroll-behavior: smooth;
 }
 
-.video-card {
-  flex: 0 0 auto;        /* ancho fijo, sin crecimiento */
-  width: 200px;          /* ancho de cada card */
-  border-radius: 8px;
-  background: #222;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.video-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-.video-thumb img {
-  width: 100%;
+.video-thumb {
+  width: 200px;
   height: 120px;
-  object-fit: cover;
-  display: block;
   border-radius: 8px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  position: relative;
 }
 
 .placeholder {
-  width: 200px;
-  height: 120px;
-  background: #333;
-  color: #fff;
+  width: 100%;
+  height: 100%;
+  background-color: #2b2b2b;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Roboto', sans-serif;
-  font-size: 1.2rem;
   border-radius: 8px;
+  position: relative;
+}
+
+.placeholder-text {
+  color: #eee;
+  font-weight: 600;
+  font-size: 1.1rem;
   text-align: center;
+  padding: 8px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  z-index: 2;
+}
+
+/* Triángulo translúcido tipo "play" — SIEMPRE visible */
+.play-indicator {
+  pointer-events: none; /* <- no bloquea hover ni clics */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  border-top: 25px solid transparent;
+  border-bottom: 25px solid transparent;
+  border-left: 40px solid rgba(255, 255, 255, 0.6);
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.6));
+  z-index: 1;
 }
 
 @media screen and (min-width: 200px) {
