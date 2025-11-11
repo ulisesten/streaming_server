@@ -15,6 +15,10 @@ const tipoMSSQL = {
 
 const config = settings.getDatabaseConfig();
 
+sql.on('error', err => {
+    console.error('Error de SQL global:', err);
+});
+
 class SqlEject {
 
     async store_eject_old(sp_name, params, database) {
@@ -117,6 +121,87 @@ class SqlEject {
 
 
     async store_eject(sp_name, params, database) {
+        const login_id = 1;
+        const valores = {};
+        const localConfig = { ...config, database };
+      
+        const pool = new sql.ConnectionPool(localConfig);
+        const poolConnect = pool.connect();
+      
+        return poolConnect
+          .then(async () => {
+            const request = pool.request();
+      
+            const query = `
+              SELECT PARAMETER_NAME, DATA_TYPE
+              FROM information_schema.parameters
+              WHERE specific_name = @procedimientoAlmacenado;
+            `;
+      
+            const sp_schema_result = await request
+              .input('procedimientoAlmacenado', sql.NVarChar, sp_name)
+              .query(query);
+      
+            const proc_params = sp_schema_result.recordset;
+      
+            // Plantilla de valores
+            for (const param of proc_params) {
+              const tipo = param.DATA_TYPE;
+              const columna = param.PARAMETER_NAME.replace('@', '');
+      
+              if (['usuario_alta', 'usuario_mod'].includes(columna)) {
+                valores[columna] = { value: login_id, type: tipo };
+                continue;
+              }
+      
+              if (tipo === 'datetime') {
+                valores[columna] = {
+                  value: ['fecha_alta', 'fecha_mod'].includes(columna)
+                    ? new Date()
+                    : '1900-01-01 00:00:00',
+                  type: tipo
+                };
+                continue;
+              }
+      
+              if (tipo === 'int') {
+                valores[columna] = { value: 0, type: tipo };
+                continue;
+              }
+      
+              valores[columna] = { value: null, type: tipo };
+            }
+      
+            // Asignar valores recibidos
+            Object.keys(params).forEach(k => {
+              if (valores[k]) valores[k].value = params[k];
+            });
+      
+            const sp_request = pool.request();
+      
+            Object.keys(valores).forEach(k => {
+              const v = valores[k];
+              if (!v) {
+                console.warn(`Parámetro ${k} indefinido`);
+                return;
+              }
+              sp_request.input(k, tipoMSSQL[v.type], v.value);
+            });
+      
+            const result = await sp_request.execute(sp_name);
+            return result.recordset;
+          })
+          .catch(err => {
+            console.error('Error en store_eject:', err);
+            return null;
+          })
+          .finally(() => {
+            pool.close(); // ✅ Cierra sólo este pool, no el global
+          });
+    }
+
+
+    async store_eject_alt1(sp_name, params, database) {
         const login_id = 1; // cambiar este valor por el devuelto por la función de login
         const valores = {};
         config.database = database;
@@ -145,6 +230,7 @@ class SqlEject {
     
         // Validar que el tipoMSSQL esté disponible
         if (typeof tipoMSSQL === 'undefined') {
+            
             throw new Error('tipoMSSQL no está definido');
         }
     
@@ -267,6 +353,10 @@ class SqlEject {
         // Validar resultado
         if (!result || !result.recordset) {
             throw new Error('No se obtuvo resultado del stored procedure');
+        }
+
+        if (pool) {
+            await pool.close();
         }
     
         return result.recordset;
