@@ -1,5 +1,6 @@
 const sqlEject = require("../../../../../librerias/sql_server/sql_eject");
-
+const telegram_bot = require('../../general/services/service_telegram_bot')
+const urlVideo = 'http://soda-stream.abrdns.com:3000/video';
 class VideosDomain {
 
     async get_videos(req) {
@@ -40,6 +41,8 @@ class VideosDomain {
           vid_descripcion: videoData.vid_descripcion || "",
           vid_tags: videoData.vid_tags || ""
         };
+
+        telegram_bot.sendNewVideoNotification({title: videoData.vid_nombre, url: `${urlVideo}/${videoData.vid_id_public}`});
 
         return sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
     }
