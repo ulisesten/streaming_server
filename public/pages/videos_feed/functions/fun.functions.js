@@ -12,7 +12,7 @@ const dateFormat = function(prm_date) {
         &&
         year == fechaActual.getFullYear()
       ) {
-          return '<div class="card_date"><small>Hoy</small></div>';
+          return '<div class="card_date"><small class="exalt">Hoy</small></div>';
       }
 
     return `<small>${day} ${month_name} ${year} a las ${date.getHours()}:${date.getMinutes()} hrs.</small>`
