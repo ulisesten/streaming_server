@@ -35,14 +35,13 @@ app.use((err, req, res, next) => {
 if (NODE_ENV === 'production') {
 
     startHttpsServer(app);
-
+    
 } else {
     app.listen(PORT, '0.0.0.0', () => {
         console.log(`[DEVELOPMENT] Servidor de streaming ejecutándose en el puerto ${PORT}`);
         console.log(`Directorio de videos: ${config.videosPath}`);
     });
 }
-
 
 
 function startHttpsServer(prm_app) {
@@ -85,9 +84,9 @@ function startHttpsServer(prm_app) {
 
     } catch (error) {
         console.warn('❌ No se pudo iniciar HTTPS, usando HTTP:', error.message);
-        startHttpServer();
     }
 }
+
 
 
 module.exports = app;
