@@ -61,11 +61,11 @@ function startHttpsServer(prm_app) {
             honorCipherOrder: true
         };
 
-        https.createServer(sslOptions, prm_app).listen(SSL_PORT, '0.0.0.0', () => {
-            console.log(`🔒 Servidor HTTPS ejecutándose en puerto ${SSL_PORT}`);
+        https.createServer(sslOptions, prm_app).listen(PORT, '0.0.0.0', () => {
+            console.log(`🔒 Servidor HTTPS ejecutándose en puerto ${PORT}`);
             console.log(`📁 Directorio de videos: ${config.videosPath}`);
             console.log(`🌍 Entorno: ${NODE_ENV}`);
-            console.log(`🔗 URL: https://localhost:${SSL_PORT}`);
+            console.log(`🔗 URL: https://localhost:${PORT}`);
             console.log(`🔐 Algoritmo: ECDSA prime256v1`);
         });
 
