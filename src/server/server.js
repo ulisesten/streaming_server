@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
@@ -7,6 +8,7 @@ const routes = require('./routes');
 const videos = require('./app/routes/api/v1/videos/');
 //const telegram_bot = require('./app/routes/api/v1/general/services/service_telegram_bot')
 const PORT = process.env.PORT || config.port;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 const app = express();
 
 // Middlewares
@@ -30,18 +32,26 @@ app.use((err, req, res, next) => {
 
 
 // Iniciar servidor
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Servidor de streaming ejecutándose en el puerto ${PORT}`);
-    console.log(`Directorio de videos: ${config.videosPath}`);
-});
+if (NODE_ENV === 'production') {
+
+    startHttpsServer(app);
+
+} else {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`[DEVELOPMENT] Servidor de streaming ejecutándose en el puerto ${PORT}`);
+        console.log(`Directorio de videos: ${config.videosPath}`);
+    });
+}
 
 
 
-function startHttpsServer() {
+function startHttpsServer(prm_app) {
+    const https = require('https');
+
     try {
         const sslOptions = {
-            key: fs.readFileSync(path.join(__dirname, 'ssl/soda-stream.abrdns.com-ec-key.pem')),
-            cert: fs.readFileSync(path.join(__dirname, 'ssl/soda-stream.abrdns.com-ec-certificate.crt')),
+            key: fs.readFileSync(process.env.SSL_KEY_PATH),
+            cert: fs.readFileSync(process.env.SSL_CERT_PATH),
             ciphers: [
                 'ECDHE-ECDSA-AES128-GCM-SHA256',
                 'ECDHE-ECDSA-AES256-GCM-SHA384', 
@@ -51,7 +61,7 @@ function startHttpsServer() {
             honorCipherOrder: true
         };
 
-        https.createServer(sslOptions, app).listen(SSL_PORT, '0.0.0.0', () => {
+        https.createServer(sslOptions, prm_app).listen(SSL_PORT, '0.0.0.0', () => {
             console.log(`🔒 Servidor HTTPS ejecutándose en puerto ${SSL_PORT}`);
             console.log(`📁 Directorio de videos: ${config.videosPath}`);
             console.log(`🌍 Entorno: ${NODE_ENV}`);
