@@ -47,6 +47,7 @@ if (NODE_ENV === 'production') {
 
 function startHttpsServer(prm_app) {
     const https = require('https');
+    const fs = require('fs');
 
     try {
         const sslOptions = {
