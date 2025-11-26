@@ -1,7 +1,7 @@
 let urlApi = '';
 
 if(window.location.hostname === 'localhost')
-    urlApi = 'http://soda-stream.abrdns.com:3000';
+    urlApi = 'https://soda-stream.abrdns.com:3000';
 
 const urlVideosVer = `${urlApi}/api/v1/videos`;
 const urlVideosViews = `${urlApi}/api/v1/videos`;

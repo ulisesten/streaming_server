@@ -7,7 +7,7 @@ const router = express.Router();
 const hlsBaseDir = path.join(process.cwd(), 'public/hls');
 if (!fs.existsSync(hlsBaseDir)) {
     fs.mkdirSync(hlsBaseDir, { recursive: true });
-  }
+}
 
 // Importar el módulo nativo - verificar la ruta correcta
 let nativeModule;
@@ -21,18 +21,18 @@ try {
 
 
 // Servir archivos estáticos
-router.use(express.static(config.publicPath));
+/* router.use(express.static(config.publicPath));
 router.use('hls/videos', express.static(hlsBaseDir, {
     setHeaders: (res, p) => {
       if (p.endsWith('.m3u8')) res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
       if (p.endsWith('.ts'))   res.setHeader('Content-Type', 'video/mp2t');
     }
-}));
+})); */
 
 
 
 // Ruta para obtener información del video
-router.get('/videoinfo/:videoName', (req, res) => {
+/* router.get('/videoinfo/:videoName', (req, res) => {
     if (!nativeModule) {
         return res.status(500).json({ error: 'Fallo al iniciar proceso de streaming.' });
     }
@@ -46,12 +46,12 @@ router.get('/videoinfo/:videoName', (req, res) => {
     
     const info = nativeModule.getVideoInfo(videoPath);
     res.json(info);
-});
+}); */
 
 
 
 // Ruta para listar videos disponibles
-router.get('/videos', (req, res) => {
+/* router.get('/videos', (req, res) => {
     fs.readdir(config.videosPath, (err, files) => {
         if (err) {
             res.status(500).json({ error: 'Error leyendo directorio de videos' });
@@ -67,7 +67,7 @@ router.get('/videos', (req, res) => {
         
         res.json(videoFiles);
     });
-});
+}); */
 
 
 
