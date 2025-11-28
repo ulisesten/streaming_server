@@ -16,6 +16,8 @@ const app = express();
 app.use(morgan('combined'));
 app.use(cors());
 app.use(express.json());
+app.use(express.json({ limit: '10gb' }));
+app.use(express.urlencoded({ extended: true, limit: '10gb' }));
 app.use("/pages", express.static(path.join(__dirname, "../../public/pages")));
 app.use("/hls/videos", express.static(path.join(__dirname, "../../public/hls/videos")));
 app.use("/hls/lives", express.static(path.join(__dirname, "../../public/hls/lives")));

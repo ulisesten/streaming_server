@@ -66,7 +66,7 @@ form.addEventListener('submit', async (e) => {
     // Iniciar polling de progreso
     const progressInterval = setInterval(() => {
         checkProgress(currentSessionId);
-    }, 500);
+    }, 1000);
 
     try {
         const res = await fetch(urlVideos, {
