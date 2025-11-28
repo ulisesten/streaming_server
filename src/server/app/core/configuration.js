@@ -16,6 +16,7 @@ class Settings extends BaseConfig {
     SECRET_KEY  = process.env.SECRET_KEY
     API_NAS     = process.env.API_NAS
     PUBLIC_ID_LENGTH = process.env.PUBLIC_ID_LENGTH
+    DOMAIN_NAME = process.env.DOMAIN_NAME;
     
 
     getDatabaseConfig() {

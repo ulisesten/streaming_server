@@ -1,6 +1,6 @@
 const sqlEject = require("../../../../../librerias/sql_server/sql_eject");
 const telegram_bot = require('../../general/services/service_telegram_bot')
-const urlVideo = 'https://soda-stream.abrdns.com:3000/video';
+const urlVideo = 'https://sodastream.fun/video';
 class VideosDomain {
 
     async get_videos(req) {
