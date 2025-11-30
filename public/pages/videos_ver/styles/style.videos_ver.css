@@ -171,7 +171,7 @@ h1 {
   text-align: center;
   padding: 8px;
   /* text-shadow: 1px 1px 2px rgba(0,0,0,0.8); */
-  z-index: 2;
+  z-index: 10;
 }
 
 /* Triángulo translúcido tipo "play" — SIEMPRE visible */

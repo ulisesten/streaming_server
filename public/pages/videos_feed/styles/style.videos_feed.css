@@ -59,9 +59,10 @@ h1 {
   
 .video-card {
     color: var(--text-color);
-    background-color: var(--fourth-color);
+    background-color: var(--primary-color);
     border-radius: 8px;
-    border: solid 1px var(--tirtiary-color);
+    /* border: solid 1px var(--tirtiary-color); */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.671);
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
