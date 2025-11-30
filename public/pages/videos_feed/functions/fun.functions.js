@@ -68,6 +68,7 @@ const funCrearVideoCard = async function(video, feedContainer) {
     videoInfo.className = 'video-info';
 
     const titleHeading = document.createElement('h3');
+    titleHeading.setAttribute('class','text-gradient-green');
     const titleLink = document.createElement('a');
     titleLink.href = videoLink;
     titleLink.textContent = video.vid_nombre;

@@ -1,7 +1,7 @@
 let urlApi = '';
 
 if(window.location.hostname === 'localhost')
-    urlApi = 'https://soda-stream.abrdns.com:3000';
+    urlApi = 'https://192.168.1.78:3000';
 
 const url_videos_feed = `${urlApi}/api/v1/videos`;
 const url_miniatura_default = "https://placehold.co/400x225?text=Sin+Miniatura";

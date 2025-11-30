@@ -118,6 +118,7 @@ const funCrearVideoCard = async function(current_id, video, feedContainer) {
     const text = document.createElement("span");
     text.className = "placeholder-text";
     text.textContent = video.vid_nombre;
+    text.setAttribute('class','text-gradient-green');
   
     // anidar elementos
     placeholder.appendChild(text);
