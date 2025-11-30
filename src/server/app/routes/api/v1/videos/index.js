@@ -74,7 +74,13 @@ videos.post('/',
         return res.status(400).json({ msg: "No se recibió archivo" });
     }
 
-    const { vid_nombre, vid_descripcion, vid_tags, vid_id_usuario } = req.body;
+    const {
+        vid_nombre,
+        vid_descripcion,
+        vid_tags,
+        vid_id_usuario,
+        vid_id_serie
+    } = req.body;
     const vid_id_public = req.vid_id_public;
     const filePath = req.file.path;
     const fileName = req.file.filename;
@@ -101,6 +107,7 @@ videos.post('/',
         vid_nombre,
         vid_descripcion,
         vid_tags,
+        vid_id_serie,
         vid_path: `/hls/videos/${path.parse(fileName).name}/playlist.m3u8`,
     });
   

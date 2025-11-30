@@ -39,7 +39,8 @@ class VideosDomain {
           vid_nombre: videoData.vid_nombre,
           vid_path: videoData.vid_path,
           vid_descripcion: videoData.vid_descripcion || "",
-          vid_tags: videoData.vid_tags || ""
+          vid_tags: videoData.vid_tags || "",
+          vid_id_serie: videoData.vid_id_serie
         };
 
         telegram_bot.sendNewVideoNotification({title: videoData.vid_nombre, url: `${urlVideo}/${videoData.vid_id_public}`});

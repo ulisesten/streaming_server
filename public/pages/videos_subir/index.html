@@ -42,7 +42,9 @@
           <label>Archivo de video</label>
           <input class="custom-file-input" type="file" name="video" accept=".mkv,video/x-matroska,video/*" required />
         </div>
-        <div id="combo_id_series"></div>
+        <div id="combo_id_series" class="item-file">
+          <label for="cmb_videos_subir_series">Serie</label><br/>
+        </div>
         
         <button type="submit">Subir Video</button>
       </div>
@@ -52,18 +54,6 @@
       <div id="progress-details"></div>
       <span id="progress-text">0%</span>
     </div>
-
-
-    <!-- <div id="progress-container" style="display: none; margin: 15px 0;">
-      <div class="progress_status">
-          <span id="progress-status">Subiendo...</span>
-          <span id="progress-percent">0%</span>
-      </div>
-      <div class="progress-bar progress_bar">
-          <div id="progress-fill"></div>
-      </div>
-      <div id="progress-details" class="progress_details">0 MB / 0 MB</div>
-    </div> -->
 
 
     <br/>
@@ -83,9 +73,16 @@
 
 
   <script src="/pages/videos_subir/functions/constants.js"></script>
-  <script src="/pages/videos_subir/functions/functions.js"></script>
+  <script src="/pages/videos_subir/functions/fun.videos_subir.js"></script>
 
   <!-- Combos -->
   <script src="/pages/general/combos/combo.series.js"></script>
+  <script>
+
+      funCmboSeries({
+        id: 'cmb_videos_subir_series'
+      });
+
+  </script>
 </body>
 </html>

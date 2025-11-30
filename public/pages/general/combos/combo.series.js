@@ -1,7 +1,8 @@
-const urlSeries = `/api/v1/series`;
+let urlSeries = `/api/v1/series`;
 
 // ID del combo
-const cmb_id_series = "combo_id_series"
+const cmb_id_series_container = "combo_id_series";
+
 const funFetchComboSeries = function(callback) {
     const options = {
         method: "GET"
@@ -21,21 +22,35 @@ const funFetchComboSeries = function(callback) {
     callback(
         [
             {ser_id: 1, ser_nombre: "One Punch Man"},
-            {ser_id: 2, ser_nombre: "One Piece"}
+            {ser_id: 2, ser_nombre: "One Piece"},
+            {ser_id: 3, ser_nombre: "Kamen Rider"}
         ]
     )
 
 }
 
-const funCmboSeries = function() {
-    const combo_series_container = document.getElementById(cmb_id_series);
+const funCmboSeries = function(opts) {
+    let cmb_series = null;
+
+    const combo_series_container = document.getElementById(cmb_id_series_container);
     if(!combo_series_container) {
         console.error("No combo series container");
         return;
     }
-    const cmb_series = document.createElement('select');
+    
+    if(opts['id']){
+        
+        cmb_series = document.getElementById(opts['id'])
+        if( cmb_series )
+            cmb_series.remove();
+        
+        cmb_series = document.createElement('select');
+        cmb_series.id = opts['id'];
+        cmb_series.setAttribute('class','combo');
+    }
+    if(opts['url'])     urlSeries = opts['url'];
 
-    combo_series_container.innerHTML = "";
+
 
     funFetchComboSeries( ( options )=> {
         if(!options) return;
@@ -51,4 +66,4 @@ const funCmboSeries = function() {
     combo_series_container.appendChild(cmb_series)
 }
 
-funCmboSeries();
+//funCmboSeries();

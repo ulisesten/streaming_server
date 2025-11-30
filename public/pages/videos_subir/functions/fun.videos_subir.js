@@ -1,8 +1,9 @@
-const form = document.getElementById('uploadForm');
+let currentSessionId = null;
+
+const form_video = document.getElementById('uploadForm');
 const vid_status = document.getElementById('status');
 const image_form = document.getElementById('image_form');
 const frm_id_video = document.getElementById('frm_id_video');
-let currentSessionId = null;
 
 // HTML para la barra de progreso (agrégalo a tu HTML existente)
 const progressHTML = `<div id="progress-container" style="display: none; margin: 15px 0;">
@@ -16,21 +17,8 @@ const progressHTML = `<div id="progress-container" style="display: none; margin:
 <div id="progress-details" class="progress_details">0 MB / 0 MB</div>
 </div>`;
 
-/* = `
-<div id="progress-container" style="display: none; margin: 15px 0;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-        <span id="progress-status">Subiendo...</span>
-        <span id="progress-percent">0%</span>
-    </div>
-    <div class="progress-bar" style="width: 100%; height: 20px; background-color: #f0f0f0; border-radius: 10px; overflow: hidden;">
-        <div id="progress-fill" style="height: 100%; background-color: #2196F3; width: 0%; transition: width 0.3s ease; border-radius: 10px;"></div>
-    </div>
-    <div id="progress-details" style="font-size: 12px; color: #666; margin-top: 5px;">0 MB / 0 MB</div>
-</div>
-`; */
-
 // Insertar la barra de progreso después del formulario
-form.insertAdjacentHTML('afterend', progressHTML);
+form_video.insertAdjacentHTML('afterend', progressHTML);
 
 const progressContainer = document.getElementById('progress-container');
 const progressFill = document.getElementById('progress-fill');
@@ -38,11 +26,16 @@ const progressPercent = document.getElementById('progress-percent');
 const progressDetails = document.getElementById('progress-details');
 const progressStatus = document.getElementById('progress-status');
 
-form.addEventListener('submit', async (e) => {
+form_video.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(form);
+    //const form_video = document.getElementById('uploadForm');
+
+    const ser_id = document.getElementById('cmb_videos_subir_series').value;
+
+    const formData = new FormData(form_video);
     const videoFile = formData.get('video'); // Asumiendo que el input se llama "video"
+    formData.append('vid_id_serie', ser_id);
     
     if (!videoFile || videoFile.size === 0) {
         vid_status.textContent = "❌ Por favor selecciona un archivo de video.";
@@ -58,7 +51,7 @@ form.addEventListener('submit', async (e) => {
     updateProgress(0, 0, videoFile.size, 'Preparando...');
 
     // Deshabilitar el formulario durante la subida
-    const submitButton = form.querySelector('button[type="submit"]');
+    const submitButton = form_video.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.textContent;
     submitButton.textContent = "Subiendo...";
     submitButton.disabled = true;
