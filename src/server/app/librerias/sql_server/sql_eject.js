@@ -10,7 +10,8 @@ const tipoMSSQL = {
     'char': sql.Char,
     'datetime': sql.DateTime,
     'numeric': sql.Numeric,
-    'decimal': sql.Decimal
+    'decimal': sql.Decimal,
+    'smallint': sql.SmallInt
 };
 
 const config = settings.getDatabaseConfig();
