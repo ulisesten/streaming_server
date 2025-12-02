@@ -21,6 +21,7 @@ const funFetchComboSeries = function(callback) {
 
     callback(
         [
+            {ser_id: 0, ser_nombre: "Seleccione..."},
             {ser_id: 1, ser_nombre: "One Punch Man"},
             {ser_id: 2, ser_nombre: "One Piece"},
             {ser_id: 3, ser_nombre: "Kamen Rider"}
@@ -54,6 +55,11 @@ const funCmboSeries = function(opts) {
 
     funFetchComboSeries( ( options )=> {
         if(!options) return;
+
+        const optionElementDefault = document.createElement("option");
+        optionElementDefault.value = 0; // Establecer el valor del atributo 'value'
+        optionElementDefault.textContent = "Seleccione..."; // Establecer el texto que verá el usuario
+        cmb_series.appendChild(optionElementDefault);
 
         for( let i = 0; i < options.length; i++ ) {
             const optionElement = document.createElement("option");
