@@ -39,20 +39,24 @@ class EncryptService {
    * @param data any
    * @returns string retorna un string encriptado que es reversible **/
   reversible_encrypt(data) {
-    if(typeof data === 'object') {
+    if(typeof data === 'object' && data !== null) {
       data = JSON.stringify(data);
     }
 
+    const input = gost.Код.Строку_в_байты(data)
+
     ///    gost.encriptacion.proceso_con_reversion
     const token = gost.Шифрование.Гаммование_с_обратной_связью(
-      data,
+      input,
       this.x_vector,
       this.SECRET,
       null,
       false,
     );
 
-    return Buffer.from(token).toString('base64');
+    const b64_token = (Buffer.from(token)).toString('base64');
+
+    return b64_token;
   }
 
 
@@ -60,18 +64,18 @@ class EncryptService {
    * @param texto_cifrado string
    * @returns string texto descifrado **/
   decrypt(texto_cifrado) {
-    const jsonString = Buffer.from(texto_cifrado, 'base64').toString();
+    const jsonString = Buffer.from(texto_cifrado, 'base64');
     
     ///    gost.encriptacion.proceso_con_reversion
-    const user = gost.Шифрование.Гаммование_с_обратной_связью(
+    const decryptedResult = gost.Шифрование.Гаммование_с_обратной_связью(
       jsonString,
       this.x_vector,
       this.SECRET,
       null,
       true,
     );
-    
-    return user;
+
+    return gost.Код.Байты_в_строку(decryptedResult);
   }
 
 

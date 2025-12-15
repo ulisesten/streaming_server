@@ -70,7 +70,7 @@ router.use('hls/videos', express.static(hlsBaseDir, {
 }); */
 
 
-
+/* 
 router.get('/stream_sync/:video', async (req, res) => {
     if (!nativeModule) {
         return res.status(500).json({ error: 'Fallo al iniciar proceso de streaming.' });
@@ -106,10 +106,10 @@ router.get('/stream_sync/:video', async (req, res) => {
     // Devuelve URL para HLS.js
     const url = `${streaming_path}/${path.parse(safeName).name}/playlist.m3u8`;
     return res.json({ url });
-});
+}); */
 
 
-router.get('/stream/:video', async (req, res) => {
+/* router.get('/stream/:video', async (req, res) => {
     if (!nativeModule) {
         return res.status(500).json({ error: 'Fallo al iniciar proceso de streaming.' });
     }
@@ -150,7 +150,7 @@ router.get('/stream/:video', async (req, res) => {
 
         res.json({ url });
     });
-});
+}); */
 
 
 // Ruta principal - servir el reproductor
@@ -168,6 +168,10 @@ router.get('/video/:video', (req, res) => {
 
 router.get('/', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/videos_feed/index.html'));
+});
+
+router.get('/signin', (req, res) => {
+    res.sendFile(path.join(config.publicPath, 'pages/sign_in/index.html'));
 });
 
 

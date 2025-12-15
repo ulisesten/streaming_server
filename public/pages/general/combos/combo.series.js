@@ -21,7 +21,7 @@ const funFetchComboSeries = function(callback) {
 
     callback(
         [
-            {ser_id: 0, ser_nombre: "Seleccione..."},
+            //{ser_id: 0, ser_nombre: "Seleccione..."},
             {ser_id: 1, ser_nombre: "One Punch Man"},
             {ser_id: 2, ser_nombre: "One Piece"},
             {ser_id: 3, ser_nombre: "Kamen Rider"}
@@ -49,9 +49,8 @@ const funCmboSeries = function(opts) {
         cmb_series.id = opts['id'];
         cmb_series.setAttribute('class','combo');
     }
+
     if(opts['url'])     urlSeries = opts['url'];
-
-
 
     funFetchComboSeries( ( options )=> {
         if(!options) return;

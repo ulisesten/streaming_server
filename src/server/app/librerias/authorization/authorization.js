@@ -15,9 +15,11 @@ class AuthorizationService {
         }
 
         const token = authHeader.split(' ')[1];
+
         let auth = jwt.gost_verify(token);
 
-        if( 
+        if( !auth
+            ||
             req.ip !== auth.user['ip'] 
             ||
             req.headers['user-agent'] !== auth.user['user_agent']

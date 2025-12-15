@@ -16,7 +16,7 @@ class UsersDomain {
             usu_contrasena: hashed_password,
         };
 
-        return sqlEject.store_eject("procUsersProc", parametros, "hereli_api");
+        return sqlEject.store_eject("procUsersProc", parametros, "soda_stream");
     }
 
     async users_update(req) {
@@ -30,7 +30,7 @@ class UsersDomain {
             usu_correo: body.usu_correo,
         };
 
-        return sqlEject.store_eject("procUsersProc",parametros,"hereli_api");
+        return sqlEject.store_eject("procUsersProc",parametros,"soda_stream");
     }
 
     async users_get() {
@@ -40,7 +40,7 @@ class UsersDomain {
       
         //console.log(encryptService.decrypt("44uK6IGt44usY0wEOxvji5zogLnKq+iBt+OAiQDjgLLogJnji5/ogbzji6XogbPjgIYZOuiBnsuUMculdAYcOeiBn8qV"))
       
-        return sqlEject.store_eject( "procUsersCons", parametros, "hereli_api" );
+        return sqlEject.store_eject( "procUsersCons", parametros, "soda_stream" );
     }
 
     async user_singin(req) {
@@ -51,7 +51,7 @@ class UsersDomain {
             usu_correo: body.usu_correo
         };
 
-        const result = sqlEject.store_eject( "procUsersCons", parametros, "hereli_api" );
+        const result = sqlEject.store_eject( "procUsersCons", parametros, "soda_stream" );
 
         return result;
     }
@@ -60,12 +60,12 @@ class UsersDomain {
         const body = req.body;
 
         return {
-            dir_calle: 'Bolivar',
+            /* dir_calle: 'Bolivar',
             dir_num_exterior: '615',
             dir_colonia: 'La Pimienta',
             dir_ciudad: 'Valles',
             dir_estado: 'San Luis Potosí',
-            dir_cp: 79068
+            dir_cp: 79068 */
         }
     }
 }

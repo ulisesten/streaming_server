@@ -7,6 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const config = require("../../../../../config");
 const settings = require("../../../../core/configuration.js");
+const telegram_bot = require('../general/services/service_telegram_bot')
 //const authService = require("../../../../librerias/authorization/authorization.js");
 
 // www.dominio.com/api/v1/users
@@ -79,7 +80,8 @@ videos.post('/',
         vid_descripcion,
         vid_tags,
         vid_id_usuario,
-        vid_id_serie
+        vid_id_serie,
+        vid_temporada
     } = req.body;
     const vid_id_public = req.vid_id_public;
     const filePath = req.file.path;
@@ -108,10 +110,19 @@ videos.post('/',
         vid_descripcion,
         vid_tags,
         vid_id_serie,
+        vid_temporada,
         vid_path: `/hls/videos/${path.parse(fileName).name}/playlist.m3u8`,
     });
   
-    res.json(videos_dto.subir_video_response(result));
+    const dto_result = videos_dto.subir_video_response(result);
+
+    telegram_bot.sendNewVideoNotification({
+        title:      vid_nombre,
+        url:        `${settings.DOMAIN_NAME}/video/${vid_id_public}`,
+        thumbnail:  `${settings.DOMAIN_NAME}/api/v1/videos/thumbnails/${dto_result.data.vid_thumbnail}`
+    });
+
+    res.json(videos_dto.subir_video_response(dto_result));
 })
 
 videos.get('/progress/:session_id', async (req, res) => {

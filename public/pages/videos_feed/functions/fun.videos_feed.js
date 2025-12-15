@@ -75,9 +75,11 @@ const funCrearVideoCard = async function(video, feedContainer) {
 
     const description = document.createElement('p');
     description.textContent = video.vid_descripcion || "Sin descripción";
+    //description.setAttribute('class','text-gradient-purple');
 
     const dateElement = document.createElement('span');
     dateElement.innerHTML = dateFormat(video.vid_fecha);
+    //dateElement.setAttribute('class','text-gradient-purple');
 
     // Ensamblar la estructura
     videoThumbLink.appendChild(thumbnailImg);

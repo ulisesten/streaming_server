@@ -54,7 +54,7 @@ class JsonWebToken {
    * @returns string, datos codificados
    */
   write_gost_token(req, data) {
-      const credentials = data || settings.getCredentials();
+      const credentials = data;
 
       const fecha_exp = new Date().getTime() + settings.getExpirationDays() * 86400000;
 
@@ -81,11 +81,16 @@ class JsonWebToken {
    */
   gost_verify(token) {
     const today = new Date().getTime();
-    const dec_data = JSON.parse(encrypt.decrypt(token));
+    let decrypted_data = encrypt.decrypt(token);
 
-    if (today > dec_data.exp) return false;
+    /* if(Object.prototype.toString.call(decrypted_data) === "[object Uint8Array]")
+      return false; */
+      
+    const decoded_data = JSON.parse(decrypted_data);
 
-    return dec_data;
+    if (today > decoded_data.exp) return false;
+
+    return decoded_data;
   }
 
   /**

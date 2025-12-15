@@ -75,7 +75,8 @@ class VideosDTO {
             success: data[0].success,
             error: data[0].error,
             data: {
-                vid_id: data[0].vid_id
+                vid_id: data[0].vid_id,
+                vid_thumbnail: data[0].vid_id_thu_public
             }
             
         };

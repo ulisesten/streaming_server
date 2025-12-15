@@ -1,5 +1,5 @@
 const sqlEject = require("../../../../../librerias/sql_server/sql_eject");
-const telegram_bot = require('../../general/services/service_telegram_bot')
+//const telegram_bot = require('../../general/services/service_telegram_bot')
 const urlVideo = 'https://sodastream.fun/video';
 class VideosDomain {
 
@@ -40,10 +40,14 @@ class VideosDomain {
           vid_path: videoData.vid_path,
           vid_descripcion: videoData.vid_descripcion || "",
           vid_tags: videoData.vid_tags || "",
-          vid_id_serie: videoData.vid_id_serie
+          vid_id_serie: videoData.vid_id_serie,
+          vid_temporada: videoData.vid_temporada
         };
 
-        telegram_bot.sendNewVideoNotification({title: videoData.vid_nombre, url: `${urlVideo}/${videoData.vid_id_public}`});
+        /* telegram_bot.sendNewVideoNotification({
+            title: videoData.vid_nombre,
+            url: `${urlVideo}/${videoData.vid_id_public}`
+        }); */
 
         return sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
     }

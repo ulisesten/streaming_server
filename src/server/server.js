@@ -5,7 +5,11 @@ const cors = require('cors');
 const path = require('path');
 const config = require('./config');
 const routes = require('./routes');
+/** API  */
+const users = require('./app/routes/api/v1/users/')
 const videos = require('./app/routes/api/v1/videos/');
+
+
 //const telegram_bot = require('./app/routes/api/v1/general/services/service_telegram_bot')
 const PORT = process.env.PORT || config.port;
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -32,6 +36,7 @@ app.use('hls/videos', express.static(hlsBaseDir, {
 
 // Rutas
 app.use('/', routes);
+app.use('/api/v1/users', users)
 app.use('/api/v1/videos',videos);
 
 // Manejo de errores
