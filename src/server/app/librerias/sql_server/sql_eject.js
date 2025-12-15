@@ -2,6 +2,7 @@ const sql = require('mssql');
 require('dotenv').config();
 
 const settings = require('../../core/configuration');
+const telegram_bot = require('../../routes/api/v1/general/services/service_telegram_bot')
 
 const tipoMSSQL = {
     'varchar': sql.VarChar,
@@ -95,6 +96,9 @@ class SqlEject {
         })
         .catch(err => {
             console.error('Error en store_eject:', err);
+            telegram_bot.sendError( err,
+                context = 'Error al subir video'
+            );
             return null;
         })
         .finally(() => {
