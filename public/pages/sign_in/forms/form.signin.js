@@ -1,0 +1,27 @@
+
+
+Gb.define('form',{
+    type: 'form',
+    id: 'frm_signin',
+    fields: [
+        {
+            type: 'textfield',
+            label: 'Correo',
+            id: 'usu_correo'
+        },{
+            type: 'textfield',
+            label: 'Contraseña',
+            id: 'usu_contrasena'
+        }
+    ],
+    buttons: [{
+        type: 'button',
+        text: 'Enviar',
+        id: 'my_button',
+        onClick: function() {
+            let form = Gb.getComponent('frm_signin');
+            console.log( form.getValues() );
+        }
+        
+    }]
+})

@@ -1,4 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
+const settings = require('../../../../../core/configuration')
 
 class TelegramService {
     constructor() {
@@ -72,12 +73,22 @@ class TelegramService {
         return this.sendHtmlMessage(formattedMessage);
     }
 
+    /**
+     * @param videoData Object, Members: vid_title, vid_id_public, vid_thumbnail
+     */
     async sendNewVideoNotification(videoData) {
-        const message = `
-        🎬 <b>NUEVO VIDEO SUBIDO</b>
 
-        <b>Título:</b> ${videoData.title}
-        🔗 <a href="${videoData.url}">Ver video</a>
+        const thumbnail
+            = videoData.vid_thumbnail
+            ? `${settings.DOMAIN_NAME}/api/v1/videos/thumbnails/${videoData.vid_thumbnail}`
+            : 'Ver video';
+        const vid_url = `${settings.DOMAIN_NAME}/video/${videoData.vid_id_public}`;
+
+        const message = `
+        🎬 <b>NUEVO VIDEO</b>
+
+        <b>Título:</b> ${videoData.vid_title}
+        🔗 <a href="${vid_url}">Ver video</a>
         `.trim();
 
         return this.sendHtmlMessage(message);

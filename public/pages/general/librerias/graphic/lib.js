@@ -7,13 +7,10 @@ class Global {
      * @param opt Opciones de configuración para el elemento a definir.
      */
     define(element, opt) {
+
         this.arr_elements[opt.id] = arr_element_handler[element](opt);
         return;
 
-        if( element == 'form' ) {
-            this.arr_elements[opt.id] = new Form(opt);
-            return;
-        }
     }
 
     /**
@@ -27,9 +24,12 @@ class Global {
 const arr_element_handler = {
     'form': (opts) => {
             return (new Form(opts));
-        },
+    },
     'header': (opts)=> {
         return (new Header(opts));
+    },
+    'container': (opts) => {
+        return (new Container(opts));
     }
 }
 
@@ -58,6 +58,10 @@ class Header {
     }
 
     getHeader() {
+        return this.cmp;
+    }
+
+    getEl() {
         return this.cmp;
     }
 }
@@ -134,9 +138,10 @@ class Form {
     }
     
     getForm() { return this.form; }
+    getEl() { return this.form; }
 
     getValues() {
-        let index;
+        //let index;
 
         //for(let i = 0; i < this.arr_field_ids.length; i++ )  {
         //    index = this.arr_field_ids[i];
@@ -279,6 +284,46 @@ function button_fn(opt) {
     b.setAttribute('value', opt.text);
     
     return b;
+}
+
+
+class Container {
+    
+    constructor(opt) {
+        this.opt = opt;
+        this.create();
+        this.applyStyle();
+        this.setItems();
+    }
+ 
+    create() {
+        this.container    = document.createElement('div');
+    }
+
+    applyStyle() {
+        const con_width = this.opt.width? `${this.opt.width}` : '100%';
+        const con_height = this.opt.height? `${this.opt.height}` : 'auto';
+
+        this.container.setAttribute('style',
+            `position: relative;
+            display: block;
+            width: ${con_width};
+            height: ${con_height};
+            left:50%;
+            transform: translate(-50%, 0);
+            `
+        );
+    }
+
+    setItems(){
+        if(!this.opt.items) return;
+
+        this.opt.items.forEach( el => {
+            this.container.append(el);
+        })
+    }
+
+    getEl() { return this.container; }
 }
 
 

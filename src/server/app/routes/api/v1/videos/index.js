@@ -117,9 +117,9 @@ videos.post('/',
     const dto_result = videos_dto.subir_video_response(result);
 
     telegram_bot.sendNewVideoNotification({
-        title:      vid_nombre,
-        url:        `${settings.DOMAIN_NAME}/video/${vid_id_public}`,
-        thumbnail:  `${settings.DOMAIN_NAME}/api/v1/videos/thumbnails/${dto_result.data.vid_thumbnail}`
+        vid_title:      vid_nombre,
+        vid_id_public:  vid_id_public,
+        vid_thumbnail:  dto_result.data['vid_thumbnail']
     });
 
     res.json(videos_dto.subir_video_response(dto_result));

@@ -11,55 +11,36 @@
 <body>
     <div id="root"></div>
     <script src="/pages/general/librerias/graphic/lib.js"></script>
+
+    <!-- Forms -->
+    <script src="/pages/sign_in/forms/form.signin.js"></script>
+
+    <!-- Containers -->
+    <script src="/pages/sign_in/containers/container.signin.js"></script>
+
+    
+
     <script>
         let root = document.getElementById('root');
 
-        /* Gb.define('form',{
-            type: 'form',
-            id: 'my_form',
-            fields: [{
-                type: 'textfield',
-                label: 'First name',
-                id: 'txt1'
-            },{
-                type: 'textfield',
-                label: 'Last name',
-                id: 'txt2'
-            },{
-                type: 'textfield',
-                label: 'Email',
-                id: 'email'
-            }],
-            buttons: [{
-                type: 'button',
-                text: 'Enviar',
-                id: 'my_button',
-                onClick: function() {
-                    let form = Gb.getComponent('my_form');
-                    console.log( form.getValues() );
-                }
-                
-            }]
-        }) */
 
         Gb.define('header',{
-            type: 'form',
+            type: 'header',
             id: 'my_header',
             title: 'Soda Stream'
         })
 
-        /* let w = new Window({
-            title: 'My Window',
-            width: 500,
-            height: 250,
+        Gb.define('container',{
+            type: 'container',
+            id: 'main_container',
             items: [
-                Gb.getComponent('my_form').getForm()
+                Gb.getComponent('my_header').getEl(),
+                Gb.getComponent('container_signin').getEl()
             ]
-        }); */
+        })
 
 
-        //root.append(Gb.getComponent('my_form').getForm());
-        root.append(Gb.getComponent('my_header').getHeader());
+        root.append(Gb.getComponent('main_container').getEl());
     </script>
 </body>
 </html>

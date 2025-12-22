@@ -68,6 +68,7 @@ class VideosDTO {
               msg: "Error al procesar información.",
               success: false,
               error: 1,
+              data: null
             };
       
         return {
