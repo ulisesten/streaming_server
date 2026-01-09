@@ -39,9 +39,9 @@ class VideosDTO {
             };
       
         return {
-            msg: data[0].msg,
-            success: data[0].success,
-            error: data[0].error,
+            msg: data[0].msg || 'Se obtuvieron los videos correctamente.',
+            success: data[0].success || true,
+            error: data[0].error || 0,
             data: data
         };
     }
