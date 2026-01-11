@@ -36,6 +36,7 @@ class VideosDTO {
               msg: "Sin resultados.",
               success: true,
               error: 0,
+              data: null
             };
       
         return {
@@ -52,6 +53,7 @@ class VideosDTO {
               msg: "Sin resultados.",
               success: true,
               error: 0,
+              data: null
             };
       
         return {
