@@ -23,10 +23,10 @@ class VideosDTO {
             };
       
         return {
-            msg: data[0].msg,
-            success: data[0].success,
-            error: data[0].error,
-            data: data
+            msg:        data[0].msg     || "Se obtuvo el video correctamente.",
+            success:    data[0].success || true,
+            error:      data[0].error   || 0,
+            data:       data
         };
     }
 
@@ -67,11 +67,13 @@ class VideosDTO {
     subir_video_response(data) {
         if (!data || data[0] == null)
             return {
-              msg: "Error al procesar información.",
+              msg: "Error al procesar el resultado.",
               success: false,
               error: 1,
               data: null
             };
+
+        console.log('subir_video_response', data)
       
         return {
             msg: data[0].msg,
