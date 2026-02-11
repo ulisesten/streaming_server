@@ -26,7 +26,7 @@ class VideosDTO {
             msg:        data[0].msg     || "Se obtuvo el video correctamente.",
             success:    data[0].success || true,
             error:      data[0].error   || 0,
-            data:       data
+            data:       data[0]
         };
     }
 
@@ -40,10 +40,10 @@ class VideosDTO {
             };
       
         return {
-            msg: data[0].msg || 'Se obtuvieron los videos correctamente.',
-            success: data[0].success || true,
-            error: data[0].error || 0,
-            data: data
+            msg:        data[0].msg     || 'Se obtuvieron los videos correctamente.',
+            success:    data[0].success || true,
+            error:      data[0].error   || 0,
+            data:       data // []
         };
     }
 
