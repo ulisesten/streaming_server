@@ -22,12 +22,12 @@ const funCargarVideo = async function() {
         const response = await fetch(url);
         const result = await response.json();
     
-        if (!result || !result.data || result.data.length === 0) {
+        if ( !result || !result.data ) {
             document.getElementById("video_title").textContent = "Video no encontrado";
             return;
         }
     
-        const videoData = result.data[0];
+        const videoData = result.data;
         const vid_id = videoData.vid_id;
     
         // Mostrar info del video
