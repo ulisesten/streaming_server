@@ -1,0 +1,62 @@
+:root {
+    --primary-color: #1a222c;
+    --secondary-color: #43c464;
+    --tirtiary-color: #3c434c;
+    --fourth-color: #26313e;
+    --text-color: #bdbfc1;
+    --background-color: #11161d;
+    --item-text-color: #1a1a1b;
+    --item-background-color: #80e099;
+}
+
+body {
+    background-color: black;
+}
+
+.header_signin {
+    height: 50px;
+}
+
+.header_signin a {
+    color: #2AF779;
+    background-image: linear-gradient(45deg, #2AF779 , #64AD57 50%, #98C785 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.form_signin {
+    color: white;
+    align-items: center;
+    margin: 8px;
+    padding: 8px;
+    background-color: var(--primary-color);
+}
+
+.form_signin .frm_el {
+    display: flex;
+    margin: 8px;
+}
+
+.form_signin label {
+    display: inline;
+    width: 100px;
+    vertical-align: bottom;
+}
+
+.form_signin input[type="text"] {
+    background-color: transparent;
+    border: solid 1px gray;
+}
+
+.form_signin .frm_btn_panel {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form_signin .frm_btn_panel input[type="submit"] {
+    position: relative;
+    width: 80px;
+    margin-left: 8px;
+}

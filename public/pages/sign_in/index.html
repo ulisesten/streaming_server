@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href='https://fonts.googleapis.com/css?family=Nunito:400,300' rel='stylesheet' type='text/css'>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
-  <link rel="stylesheet" href="/pages/videos_ver/styles/style.videos_ver.css" />
+  <link rel="stylesheet" href="/pages/sign_in/style/style.signin.css" />
 </head>
 <body>
     <div id="root"></div>
@@ -26,15 +26,16 @@
 
         Gb.define('header',{
             type: 'header',
-            id: 'my_header',
-            title: 'Soda Stream'
+            id: 'header.signin',
+            title: 'Soda Stream',
+            cls: 'header_signin'
         })
 
         Gb.define('container',{
             type: 'container',
             id: 'main_container',
             items: [
-                Gb.getComponent('my_header').getEl(),
+                Gb.getComponent('header.signin').getEl(),
                 Gb.getComponent('container_signin').getEl()
             ]
         })

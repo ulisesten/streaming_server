@@ -42,6 +42,7 @@ class Header {
 
     create() {
         this.cmp = document.createElement('div');
+        this.cmp.setAttribute('class',this.opts['cls'] || 'g_header');
         this.cmp.id = this.opts['id'] || '';
         this.cmp_content = document.createElement('div');
         this.cmp_content.setAttribute('class','header-content');
@@ -82,6 +83,7 @@ class Form {
 
     create() {
         this.form = document.createElement('form');
+        this.form.setAttribute('class',this.opt['cls'] || 'g_form');
     }
      
     //// Fields
@@ -106,6 +108,7 @@ class Form {
             l.setAttribute("style", "margin:4px;"); 
 
             let d = document.createElement('div')
+            d.setAttribute('class','frm_el')
             d.append(l);
             d.append(inp)
 
@@ -118,6 +121,8 @@ class Form {
         if(this.opt.buttons == undefined)
             return;
 
+        const btn_panel = document.createElement('div');
+        btn_panel.setAttribute('class','frm_btn_panel')
         for(let i = 0; i < this.opt.buttons.length; i++ )  {
             let el = this.opt.buttons[i];
             if(el.type != 'button')
@@ -133,7 +138,8 @@ class Form {
                 el.onClick.call()
             });
 
-            this.form.append(b);
+            btn_panel.prepend(b)
+            this.form.append(btn_panel);
         }
     }
     

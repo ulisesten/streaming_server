@@ -3,6 +3,7 @@
 Gb.define('form',{
     type: 'form',
     id: 'frm_signin',
+    cls: 'form_signin',
     fields: [
         {
             type: 'textfield',
@@ -15,13 +16,21 @@ Gb.define('form',{
         }
     ],
     buttons: [{
-        type: 'button',
-        text: 'Enviar',
-        id: 'my_button',
-        onClick: function() {
-            let form = Gb.getComponent('frm_signin');
-            console.log( form.getValues() );
+            type: 'button',
+            text: 'Enviar',
+            id: 'my_button',
+            onClick: function() {
+                let form = Gb.getComponent('frm_signin');
+                console.log( form.getValues() );
+            }
+        },{
+            type: 'button',
+            text: 'Limpiar',
+            id: 'my_button_limpiar',
+            onClick: function() {
+                let form = Gb.getComponent('frm_signin');
+                //form.reset()
+            }
         }
-        
-    }]
+    ]
 })
