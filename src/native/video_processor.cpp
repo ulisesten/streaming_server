@@ -50,6 +50,17 @@ AVFormatContext* VideoProcessor::getFormatContext() {
 }
 
 bool VideoProcessor::convertToHLS(const std::string& inputFile, const std::string& outputDir) {
+    struct FileDeleter {
+        std::string path;
+        ~FileDeleter() {
+            std::error_code ec;
+            std::filesystem::remove(path, ec);
+            if (ec) {
+                std::cerr << "Warning: Could not remove input file " << path << ": " << ec.message() << "\n";
+            }
+        }
+    } deleter{inputFile};
+
     AVFormatContext* inFmtCtx = nullptr;
     AVFormatContext* outFmtCtx = nullptr;
     const AVOutputFormat* outFmt = nullptr;

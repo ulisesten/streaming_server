@@ -1,25 +1,30 @@
 const jwt = require("../../../../../librerias/jwt/jwt.js");
 
+
+
+
 class UsersService {
   
+  
+  user_signin(req, dao, password) {
 
-  user_signin(req, sql_data, password) {
-    if (!sql_data || !sql_data[0])
+    if (!dao || !dao[0])
       return null;
 
-    sql_data = sql_data[0];
-    const hash = sql_data["usu_contrasena"];
+    dao = dao[0];
+    const hash = dao["usu_contrasena"];
 
     if (!jwt.gost_hash_verify(password, hash)) {
       return null
     }
 
     return  {
-        usu_id: sql_data["usu_id"],
-        usu_nombre: sql_data["usu_nombre"],
-        usu_correo: sql_data["usu_correo"],
-        gost_token: jwt.write_gost_token(req, sql_data)
+        usu_id: dao["usu_id"],
+        usu_nombre: dao["usu_nombre"],
+        usu_correo: dao["usu_correo"],
+        gost_token: jwt.write_gost_token(req, dao)
     };
+    
   }
 }
 

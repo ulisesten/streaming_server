@@ -1,14 +1,24 @@
 const sqlEject = require("../../../../../librerias/sql_server/sql_eject");
 //const telegram_bot = require('../../general/services/service_telegram_bot')
 const urlVideo = 'https://sodastream.fun/video';
-class VideosDomain {
+const path = require("node:path");
 
+
+/**
+ * @brief esta clase hace cosas locochonas
+ */
+class VideosDomain {
+    /**
+     * @brief Esta funcion es para obtener los videos ...
+     * @param {*} req contiene los datos para hacer la consulta
+     * @returns Array, retorna un array con los videos
+     */
     async get_videos(req) {
         const parametros = {
             tipoConsulta: "CAT_VIDEOS_CONS"
         };
 
-        return sqlEject.store_eject("procCatVideosCons", parametros,"soda_stream");
+        return sqlEject.store_eject("procCatVideosCons", parametros, "soda_stream");
     }
 
     async get_series_videos(params) {
@@ -17,7 +27,7 @@ class VideosDomain {
             vid_id: params.vid_id
         };
 
-        return sqlEject.store_eject("procCatVideosCons", parametros,"soda_stream");
+        return sqlEject.store_eject("procCatVideosCons", parametros, "soda_stream");
     }
 
 
@@ -27,32 +37,31 @@ class VideosDomain {
             vid_id_public: data.vid_id
         };
 
-        return sqlEject.store_eject("procCatVideosCons", parametros,"soda_stream");
+        return sqlEject.store_eject("procCatVideosCons", parametros, "soda_stream");
     }
 
-
-    async insert(videoData) {
+    /**
+     * 
+     * @param {vid_id_usuario, vid_id_public, vid_nombre, vid_descripcion, vid_tags, vid_id_serie, vid_temporada, vid_path } videoData 
+     * @returns 
+     */
+    async insert_video(req) {
         const parametros = {
-          tipoRegistro: "CAT_VIDEOS_INS",
-          vid_id_usuario: videoData.vid_id_usuario,
-          vid_id_public: videoData.vid_id_public,
-          vid_nombre: videoData.vid_nombre,
-          vid_path: videoData.vid_path,
-          vid_descripcion: videoData.vid_descripcion || "",
-          vid_tags: videoData.vid_tags || "",
-          vid_id_serie: videoData.vid_id_serie,
-          vid_temporada: videoData.vid_temporada
+            tipoRegistro: "CAT_VIDEOS_INS",
+            vid_id_public: req.vid_id_public,
+            vid_id_usuario: req.body.vid_id_usuario,
+            vid_nombre: req.body.vid_nombre,
+            vid_path: `/${path.parse(req.file.filename).name}/playlist.m3u8`,
+            vid_descripcion: req.body.vid_descripcion || "",
+            vid_tags: req.body.vid_tags || "",
+            vid_id_serie: req.body.vid_id_serie,
+            vid_temporada: req.body.vid_temporada
         };
-
-        /* telegram_bot.sendNewVideoNotification({
-            title: videoData.vid_nombre,
-            url: `${urlVideo}/${videoData.vid_id_public}`
-        }); */
 
         return sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
     }
 
-    async thumb_insert( data ) {
+    async thumb_insert(data) {
         const parametros = {
             tipoRegistro: "CAT_VID_THUMBNAIL_INS",
             vid_id: data.vid_id,
@@ -63,8 +72,8 @@ class VideosDomain {
         return sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
     }
 
-    async images_get_one( thu_id_public, cb ) {
-        
+    async images_get_one(thu_id_public, cb) {
+
         const parametros = {
             tipoConsulta: "CAT_VID_THUMNAIL_CONS",
             thu_id_public: thu_id_public
@@ -76,8 +85,8 @@ class VideosDomain {
 
     async insert_view(videoData) {
         const parametros = {
-          tipoRegistro: "CAT_VIDEOS_VIEW",
-          vid_id: videoData.vid_id
+            tipoRegistro: "CAT_VIDEOS_VIEW",
+            vid_id: videoData.vid_id
         };
 
         return sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");

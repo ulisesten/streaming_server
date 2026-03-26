@@ -19,21 +19,14 @@ users.put("/:usu_id", async function (req, res) {
     res.json(usersDto.user_update_response(db_res));
 });
 
-users.get("/", authService.verify ,async function (req, res) {
+users.get("/", authService.verify, async function (req, res) {
     const db_res = await usersDomain.users_get();
     res.json(usersDto.users_get_response(db_res));
 });
 
 users.post("/signin", async function (req, res) {
-    const contrasena = req.body.usu_contrasena;
-    const db_res = await usersDomain.user_singin(req);
-
-    const request = {
-        ip: req.ip,
-        user_agent: req.headers['user-agent']
-    };
-
-    const service_response = usersService.user_signin(request, db_res, contrasena);
+    const dao = await usersDomain.user_singin(req);
+    const service_response = authService.user_signin(req, dao);
     res.json(usersDto.user_signin_response(service_response));
 });
 

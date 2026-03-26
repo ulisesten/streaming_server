@@ -29,15 +29,15 @@ app.use("/hls/lives", express.static(path.join(__dirname, "../../public/hls/live
 //app.use(express.static(config.publicPath));
 app.use('hls/videos', express.static(hlsBaseDir, {
     setHeaders: (res, p) => {
-      if (p.endsWith('.m3u8')) res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
-      if (p.endsWith('.ts'))   res.setHeader('Content-Type', 'video/mp2t');
+        if (p.endsWith('.m3u8')) res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+        if (p.endsWith('.ts')) res.setHeader('Content-Type', 'video/mp2t');
     }
 }));
 
 // Rutas
 app.use('/', routes);
 app.use('/api/v1/users', users)
-app.use('/api/v1/videos',videos);
+app.use('/api/v1/videos', videos);
 
 // Manejo de errores
 app.use((err, req, res, next) => {
@@ -51,22 +51,21 @@ app.use((err, req, res, next) => {
 if (NODE_ENV === 'production') {
 
     startHttpsServer(app);
-    
+
 } else {
     app.listen(PORT, '0.0.0.0', () => {
         console.log(`[DEVELOPMENT] Servidor de streaming ejecutándose en el puerto ${PORT}`);
-        console.log(`Directorio de videos: ${config.videosPath}`);
     });
 }
 
 
 function startHttpsServer(prm_app) {
     const https = require('https');
-    const http  = require('http');
-    const fs    = require('fs');
+    const http = require('http');
+    const fs = require('fs');
 
     // Certificados Let’s Encrypt (fullchain + key)
-    const keyPath  = process.env.SSL_KEY_PATH;        // ej: /etc/letsencrypt/live/sodastream.fun/privkey.pem
+    const keyPath = process.env.SSL_KEY_PATH;        // ej: /etc/letsencrypt/live/sodastream.fun/privkey.pem
     const certPath = process.env.SSL_CERT_PATH;       // ej: /etc/letsencrypt/live/sodastream.fun/fullchain.pem
 
     try {
@@ -78,7 +77,7 @@ function startHttpsServer(prm_app) {
         }
 
         const sslOptions = {
-            key:  fs.readFileSync(keyPath),
+            key: fs.readFileSync(keyPath),
             cert: fs.readFileSync(certPath),
             // Con Let’s Encrypt, Node usa automáticamente suites modernas.
             honorCipherOrder: true,

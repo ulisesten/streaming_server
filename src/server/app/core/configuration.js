@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 
 class BaseConfig {
     DB_USER = process.env.DB_USER
@@ -10,14 +11,22 @@ class BaseConfig {
 }
 
 class Settings extends BaseConfig {
+    PROJECTDIR = path.join(__dirname, '../../../../');
     BACKEND_CORS_ORIGINS = process.env.BACKEND_CORS_ORIGINS
     SERVER_HOST = process.env.SERVER_HOST
     SERVER_PORT = process.env.SERVER_PORT
-    SECRET_KEY  = process.env.SECRET_KEY
-    API_NAS     = process.env.API_NAS
+    SECRET_KEY = process.env.SECRET_KEY
+    API_NAS = process.env.API_NAS
     PUBLIC_ID_LENGTH = process.env.PUBLIC_ID_LENGTH
     DOMAIN_NAME = process.env.DOMAIN_NAME;
-    
+    VIDEO_OUTPUT_PATH;
+    TEMP_VIDEOS_PATH;
+
+    constructor() {
+        super();
+        this.VIDEO_OUTPUT_PATH = path.join(this.PROJECTDIR, process.env.VIDEO_OUTPUT_PATH);
+        this.TEMP_VIDEOS_PATH = path.join(this.PROJECTDIR, process.env.TEMP_VIDEOS_PATH);
+    }
 
     getDatabaseConfig() {
         return {
@@ -57,8 +66,8 @@ class Settings extends BaseConfig {
         return this.API_NAS;
     }
 
-    getPublicIdLength(){
-        return  this.PUBLIC_ID_LENGTH;
+    getPublicIdLength() {
+        return this.PUBLIC_ID_LENGTH;
     }
 }
 
