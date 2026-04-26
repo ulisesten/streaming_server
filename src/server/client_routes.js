@@ -174,5 +174,8 @@ router.get('/signin', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/sign_in/index.html'));
 });
 
+router.get('/upload_v2', (req, res) => {
+    res.sendFile(path.join(config.publicPath, 'pages/videos_subir_v2/index.html'));
+});
 
 module.exports = router;

@@ -21,6 +21,8 @@ class Settings extends BaseConfig {
     DOMAIN_NAME = process.env.DOMAIN_NAME;
     VIDEO_OUTPUT_PATH;
     TEMP_VIDEOS_PATH;
+    BACKEND_CORS_ORIGINS = process.env.BACKEND_CORS_ORIGINS;
+    REDIRECT_HTTP_TO_HTTPS = process.env.REDIRECT_HTTP_TO_HTTPS === 'true';
 
     constructor() {
         super();

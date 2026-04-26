@@ -20,8 +20,7 @@ Gb.define('form',{
             text: 'Enviar',
             id: 'my_button',
             onClick: function() {
-                let form = Gb.getComponent('frm_signin');
-                console.log( form.getValues() );
+                funUsersSignin();
             }
         },{
             type: 'button',

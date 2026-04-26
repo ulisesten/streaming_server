@@ -77,20 +77,20 @@ class TelegramService {
      * @param videoData Object, Members: vid_title, vid_id_public, vid_thumbnail
      */
     async sendNewVideoNotification(videoData) {
-
-        const thumbnail
-            = videoData.vid_thumbnail
+        const thumbnail = videoData.vid_thumbnail
             ? `${settings.DOMAIN_NAME}/api/v1/videos/thumbnails/${videoData.vid_thumbnail}`
-            : 'Ver video';
+            : null;
         const vid_url = `${settings.DOMAIN_NAME}/video/${videoData.vid_id_public}`;
 
-        const message = `
-        🎬 <b>NUEVO VIDEO</b>
-
-        <b>Título:</b> ${videoData.vid_title}
-        🔗 <a href="${vid_url}">Ver video</a>
-        `.trim();
-
+        let message = `
+        🎬 <b>NUEVO VIDEO</b>\n\n<b>Título:</b> ${videoData.vid_title}\n`;
+        if (thumbnail) {
+            message += `<a href=\"${vid_url}\"><img src=\"${thumbnail}\" /></a>\n`;
+            message += `<a href=\"${vid_url}\">Ver video</a>\n`;
+        } else {
+            message += `<a href=\"${vid_url}\">Ver video</a>\n`;
+        }
+        message = message.trim();
         return this.sendHtmlMessage(message);
     }
 

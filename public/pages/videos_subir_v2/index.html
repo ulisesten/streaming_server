@@ -15,13 +15,9 @@
     <script src="/pages/general/librerias/graphic/lib.js"></script>
 
     <!-- Forms -->
-    <script src="/pages/sign_in/forms/form.signin.js"></script>
+    <script src="/pages/videos_subir_v2/forms/form.videos_subir.js"></script>
 
-    <!-- Containers -->
-    <script src="/pages/sign_in/containers/container.signin.js"></script>
-
-    <!-- Functions -->
-    <script src="/pages/sign_in/functions/fun.users_signin.js"></script>
+    
 
 
 
@@ -36,17 +32,19 @@
             cls: 'header_signin'
         })
 
+        
+
         Gb.define('container', {
             type: 'container',
-            id: 'main_container',
+            id: 'container_videos_subir',
             items: [
                 Gb.getComponent('header.signin').getEl(),
-                Gb.getComponent('container_signin').getEl()
+                Gb.getComponent('frm_videos_subir').getEl()
             ]
         })
 
 
-        root.append(Gb.getComponent('main_container').getEl());
+        root.append(Gb.getComponent('container_videos_subir').getEl());
     </script>
 </body>
 

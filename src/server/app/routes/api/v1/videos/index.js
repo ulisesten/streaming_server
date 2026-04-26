@@ -5,7 +5,8 @@ const videos_domain = require("./domain/videos_domain.js");
 const videos_service = require("./service/videos_service.js");
 const fs = require("fs");
 const settings = require("../../../../core/configuration.js");
-const telegram_bot = require('../general/services/service_telegram_bot')
+const telegram_bot = require('../general/services/service_telegram_bot');
+const { reject } = require("../../../../core/errors.js");
 
 // www.dominio.com/api/v1/users
 
@@ -32,19 +33,13 @@ videos.get("/:vid_id", async function (req, res) {
 
 
 /// Subir videos
-videos.post('/',
-    videos_service.progress_handler,
-    videos_service.upload_video.single("video"),
-    async (req, res) => {
-
+videos.post('/', videos_service.progress_handler, videos_service.upload_video.single("video"), async (req, res) => {
+    try {
         const video_status = await videos_service.process_uploaded(req)
 
         if (video_status != 0) {
-            return res.status(500).json({
-                success: false,
-                error: video_status,
-                msg: "Error procesando video"
-            });
+            reject(res, 500, "Error procesando video");
+            return;
         }
 
         const result = await videos_domain.insert_video(req);
@@ -57,8 +52,13 @@ videos.post('/',
             vid_thumbnail: dto_result.data['vid_thumbnail']
         });
 
-        res.json(videos_dto.subir_video_response(dto_result));
-    })
+        res.json(dto_result);
+
+    } catch (exc) {
+        console.log('Subir videos: [ERROR] ', exc)
+        reject(res, 500, "Error en el proceso");
+    }
+})
 
 videos.get('/progress/:session_id', async (req, res) => {
     const { session_id } = req.params;

@@ -5,7 +5,6 @@ const jwt = require("../../../../../librerias/jwt/jwt.js");
 
 class UsersService {
   
-  
   user_signin(req, dao, password) {
 
     if (!dao || !dao[0])

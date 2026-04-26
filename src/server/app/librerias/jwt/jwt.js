@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const encrypt = require("../encrypt/encrypt.js");
 const settings = require("../../core/configuration");
-
+const crypto = require("crypto");
+  
 class JsonWebToken {
   secret_key = settings.getSecretKey();
 
@@ -66,9 +67,9 @@ class JsonWebToken {
               id: credentials.usu_id,
               usu_nombre: credentials.usu_nombre,
               correo: credentials.usu_correo,
-              ip: req.ip,
-              user_agent: req.user_agent
+              ip: req.ip
           },
+          sign: encrypt.hash(this.secret_key + credentials.usu_id + req.ip)
       };
 
       return encrypt.reversible_encrypt(payload);
@@ -82,12 +83,11 @@ class JsonWebToken {
   gost_verify(token) {
     const today = new Date().getTime();
     let decrypted_data = encrypt.decrypt(token);
-
-    /* if(Object.prototype.toString.call(decrypted_data) === "[object Uint8Array]")
-      return false; */
       
     const decoded_data = JSON.parse(decrypted_data);
-
+    const expected_sign = encrypt.hash(this.secret_key + decoded_data.id + decoded_data.user.ip);
+    
+    if (decoded_data.sign !== expected_sign) return false;
     if (today > decoded_data.exp) return false;
 
     return decoded_data;
@@ -122,6 +122,89 @@ class JsonWebToken {
     if (i != new_hash.length) return false;
 
     return true;
+  }
+
+  /**
+   * @brief Genera un refresh token JWT
+   * @param data object, datos del usuario
+   * @returns string
+   */
+  write_refresh_token(req, data) {
+    const fecha_exp = new Date().getTime() + (settings.getRefreshExpirationDays?.() || 7) * 86400000;
+    const payload = {
+      id: data.usu_id,
+      exp: fecha_exp,
+      type: 'refresh',
+      user: {
+        id: data.usu_id,
+        usu_nombre: data.usu_nombre,
+        correo: data.usu_correo,
+        ip: req.ip
+      },
+      sign: encrypt.hash(this.secret_key + data.usu_id + req.ip + 'refresh')
+    };
+
+    //return jwt.sign(payload, this.secret_key, null);
+
+    return encrypt.reversible_encrypt(payload);
+  }
+
+  /**
+   * @brief Verifica un refresh token JWT
+   * @param token string
+   * @returns object|null
+   */
+  verify_refresh_token(token) {
+    const today = new Date().getTime();
+    let decrypted_data = encrypt.decrypt(token);
+      
+    const decoded_data = JSON.parse(decrypted_data);
+
+    const expected_sign = encrypt.hash(this.secret_key + decoded_data.id + decoded_data.user.ip + 'refresh');
+    
+    if (decoded_data.sign !== expected_sign) return false;
+    if (today > decoded_data.exp) return false;
+
+    return decoded_data;
+  }
+
+  write_csrf_token(req) {
+    const exp = Date.now() + (1000 * 60 * 60 * 2); // 2 horas
+
+    const payload = {
+      exp,
+      rand: crypto.randomBytes(32).toString('hex')
+    };
+
+    // Firma tipo HMAC (más seguro que concatenar strings)
+    const sign = encrypt.hash(
+      this.secret_key + payload.rand + payload.exp + req.ip
+    );
+
+    return encrypt.reversible_encrypt({
+      ...payload,
+      sign
+    });
+  }
+
+  verify_csrf_token(token) {
+    try {
+      const data = encrypt.decrypt(token);
+
+      // 1. Expiración
+      if (Date.now() > data.exp) return false;
+
+      // 2. Recalcular firma
+      const expectedSign = encrypt.hash(
+        this.secret_key + data.rand + data.exp + data.ip
+      );
+
+      if (expectedSign !== data.sign) return false;
+
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
 

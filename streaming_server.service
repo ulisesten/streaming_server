@@ -1,0 +1,14 @@
+[Unit]
+Description=Streaming Server Node.js Service
+After=network.target
+
+[Service]
+Type=simple
+User=ulises
+WorkingDirectory=/home/ulises/Documentos/Development/streaming_server
+ExecStart=/bin/bash start.sh
+Restart=on-failure
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

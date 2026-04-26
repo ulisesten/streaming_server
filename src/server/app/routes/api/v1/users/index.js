@@ -1,11 +1,10 @@
 const { Router } = require("express");
 const users = Router();
 const usersDto = require("./dto/users_dto.js");
-const usersService = require("./service/users_service.js");
 const usersDomain = require("./domain/users_domain.js");
 const authService = require("../../../../librerias/authorization/authorization.js");
-const sqlEject = require("../../../../librerias/sql_server/sql_eject.js");
-const encryptService = require("../../../../librerias/encrypt/encrypt.js");
+const jwtLib = require("../../../../librerias/jwt/jwt.js");
+const crypto = require("crypto");
 
 // www.dominio.com/api/v1/users
 
@@ -24,11 +23,11 @@ users.get("/", authService.verify, async function (req, res) {
     res.json(usersDto.users_get_response(db_res));
 });
 
-users.post("/signin", async function (req, res) {
-    const dao = await usersDomain.user_singin(req);
-    const service_response = authService.user_signin(req, dao);
-    res.json(usersDto.user_signin_response(service_response));
-});
+
+users.post("/signin", usersDomain.user_signin);
+
+// Endpoint para refresh token
+users.post("/refresh_token", usersDomain.users_refresh_token);
 
 
 users.get("/:usu_id/address", async function (req, res) {

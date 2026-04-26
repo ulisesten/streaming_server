@@ -1,0 +1,63 @@
+
+Gb.define('form',{
+    type: 'form',
+    id: 'frm_videos_subir',
+    cls: 'form_signin',
+    fields: [
+        {
+            type: 'textfield',
+            label: 'Título',
+            id: 'vid_nombre'
+        },{
+            type: 'textfield',
+            label: 'Capítulo',
+            id: 'vid_chapter'
+        },{
+            type: 'textfield',
+            label: 'Descripción',
+            id: 'vid_descripcion'
+        }, {
+            type: 'textfield',
+            label: 'tags',
+            id: 'vid_tags'
+        },{
+            type: 'textfield',
+            label: 'Id de usuario',
+            id: 'vid_id_usuario'
+        },{
+            type: 'textfield',
+            label: 'Id Serie',
+            id: 'vid_id_serie'
+        },{
+            type: 'textfield',
+            label: 'Id Temporada',
+            id: 'vid_id_temporada'
+        },{
+            type: 'textfield',
+            label: 'Tags',
+            id: 'vid_tags'
+        },{
+            type: 'file',
+            label: 'Archivo de video',
+            id: 'vid_archivo'
+        }
+    ],
+    buttons: [{
+            type: 'button',
+            text: 'Subir',
+            id: 'btn_videos_subir',
+            onClick: function() {
+                let form = Gb.getComponent('frm_videos_subir');
+                console.log( form.getValues() );
+            }
+        },{
+            type: 'button',
+            text: 'Limpiar',
+            id: 'btn_videos_subir_limpiar',
+            onClick: function() {
+                let form = Gb.getComponent('frm_signin');
+                //form.reset()
+            }
+        }
+    ]
+})
