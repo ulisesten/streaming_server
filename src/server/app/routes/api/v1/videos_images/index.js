@@ -28,7 +28,9 @@ images.post("/", upload.single('image'), async function (req, res) {
 
 
 
-images.get("/:ima_id", async function (req, res) {
+images.get("/:ima_id:ext", async function (req, res) {
+
+    console.log('GET /api/v1/videos/thumbnails/:ima_id:ext', req.params);
 
     productImages.images_get_one(
         ima_id = req.params.ima_id,

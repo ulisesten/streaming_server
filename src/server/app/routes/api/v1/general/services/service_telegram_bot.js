@@ -77,21 +77,52 @@ class TelegramService {
      * @param videoData Object, Members: vid_title, vid_id_public, vid_thumbnail
      */
     async sendNewVideoNotification(videoData) {
-        const thumbnail = videoData.vid_thumbnail
-            ? `${settings.DOMAIN_NAME}/api/v1/videos/thumbnails/${videoData.vid_thumbnail}`
-            : null;
-        const vid_url = `${settings.DOMAIN_NAME}/video/${videoData.vid_id_public}`;
-
-        let message = `
-        🎬 <b>NUEVO VIDEO</b>\n\n<b>Título:</b> ${videoData.vid_title}\n`;
-        if (thumbnail) {
-            message += `<a href=\"${vid_url}\"><img src=\"${thumbnail}\" /></a>\n`;
-            message += `<a href=\"${vid_url}\">Ver video</a>\n`;
-        } else {
-            message += `<a href=\"${vid_url}\">Ver video</a>\n`;
+        if (!this.bot) {
+            console.warn('Telegram bot no configurado');
+            return false;
         }
-        message = message.trim();
-        return this.sendHtmlMessage(message);
+
+
+        let domain = settings.DOMAIN_NAME || 'http://localhost:3000';
+
+        if (!domain.startsWith('http')) {
+            domain = `https://${domain}`;
+        }
+        domain = domain.replace(/\/$/, '');
+
+        const thumbnail = videoData.vid_thumbnail ? videoData.vid_thumbnail : null;
+        let url_photo = null;
+        if (thumbnail) {
+            url_photo = `${domain}/api/v1/videos/thumbnails/${thumbnail}.jpg`;
+        }
+        const vid_url = `${domain}/video/${videoData.vid_id_public}`;
+
+        // Texto de la leyenda (caption) con formato HTML
+        let caption = `🎬 <b>NUEVO VIDEO</b>\n\n<b>Título:</b> ${videoData.vid_title}\n`;
+        caption += `<a href=\"${vid_url}\">▶️ Ver video</a>`;
+        caption = caption.trim();
+
+        console.log('📢 Enviando notificación de nuevo video a Telegram...', url_photo);
+
+        try {
+            if (url_photo) {
+                // Enviar foto con leyenda y parse_mode HTML
+                console.log('Enviando foto a Telegram:', url_photo);
+                await this.bot.sendPhoto(this.chatId, url_photo, {
+                    caption: caption,
+                    parse_mode: 'HTML'
+                });
+                console.log('✅ Notificación de nuevo video enviada con thumbnail');
+            } else {
+                // Enviar solo mensaje de texto
+                await this.sendHtmlMessage(caption);
+                console.log('✅ Notificación de nuevo video enviada sin thumbnail');
+            }
+            return true;
+        } catch (error) {
+            console.error('❌ Error enviando notificación de nuevo video:', error.message);
+            return false;
+        }
     }
 
 
@@ -111,5 +142,12 @@ class TelegramService {
         return this.sendHtmlMessage(message);
     }
 }
+
+/*const t = new TelegramService();
+t.sendNewVideoNotification({
+    vid_title: 'Nuevo video de prueba',
+    vid_id_public: 'zEp3B_rn-fW',
+    vid_thumbnail: 'OPtESlF0bjg'
+});*/
 
 module.exports = new TelegramService();

@@ -4,6 +4,7 @@ const videos_dto = require("./dto/videos_dto.js");
 const videos_domain = require("./domain/videos_domain.js");
 const videos_service = require("./service/videos_service.js");
 const fs = require("fs");
+const path = require("path");
 const settings = require("../../../../core/configuration.js");
 const telegram_bot = require('../general/services/service_telegram_bot');
 const { reject } = require("../../../../core/errors.js");
@@ -124,11 +125,16 @@ videos.post('/:vid_id/thumbnails', videos_service.upload_thumbnail.single("image
     res.json(videos_dto.general_response(result));
 })
 
-videos.get("/thumbnails/:thu_id_public", async function (req, res) {
 
+// Handler compartido para thumbnails con o sin extensión
+async function serveThumbnail(req, res) {
     const thu_id_public = req.params.thu_id_public;
+    const ext = req.params.ext;
+    console.log('GET /api/v1/videos/thumbnails/:thu_id_public:ext', req.params);
 
     const result = await videos_domain.images_get_one(thu_id_public);
+
+     console.log('Imagen encontrada:', result);
 
     if (!result || !result[0]) {
         res.json({
@@ -140,21 +146,68 @@ videos.get("/thumbnails/:thu_id_public", async function (req, res) {
     }
 
     const imagen = result[0];
-    const imagePath = imagen.thu_path;
+    let imagePath = imagen.thu_path;
+
+    if (settings.NODE_ENV !== 'production') {
+        imagePath = imagePath.replace('../../nas/', '/home/ulises/Documentos/Development/apinas/');
+    }
+
+    const pathObj = path.parse(imagePath);
+    const fallbackExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+    // Si se solicita una extensión específica, intenta buscar el archivo con esa extensión
+    if (ext) {
+        imagePath = path.join(pathObj.dir, `${pathObj.name}.${ext}`);
+        if (!fs.existsSync(imagePath)) {
+            for (const fallbackExt of fallbackExts) {
+                if (fallbackExt === ext.toLowerCase()) continue;
+                const candidate = path.join(pathObj.dir, `${pathObj.name}.${fallbackExt}`);
+                if (fs.existsSync(candidate)) {
+                    imagePath = candidate;
+                    break;
+                }
+            }
+        }
+    } else {
+        // Si no hay extensión en la URL, prueba la ruta original y algunas extensiones comunes.
+        if (!fs.existsSync(imagePath)) {
+            for (const fallbackExt of fallbackExts) {
+                const candidate = path.join(pathObj.dir, `${pathObj.name}.${fallbackExt}`);
+                if (fs.existsSync(candidate)) {
+                    imagePath = candidate;
+                    break;
+                }
+            }
+        }
+    }
 
     // Verificar si la imagen existe
     fs.stat(imagePath, (err, stats) => {
+        console.log('Verificando existencia de imagen en path:', imagePath);
         if (err) {
             return res.status(404).json({ msg: 'Imagen no encontrada' });
         }
 
+        const extension = path.parse(imagePath).ext.toLowerCase().replace('.', '');
+        const mimeTypes = {
+            jpg: 'image/jpeg',
+            jpeg: 'image/jpeg',
+            png: 'image/png',
+            gif: 'image/gif',
+            webp: 'image/webp'
+        };
+        const type = mimeTypes[extension];
+        if (type) {
+            res.setHeader('Content-Type', type);
+        }
+
         const imageStream = fs.createReadStream(imagePath);
-
-        //res.setHeader('Content-Type', 'image/jpg'); // Ajustar según el tipo de imagen
-
         imageStream.pipe(res);
     });
+}
 
-});
+// Primero la ruta con extensión, luego la ruta sin extensión
+videos.get("/thumbnails/:thu_id_public.:ext", serveThumbnail);
+videos.get("/thumbnails/:thu_id_public", serveThumbnail);
 
 module.exports = videos;
