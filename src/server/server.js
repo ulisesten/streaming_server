@@ -8,7 +8,7 @@ const routes = require('./client_routes');
 const settings = require('./app/core/configuration.js');
 /** API  */
 const users = require('./app/routes/api/v1/users/')
-const videos = require('./app/routes/api/v1/videos/');
+const videos = require('./app/routes/api/v1/videos/routes.js');
 const series = require('./app/routes/api/v1/series/');
 const seasons = require('./app/routes/api/v1/seasons/');
 const genres = require('./app/routes/api/v1/genres/');

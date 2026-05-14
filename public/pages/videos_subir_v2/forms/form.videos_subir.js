@@ -25,8 +25,8 @@ Gb.define('form',{
             label: 'Id de usuario',
             id: 'vid_id_usuario'
         },{
-            type: 'textfield',
-            label: 'Id Serie',
+            type: 'cbx_series',
+            label: 'Serie',
             id: 'vid_id_serie'
         },{
             type: 'textfield',
@@ -47,8 +47,7 @@ Gb.define('form',{
             text: 'Subir',
             id: 'btn_videos_subir',
             onClick: function() {
-                let form = Gb.getComponent('frm_videos_subir');
-                console.log( form.getValues() );
+                funVideosSubir();
             }
         },{
             type: 'button',

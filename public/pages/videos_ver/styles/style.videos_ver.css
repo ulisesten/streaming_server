@@ -196,9 +196,9 @@ h1 {
     }
 }
 
-@media screen and (min-width: 412px) {
+@media screen and (min-width: 400px) {
     video {
-      width: 412px;
+      width: 400px;
     }
 }
 

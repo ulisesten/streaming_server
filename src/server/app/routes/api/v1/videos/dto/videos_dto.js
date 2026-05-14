@@ -86,6 +86,30 @@ class VideosDTO {
 
         };
     }
+
+
+    get_cat_thumbnails_response(data) {
+        if (!data || data[0] == null)
+            return {
+                status: 404,
+                response: {
+                    msg: "Sin resultados.",
+                    success: true,
+                    error: 0,
+                    data: null
+                }
+            };
+
+        return {
+            status: 200,
+            response: {
+                msg: data[0].msg || 'Se obtuvieron los thumbnails correctamente.',
+                success: data[0].success || true,
+                error: data[0].error || 0,
+                data: data
+            }
+        };
+    }
 }
 
 module.exports = new VideosDTO();

@@ -1,0 +1,137 @@
+
+
+const funVideosSubir = async () => {
+    const formCmp = Gb.getEl('frm_videos_subir') || Gb.getComponent('frm_videos_subir');
+    if (!formCmp) {
+        console.error('Formulario no encontrado');
+        return;
+    }
+
+    const prgres_bar = Gb.define('progress_bar', {
+        type: 'progress_bar',
+        id: 'progress_bar_videos_subir',
+        progress: 35,
+        file_size: 734003200, // 700 MB aprox
+        success_msg: 'Subida completada',
+        error_msg: 'Falló la subida',
+        window: true
+    });
+
+    const vals = formCmp.getValues();
+
+    const fd = new FormData();
+    fd.append('vid_nombre', vals.vid_nombre || '');
+    fd.append('vid_chapter', vals.vid_chapter || '');
+    fd.append('vid_descripcion', vals.vid_descripcion || '');
+    fd.append('vid_tags', vals.vid_tags || '');
+    fd.append('vid_id_usuario', vals.vid_id_usuario || '');
+    fd.append('vid_id_serie', vals.vid_id_serie || '');
+    fd.append('vid_id_temporada', vals.vid_id_temporada || '');
+
+    // file -> FileList
+    const files = vals.vid_archivo;
+    if (!files || files.length == 0) {
+        console.error('No seleccionaste archivo');
+        return;
+    }
+    
+    fd.append('video', files[0]); // primer archivo
+
+    prgres_bar.update(0, files[0].size);
+    prgres_bar.setProgressMsg('Subiendo...');
+
+    const subirVideoProgressInterval = setInterval(() => {
+        funSubirVideosProgressGet(currentSessionId);
+    }, 1000);
+
+    const currentSessionId = 'upload_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+    try {
+        const res = await fetch(urlVideosSubir, {
+            method: 'POST',
+            body: fd,
+            headers: {
+                'X-Upload-Session': currentSessionId
+            }
+        });
+
+        clearInterval(subirVideoProgressInterval);
+
+        if (!res.ok) {
+            const txt = await res.text();
+            prgres_bar.update(0, files[0].size);
+            prgres_bar.setStatus('error');
+            throw new Error(`HTTP ${res.status} - ${txt}`);
+        }
+        
+        const data = await res.json();
+        console.log('Subida OK:', data);
+
+        prgres_bar.update(100, files[0].size);
+        prgres_bar.setStatus('success');
+
+    } catch (err) {
+        prgres_bar.update(0, files[0].size);
+        prgres_bar.setStatus('error');
+        console.error('Error al subir:', err);
+    }
+}
+
+
+const funSubirVideosProgressGet = async (sessionId) => {
+    try {
+        const response = await fetch(`${urlVideosSubir}/progress/${sessionId}`);
+        if (response.ok) {
+            const progress = await response.json();
+            Gb.getEl('progress_bar_videos_subir').update(progress.progress, progress.total);
+        }
+    } catch (error) {
+        console.error('Error checking progress:', error);
+    }
+}
+
+
+const funRenderComboSeries = (data) => {
+    
+}
+
+const funVidThumbnailSubir = async () => {
+    const formCmp = Gb.getEl('frm_videos_thumbnail_subir') || Gb.getComponent('frm_videos_thumbnail_subir');
+    if (!formCmp) {
+        console.error('Formulario de miniatura no encontrado');
+        return;
+    }
+
+    const vals = formCmp.getValues();
+    const files = vals.vid_thumbnail_archivo;
+
+    if (!files || files.length === 0) {
+        Gb.define('notification', { message: 'Debes seleccionar una imagen.' });
+        return;
+    }
+
+    const fd = new FormData();
+    fd.append('image', files[0]);
+
+    try {
+        const res = await fetch(url_vid_subir_thumbnails, {
+            method: 'POST',
+            body: fd
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || (data && data.error > 0)) {
+            const errMsg = data && data.msg ? data.msg : 'No se pudo guardar la miniatura.';
+            throw new Error(errMsg);
+        }
+
+        Gb.define('notification', { message: data.msg || 'Miniatura guardada correctamente.' });
+        if (typeof formCmp.reset === 'function') {
+            formCmp.reset();
+        }
+    } catch (err) {
+        console.error('Error al subir miniatura:', err);
+        Gb.define('notification', { message: `Error al guardar miniatura: ${err.message}` });
+    }
+}
