@@ -9,7 +9,7 @@ Gb.define('form',{
             id: 'ser_nombre'
         },{
             type: 'cbx_thumbnails',
-            label: 'ID Serie',
+            label: 'Portada',
             id: 'ser_id_thumbnail'
         }
     ],
@@ -18,7 +18,7 @@ Gb.define('form',{
             text: 'Subir',
             id: 'btn_videos_series_nueva',
             onClick: function() {
-                //funVideosSubir();
+                funSerieNueva();
             }
         },{
             type: 'button',

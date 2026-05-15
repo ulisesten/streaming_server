@@ -11,7 +11,7 @@ Gb.define('form',{
         },{
             type: 'textfield',
             label: 'Capítulo',
-            id: 'vid_chapter'
+            id: 'vid_capitulo'
         },{
             type: 'textfield',
             label: 'Descripción',
@@ -29,9 +29,9 @@ Gb.define('form',{
             label: 'Serie',
             id: 'vid_id_serie'
         },{
-            type: 'textfield',
-            label: 'Id Temporada',
-            id: 'vid_id_temporada'
+            type: 'cbx_temporadas',
+            label: 'Temporada',
+            id: 'cbx_temporadas'
         },{
             type: 'textfield',
             label: 'Tags',

@@ -4,7 +4,7 @@ Gb.define('toolbar',{
     items: [
         {
             type: 'button',
-            text: 'Nueva Serie',
+            text: 'Nuevo Video',
             id: 'tlb_serie_nueva',
             onClick: function() {
                 
@@ -18,6 +18,14 @@ Gb.define('toolbar',{
             id: 'tlb_serie_nueva',
             onClick: function() {
                 Gb.getEl('win_videos_serie_nueva').open();
+            }
+        },
+        {
+            type: 'button',
+            text: 'Nueva Temporada',
+            id: 'tlb_temporada_nueva',
+            onClick: function() {
+                Gb.getEl('win_videos_temporada_nueva').open();
             }
         },
         {

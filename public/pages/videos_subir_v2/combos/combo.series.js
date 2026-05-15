@@ -11,5 +11,9 @@ Gb.define('combobox',{
     remote: true,
     autoload: true,
     result: 'data',
-    fields: campos
+    fields: campos,
+    onSelect: function(serieId) {
+        //console.log(serieId)
+        funInitComboTemporadasBySerie(serieId);
+    }
 })

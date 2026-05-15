@@ -1,5 +1,6 @@
 class Global {
     arr_elements = new Array();
+    arr_element_defs = {};
 
     /**
      * @brief Método capaz de definir objetos.
@@ -14,7 +15,14 @@ class Global {
             throw new Error(`No valid element handler: ${element}`);
         }
 
+        if (opt && opt.type) {
+            this.arr_element_defs[element] = Object.assign({}, opt);
+        }
+
         const instance = factory(opt);
+        if (opt && opt.id && instance && typeof instance.getEl === 'function') {
+            instance.getEl(opt.id);
+        }
         if (opt && opt.id) {
             this.arr_elements[opt.id] = instance;
         }
@@ -29,8 +37,38 @@ class Global {
      * @param id Id del elemento que deseamos obtener.
      * @return Elemento HTML.
      */
-    getComponent(id) { return this.arr_elements[id]; }
-    getEl(id) { return this.arr_elements[id]; }
+    getComponent(id) {
+        const direct = this.arr_elements[id];
+        const domEl = document.getElementById(id);
+        const bindToDom = (inst) => {
+            if (!inst) return null;
+            if (domEl && typeof inst.getEl === 'function') {
+                if (inst.opt && typeof inst.opt === 'object') {
+                    inst.opt.id = id;
+                }
+                inst.select = domEl;
+            }
+            return inst;
+        };
+        if (direct) return bindToDom(direct);
+
+        const values = Object.values(this.arr_elements || {});
+        for (let i = 0; i < values.length; i++) {
+            const inst = values[i];
+            if (inst && inst.opt && inst.opt.id === id) {
+                return bindToDom(inst);
+            }
+        }
+        if (domEl && domEl.tagName === 'SELECT') {
+            const fallback = new Combobox({ id });
+            fallback.select = domEl;
+            this.arr_elements[id] = fallback;
+            return fallback;
+        }
+        return null;
+    }
+    getEl(id) { return this.getComponent(id); }
+    getDef(id) { return this.arr_element_defs[id]; }
 }
 
 const arr_element_handler = {
@@ -178,6 +216,30 @@ class Combobox {
     create() {
         this.select = document.createElement('select');
         this.select.setAttribute('id', this.opt.id || '');
+        this.bindOnSelect(this.select);
+    }
+
+    resolveSelect() {
+        if (this.select && this.select.tagName === 'SELECT' && this.select.isConnected) {
+            return this.select;
+        }
+        if (this.opt && this.opt.id) {
+            const elById = document.getElementById(this.opt.id);
+            if (elById && elById.tagName === 'SELECT') {
+                return elById;
+            }
+        }
+        return this.select;
+    }
+
+    bindOnSelect(selectEl) {
+        if (!selectEl || selectEl.__g_onselect_bound) return;
+        selectEl.addEventListener('change', (e) => {
+            if (typeof this.opt.onSelect === 'function') {
+                this.opt.onSelect(e.target.value, e.target);
+            }
+        });
+        selectEl.__g_onselect_bound = true;
     }
 
     applyStyle() {
@@ -190,7 +252,11 @@ class Combobox {
     }
 
     setOptions(options = []) {
-        this.select.innerHTML = '';
+        const selectEl = this.resolveSelect();
+        if (!selectEl) return;
+        this.bindOnSelect(selectEl);
+        this.select = selectEl;
+        selectEl.innerHTML = '';
         const fields = this.opt.fields || {};
         const valueField = fields.id || 'id';
         const textField = fields.name || 'name';
@@ -206,7 +272,7 @@ class Combobox {
                 optionEl.value = opt;
                 optionEl.textContent = opt;
             }
-            this.select.append(optionEl);
+            selectEl.append(optionEl);
         });
     }
 
@@ -215,6 +281,8 @@ class Combobox {
             console.log('Combobox: URL no definida.');
             return;
         }
+
+        console.log('combo loading')
 
         let fetchUrl = this.url;
         if (Object.keys(extraParams).length > 0) {
@@ -235,13 +303,18 @@ class Combobox {
             .catch(error => console.error('Combobox Load Error:', error));
     }
 
-    getEl() {
-        return this.select;
+    getEl(id = null) {
+        if (id) {
+            this.opt.id = id;
+            if (this.select) this.select.setAttribute('id', id);
+        }
+        return this.resolveSelect();
     }
 
     getValue() {
-        if (!this.select) return null;
-        return this.select.value ?? null;
+        const selectEl = this.resolveSelect();
+        if (!selectEl) return null;
+        return selectEl.value ?? null;
     }
 }
 
@@ -295,14 +368,19 @@ class Dropdown {
     positionList() {
         const rect = this.trigger.getBoundingClientRect();
         const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
         const margin = 2;
         const maxHeight = 260;
         const spaceBelow = viewportHeight - rect.bottom - margin;
         const spaceAbove = rect.top - margin;
         const openUp = spaceBelow < 180 && spaceAbove > spaceBelow;
         const height = Math.min(maxHeight, openUp ? Math.max(spaceAbove, 120) : Math.max(spaceBelow, 120));
-        this.list.style.left = `${rect.left}px`;
-        this.list.style.width = `${rect.width}px`;
+        const minWidth = Math.max(180, rect.width);
+        const preferredWidth = this.opt.list_width || minWidth;
+        const safeWidth = Math.min(preferredWidth, viewportWidth - (margin * 2));
+        const left = Math.min(Math.max(margin, rect.left), Math.max(margin, viewportWidth - safeWidth - margin));
+        this.list.style.left = `${left}px`;
+        this.list.style.width = `${safeWidth}px`;
         this.list.style.maxHeight = `${height}px`;
         this.list.style.top = openUp ? `${Math.max(margin, rect.top - height - margin)}px` : `${rect.bottom + margin}px`;
     }
@@ -532,6 +610,7 @@ class Menu {
 class Form {
     arr_field_ids = new Array();
     arr_field_refs = {};
+    arr_field_instances = {};
     values = {};
     constructor(opt) {
         this.opt = opt;
@@ -568,8 +647,7 @@ class Form {
                 return inp;
             },
             combobox: (field) => {
-                const combobox = new Combobox(field);
-                return combobox.getEl();
+                return new Combobox(field);
             }
         };
 
@@ -582,9 +660,18 @@ class Form {
 
             const isCustomComponentType = typeof el.type === 'object' && el.type && typeof el.type.getEl === 'function';
             const field_builder = typeof el.type === 'string' ? field_handler[el.type] : null;
-            const instanceFromGb = !field_builder && typeof el.type === 'string'
-                ? (Gb.getEl(el.type) || Gb.getComponent(el.type))
+            const aliasedDef = !field_builder && typeof el.type === 'string'
+                ? Gb.getDef(el.type)
                 : null;
+            let instanceFromGb = null;
+            if (!field_builder && typeof el.type === 'string') {
+                if (aliasedDef && aliasedDef.type && arr_element_handler[aliasedDef.type]) {
+                    const aliasOpts = Object.assign({}, aliasedDef, el.id ? { id: el.id } : {});
+                    instanceFromGb = arr_element_handler[aliasedDef.type](aliasOpts);
+                } else {
+                    instanceFromGb = Gb.getEl(el.type) || Gb.getComponent(el.type);
+                }
+            }
             const isGbInstanceType = instanceFromGb && (typeof instanceFromGb.getEl === 'function' || instanceFromGb instanceof Element);
             if (!field_builder && !isCustomComponentType && !isGbInstanceType) {
                 console.error('No valid field type: ', el.type);
@@ -595,12 +682,55 @@ class Form {
             if (fieldKey) this.arr_field_ids.push(fieldKey);
 
             let inp = null;
+            let fieldInstance = null;
             if (isCustomComponentType) {
+                fieldInstance = el.type;
                 inp = el.type.getEl();
             } else if (isGbInstanceType) {
-                inp = instanceFromGb instanceof Element ? instanceFromGb : instanceFromGb.getEl();
+                if (!aliasedDef && instanceFromGb && !(instanceFromGb instanceof Element)
+                    && instanceFromGb.opt && typeof instanceFromGb.constructor === 'function') {
+                    // Si viene de una instancia reusable (ej. Combobox), crear una nueva con su misma config.
+                    const clonedOpts = Object.assign({}, instanceFromGb.opt, el.id ? { id: el.id } : {});
+                    const freshInstance = new instanceFromGb.constructor(clonedOpts);
+                    fieldInstance = freshInstance;
+                    if (el.id) {
+                        Gb.arr_elements[el.id] = freshInstance;
+                    }
+                    inp = typeof freshInstance.getEl === 'function' ? freshInstance.getEl() : null;
+                } else {
+                    if (!(instanceFromGb instanceof Element)) {
+                        fieldInstance = instanceFromGb;
+                    }
+                    const sourceEl = instanceFromGb instanceof Element ? instanceFromGb : instanceFromGb.getEl();
+                    if (sourceEl instanceof Element) {
+                        // Fallback seguro para no mover el mismo nodo entre formularios.
+                        inp = (!aliasedDef && sourceEl.parentElement) ? sourceEl.cloneNode(true) : sourceEl;
+                    }
+                }
             } else {
-                inp = field_builder(el);
+                if (typeof el.type === 'string' && arr_element_handler[el.type]) {
+                    const builtInstance = arr_element_handler[el.type](el);
+                    if (builtInstance && typeof builtInstance.getEl === 'function') {
+                        fieldInstance = builtInstance;
+                        if (el.id) {
+                            Gb.arr_elements[el.id] = builtInstance;
+                        }
+                        inp = builtInstance.getEl();
+                    } else {
+                        inp = builtInstance;
+                    }
+                } else {
+                    const builtField = field_builder(el);
+                    if (builtField && typeof builtField.getEl === 'function') {
+                        fieldInstance = builtField;
+                        if (el.id) {
+                            Gb.arr_elements[el.id] = builtField;
+                        }
+                        inp = builtField.getEl();
+                    } else {
+                        inp = builtField;
+                    }
+                }
             }
             if (!inp || !(inp instanceof Element)) {
                 console.error('Invalid field element for type:', el.type);
@@ -610,8 +740,19 @@ class Form {
             if (el.id && !inp.id) {
                 inp.setAttribute('id', el.id);
             }
+            if (el.id && fieldInstance) {
+                if (fieldInstance.opt && typeof fieldInstance.opt === 'object') {
+                    fieldInstance.opt.id = el.id;
+                }
+                if (typeof fieldInstance.getEl === 'function') {
+                    fieldInstance.getEl(el.id);
+                }
+            }
             if (fieldKey) {
                 this.arr_field_refs[fieldKey] = inp;
+                if (fieldInstance && typeof fieldInstance.getValue === 'function') {
+                    this.arr_field_instances[fieldKey] = fieldInstance;
+                }
             }
 
             let d = document.createElement('div')
@@ -664,6 +805,11 @@ class Form {
                 const gbField = Gb.getEl(fieldId) || Gb.getComponent(fieldId);
                 if (gbField && typeof gbField.getValue === 'function') {
                     this.values[fieldId] = gbField.getValue();
+                    return;
+                }
+                const instanceField = this.arr_field_instances[fieldId];
+                if (instanceField && typeof instanceField.getValue === 'function') {
+                    this.values[fieldId] = instanceField.getValue();
                     return;
                 }
 

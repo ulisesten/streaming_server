@@ -7,6 +7,7 @@ const seasonsDTO = require("../dto/seasons_dto");
 class SpProcesos {
     //! CONS
     static CONS_SEASONS_CONS  = 1;
+    static CONS_SEASONS_BY_SERIE_CONS = 2;
 
     //! PROC
     static PROC_SEASONS_NEW   = 1;
@@ -18,6 +19,23 @@ class SeasonsDomain {
         try {
             const params = {
                 tipoConsulta: SpProcesos.CONS_SEASONS_CONS
+            }
+
+            const dao = await sqlEject.store_eject("procCatSeasonsCons", params, "soda_stream");
+            const dto_res = seasonsDTO.seasons_obtener_response(dao);
+            res.status(dto_res.status).json(dto_res.response);
+
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    static async getSeasonsBySeriesId(req, res) {
+        try {
+            const { ser_id } = req.params;
+            const params = {
+                tipoConsulta: SpProcesos.CONS_SEASONS_BY_SERIE_CONS,
+                ser_id: ser_id
             }
 
             const dao = await sqlEject.store_eject("procCatSeasonsCons", params, "soda_stream");

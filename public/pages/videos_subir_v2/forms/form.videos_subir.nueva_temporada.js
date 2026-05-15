@@ -1,20 +1,20 @@
-Gb.define('form',{
+Gb.define('frm_videos_temporada_nueva',{
     type: 'form',
     id: 'frm_videos_temporada_nueva',
     cls: 'form_signin',
     fields: [
         {
             type: 'textfield',
-            label: 'Título',
-            id: 'tem_numero'
+            label: 'Número',
+            id: 'sea_numero'
         },{
             type: 'cbx_series',
             label: 'Serie',
-            id: 'tem_id_serie'
+            id: 'sea_id_serie'
         },{
             type: 'cbx_thumbnails',
-            label: 'Thumbnail',
-            id: 'tem_id_thumbnail'
+            label: 'Miniatura',
+            id: 'sea_id_thumbnail'
         }
     ],
     buttons: [{
@@ -22,7 +22,7 @@ Gb.define('form',{
             text: 'Subir',
             id: 'btn_videos_temporada_nueva',
             onClick: function() {
-                //funVideosSubir();
+                funVidSubTemporadaNueva();
             }
         },{
             type: 'button',

@@ -163,7 +163,9 @@ class VideosDomain {
             vid_descripcion: req.body.vid_descripcion || "",
             vid_tags: req.body.vid_tags || "",
             vid_id_serie: req.body.vid_id_serie,
-            vid_temporada: req.body.vid_temporada
+            vid_id_temporada: req.body.vid_id_temporada,
+            vid_temporada: req.body.vid_temporada,
+            vid_capitulo: req.body.vid_capitulo
         };
 
         return sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");

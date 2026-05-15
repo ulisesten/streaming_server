@@ -26,6 +26,19 @@ Gb.define('window', {
 
 Gb.define('window', {
     type: 'window',
+    id: 'win_videos_temporada_nueva',
+    title: 'Nueva serie',
+    width: 700,
+    height: 260,
+    'x-align': 'center',
+    'y-align': 'center',
+    items: [
+        Gb.getComponent('frm_videos_temporada_nueva').getEl()
+    ]
+})
+
+Gb.define('window', {
+    type: 'window',
     id: 'win_videos_thumbnail_subir',
     title: 'Subir miniatura',
     width: 700,
