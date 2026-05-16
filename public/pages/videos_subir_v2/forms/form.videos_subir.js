@@ -27,7 +27,7 @@ Gb.define('form',{
         },{
             type: 'cbx_series',
             label: 'Serie',
-            id: 'vid_id_serie'
+            id: 'cbx_series'
         },{
             type: 'cbx_temporadas',
             label: 'Temporada',

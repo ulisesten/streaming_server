@@ -25,7 +25,7 @@ const funVideosSubir = async () => {
     fd.append('vid_descripcion', vals.vid_descripcion || '');
     fd.append('vid_tags', vals.vid_tags || '');
     fd.append('vid_id_usuario', vals.vid_id_usuario || '');
-    fd.append('vid_id_serie', vals.vid_id_serie || '');
+    fd.append('vid_id_serie', vals.cbx_series || '');
     fd.append('vid_id_temporada', vals.cbx_temporadas || '');
 
     // file -> FileList
