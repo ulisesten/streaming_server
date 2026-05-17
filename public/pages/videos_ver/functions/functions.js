@@ -114,10 +114,13 @@ const funCrearVideoCard = async function (current_id, video, feedContainer) {
     const placeholder = document.createElement("div");
     placeholder.className = "placeholder";
 
+    const chapter = video.vid_chapter || video.vid_capitulo;
+    const videoTitle = chapter ? `${chapter} - ${video.vid_nombre}` : video.vid_nombre;
+
     // texto dentro del placeholder
     const text = document.createElement("span");
     text.className = "placeholder-text";
-    text.textContent = video.vid_nombre;
+    text.textContent = videoTitle;
     text.setAttribute('class', 'text-gradient-green');
 
     // anidar elementos
@@ -138,7 +141,7 @@ const funCrearVideoCard = async function (current_id, video, feedContainer) {
 
     console.log(current_id, video.vid_id)
 
-    titleLink.textContent = video.vid_nombre;
+    titleLink.textContent = videoTitle;
 
     const description = document.createElement('p');
     description.textContent = video.vid_descripcion || "Sin descripción";
@@ -161,7 +164,6 @@ const funCrearVideoCard = async function (current_id, video, feedContainer) {
 
     feedContainer.appendChild(videoCard);
 }
-
 
 
 
