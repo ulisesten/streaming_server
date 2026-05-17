@@ -788,6 +788,11 @@ class Form {
 
             b.addEventListener('click', (e) => {
                 e.preventDefault();
+                if (el.action === 'reset') {
+                    this.reset();
+                    if (typeof el.onClick === 'function') el.onClick.call();
+                    return;
+                }
                 el.onClick.call()
             });
 
@@ -847,6 +852,33 @@ class Form {
             value = this.values[el] ? this.values[el] : value
             document.getElementById(el).value = value;
         })
+    }
+
+    reset() {
+        try {
+            if (this.form && typeof this.form.reset === 'function') {
+                this.form.reset();
+            }
+
+            this.arr_field_ids.forEach((fieldId) => {
+                const gbField = Gb.getEl(fieldId) || Gb.getComponent(fieldId);
+                const fieldEl = this.arr_field_refs[fieldId] || document.getElementById(fieldId);
+
+                if (gbField && typeof gbField.setValue === 'function') {
+                    gbField.setValue('');
+                } else if (fieldEl && fieldEl.tagName === 'SELECT') {
+                    fieldEl.selectedIndex = 0;
+                } else if (fieldEl && fieldEl.type === 'file') {
+                    fieldEl.value = '';
+                } else if (fieldEl) {
+                    fieldEl.value = '';
+                }
+
+                this.values[fieldId] = null;
+            });
+        } catch (error) {
+            console.error('Form.reset: error resetting form', error);
+        }
     }
 }
 
@@ -1429,6 +1461,12 @@ class ProgressBar {
         if (this.status !== 'error') {
             this.setStatus('progress');
         }
+    }
+
+    reset() {
+        this.setStatus('progress');
+        this.setProgressMsg(this.opt.progress_msg || []);
+        this.update(0, this.opt.file_size || 0);
     }
 
     embedInWindow() {
