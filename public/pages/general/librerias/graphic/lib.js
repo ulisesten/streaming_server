@@ -1479,7 +1479,13 @@ class ProgressBar {
         if (!(windowEl instanceof Element)) return;
         windowEl.classList.add('g_window_progress');
         if (this.el.parentNode === windowEl) return;
-        if (this.el.id && windowEl.querySelector(`#${this.el.id}`)) return;
+        if (this.el.id) {
+            const existingEl = windowEl.querySelector(`#${this.el.id}`);
+            if (existingEl && existingEl !== this.el) {
+                existingEl.replaceWith(this.el);
+                return;
+            }
+        }
         windowEl.append(this.el);
     }
 
