@@ -27,7 +27,7 @@ Gb.define('window', {
 Gb.define('window', {
     type: 'window',
     id: 'win_videos_temporada_nueva',
-    title: 'Nueva serie',
+    title: 'Nueva Temporada',
     width: 700,
     height: 260,
     'x-align': 'center',

@@ -69,6 +69,17 @@ const funVideosSubir = async () => {
 
         prgres_bar.update(100, files[0].size);
         prgres_bar.setStatus('success');
+        Gb.define('notification', { message: data.msg || 'Video subido correctamente.' });
+        if (typeof formCmp.reset === 'function') {
+            formCmp.reset();
+        }
+        if (typeof prgres_bar.reset === 'function') {
+            prgres_bar.reset();
+        }
+        const win = Gb.getEl('win_videos_subir') || Gb.getComponent('win_videos_subir');
+        if (win && typeof win.close === 'function') {
+            win.close();
+        }
 
     } catch (err) {
         prgres_bar.update(0, files[0].size);
@@ -130,6 +141,14 @@ const funVidThumbnailSubir = async () => {
         if (typeof formCmp.reset === 'function') {
             formCmp.reset();
         }
+        const progressBar = Gb.getEl('progress_bar_videos_thumbnail_subir') || Gb.getComponent('progress_bar_videos_thumbnail_subir');
+        if (progressBar && typeof progressBar.reset === 'function') {
+            progressBar.reset();
+        }
+        const win = Gb.getEl('win_videos_thumbnail_subir') || Gb.getComponent('win_videos_thumbnail_subir');
+        if (win && typeof win.close === 'function') {
+            win.close();
+        }
     } catch (err) {
         console.error('Error al subir miniatura:', err);
         Gb.define('notification', { message: `Error al guardar miniatura: ${err.message}` });
@@ -168,6 +187,17 @@ const funSerieNueva = async function() {
         }
 
         Gb.define('notification', { message: data.msg || 'Serie creada correctamente.' });
+        if (typeof formCmp.reset === 'function') {
+            formCmp.reset();
+        }
+        const progressBar = Gb.getEl('progress_bar_videos_serie_nueva') || Gb.getComponent('progress_bar_videos_serie_nueva');
+        if (progressBar && typeof progressBar.reset === 'function') {
+            progressBar.reset();
+        }
+        const win = Gb.getEl('win_videos_serie_nueva') || Gb.getComponent('win_videos_serie_nueva');
+        if (win && typeof win.close === 'function') {
+            win.close();
+        }
         return data;
     } catch (err) {
         console.error('Error al crear serie:', err);
@@ -235,6 +265,14 @@ const funVidSubTemporadaNueva = async function() {
 
         if (typeof formCmp.reset === 'function') {
             formCmp.reset();
+        }
+        const progressBar = Gb.getEl('progress_bar_videos_temporada_nueva') || Gb.getComponent('progress_bar_videos_temporada_nueva');
+        if (progressBar && typeof progressBar.reset === 'function') {
+            progressBar.reset();
+        }
+        const win = Gb.getEl('win_videos_temporada_nueva') || Gb.getComponent('win_videos_temporada_nueva');
+        if (win && typeof win.close === 'function') {
+            win.close();
         }
 
         const idSerie = payload.sea_id_serie;
