@@ -88,9 +88,13 @@ class TelegramService {
         let caption = `🎬 <b>NUEVO VIDEO</b>\n\n<b>Título:</b> ${videoData.vid_title}\n`;
         caption += `<a href="${vid_url}">▶️ Ver video</a>`;
 
+        console.log(`📢 Preparando notificación para Telegram(videoData): `, videoData);
+
         try {
             if (videoData.vid_thumbnail) {
                 const thumbnailUrl = `${domain}/api/v1/videos/thumbnails/${videoData.vid_thumbnail}`;
+
+                console.log(`📸 Obteniendo thumbnail para Telegram: ${thumbnailUrl}`);
                 
                 // Simular la petición como lo haría Telegram
                 const imageBuffer = await axios.get(thumbnailUrl, {
@@ -119,6 +123,9 @@ class TelegramService {
                     filename: `${videoData.vid_id_public}.${extension}`,
                     contentType
                 };
+
+                console.log(`📸 Enviando thumbnail a Telegram: ${thumbnailUrl} (Content-Type: ${contentType})`);
+                
                 // Enviar el buffer directamente
                 await this.bot.sendPhoto(this.chatId, Buffer.from(imageBuffer.data), {
                     caption: caption,
