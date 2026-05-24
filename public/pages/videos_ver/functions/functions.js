@@ -84,11 +84,23 @@ const funcCargarVideosRelacionados = async function (prm_vid_id) {
     result.data.forEach(video => {
         funCrearVideoCard(prm_vid_id, video, feedContainer);
     });
+
+    const activeCard = feedContainer.querySelector('[data-current-video="true"]');
+    if (activeCard) {
+        activeCard.scrollIntoView({
+            behavior: "smooth",
+            inline: "center",
+            block: "nearest"
+        });
+    }
 }
 
 const funCrearVideoCard = async function (current_id, video, feedContainer) {
     const videoCard = document.createElement("div");
     videoCard.classList.add("video-card");
+    if (current_id === video.vid_id) {
+        videoCard.setAttribute("data-current-video", "true");
+    }
 
     // Miniatura (usa placeholder si no hay thumb)
     const thumb = `https://placehold.co/400x225?text=${video.vid_nombre}`;
@@ -164,7 +176,6 @@ const funCrearVideoCard = async function (current_id, video, feedContainer) {
 
     feedContainer.appendChild(videoCard);
 }
-
 
 
 
