@@ -101,9 +101,23 @@ class TelegramService {
                     }
                 });
                 
+                const responseContentType = imageBuffer.headers?.['content-type'];
+                const contentType = responseContentType && responseContentType.startsWith('image/')
+                    ? responseContentType.split(';')[0].trim()
+                    : 'image/jpeg';
+                const extensionByType = {
+                    'image/jpeg': 'jpg',
+                    'image/jpg': 'jpg',
+                    'image/png': 'png',
+                    'image/webp': 'webp',
+                    'image/gif': 'gif',
+                    'image/bmp': 'bmp',
+                    'image/svg+xml': 'svg'
+                };
+                const extension = extensionByType[contentType] || 'jpg';
                 const fileOptions = {
-                    filename: `${videoData.vid_id_public}.jpg`,
-                    contentType: 'image/jpeg'
+                    filename: `${videoData.vid_id_public}.${extension}`,
+                    contentType
                 };
                 // Enviar el buffer directamente
                 await this.bot.sendPhoto(this.chatId, Buffer.from(imageBuffer.data), {
@@ -117,7 +131,7 @@ class TelegramService {
             }
             return true;
         } catch (error) {
-            console.error('❌ Error:', error.message);
+            console.error('❌ TelegramService NewVideoNotification Error:', error.message);
             // Fallback a solo texto
             try {
                 await this.sendHtmlMessage(caption);
