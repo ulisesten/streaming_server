@@ -100,11 +100,31 @@ class TelegramService {
                 const thumbnailUrl = `${domain}/api/v1/videos/thumbnails/${videoData.vid_thumbnail}`;
 
                 console.log('📸 [TelegramService] Obteniendo thumbnail', { thumbnailUrl });
+                console.log('📸 [TelegramService] Intento 1: enviar URL directa a Telegram');
+
+                try {
+                    const sendPhotoByUrlResult = await this.bot.sendPhoto(this.chatId, thumbnailUrl, {
+                        caption: caption,
+                        parse_mode: 'HTML'
+                    });
+                    console.log('📸 [TelegramService] Respuesta sendPhoto(URL)', {
+                        ok: Boolean(sendPhotoByUrlResult),
+                        messageId: sendPhotoByUrlResult?.message_id,
+                        photoCount: sendPhotoByUrlResult?.photo?.length
+                    });
+                    console.log('✅ Notificación enviada con thumbnail (url directa)');
+                    return true;
+                } catch (urlError) {
+                    console.error('⚠️ [TelegramService] Falló sendPhoto con URL, intentando buffer', {
+                        message: urlError?.message,
+                        code: urlError?.code
+                    });
+                }
                 
                 // Simular la petición como lo haría Telegram
                 const imageBuffer = await axios.get(thumbnailUrl, {
                     responseType: 'arraybuffer',
-                    timeout: 15000,
+                    timeout: 30000,
                     headers: {
                         'User-Agent': 'Mozilla/5.0 (compatible; TelegramBot/1.0; +https://core.telegram.org/bots)'
                     }
