@@ -1,5 +1,4 @@
 const TelegramBot = require('node-telegram-bot-api');
-const axios = require('axios');
 const settings = require('../../../../../core/configuration')
 
 class TelegramService {
@@ -100,87 +99,39 @@ class TelegramService {
                 const thumbnailUrl = `${domain}/api/v1/videos/thumbnails/${videoData.vid_thumbnail}`;
 
                 console.log('📸 [TelegramService] Obteniendo thumbnail', { thumbnailUrl });
-                console.log('📸 [TelegramService] Intento 1: enviar URL directa a Telegram');
-
-                try {
-                    const sendPhotoByUrlResult = await this.bot.sendPhoto(this.chatId, thumbnailUrl, {
-                        caption: caption,
-                        parse_mode: 'HTML'
-                    });
-                    console.log('📸 [TelegramService] Respuesta sendPhoto(URL)', {
-                        ok: Boolean(sendPhotoByUrlResult),
-                        messageId: sendPhotoByUrlResult?.message_id,
-                        photoCount: sendPhotoByUrlResult?.photo?.length
-                    });
-                    console.log('✅ Notificación enviada con thumbnail (url directa)');
-                    return true;
-                } catch (urlError) {
-                    console.error('⚠️ [TelegramService] Falló sendPhoto con URL, intentando buffer', {
-                        message: urlError?.message,
-                        code: urlError?.code
-                    });
-                }
-                
-                // Simular la petición como lo haría Telegram
-                const imageBuffer = await axios.get(thumbnailUrl, {
-                    responseType: 'arraybuffer',
-                    timeout: 30000,
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (compatible; TelegramBot/1.0; +https://core.telegram.org/bots)'
+                const maxAttempts = 3;
+                for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+                    try {
+                        console.log(`📸 [TelegramService] Intento ${attempt}/${maxAttempts}: sendPhoto(URL)`);
+                        const sendPhotoByUrlResult = await this.bot.sendPhoto(this.chatId, thumbnailUrl, {
+                            caption: caption,
+                            parse_mode: 'HTML'
+                        });
+                        console.log('📸 [TelegramService] Respuesta sendPhoto(URL)', {
+                            ok: Boolean(sendPhotoByUrlResult),
+                            attempt,
+                            messageId: sendPhotoByUrlResult?.message_id,
+                            photoCount: sendPhotoByUrlResult?.photo?.length
+                        });
+                        console.log('✅ Notificación enviada con thumbnail (url directa)');
+                        return true;
+                    } catch (urlError) {
+                        console.error('⚠️ [TelegramService] Falló sendPhoto(URL)', {
+                            attempt,
+                            message: urlError?.message,
+                            code: urlError?.code
+                        });
+                        if (attempt < maxAttempts) {
+                            await new Promise((resolve) => setTimeout(resolve, 2000));
+                        }
                     }
-                });
-                
-                console.log('📸 [TelegramService] Respuesta thumbnail', {
-                    status: imageBuffer?.status,
-                    statusText: imageBuffer?.statusText,
-                    headers: imageBuffer?.headers,
-                    dataBytes: imageBuffer?.data?.byteLength
-                });
-
-                const responseContentType = imageBuffer.headers?.['content-type'];
-                const contentType = responseContentType && responseContentType.startsWith('image/')
-                    ? responseContentType.split(';')[0].trim()
-                    : 'image/jpeg';
-                const extensionByType = {
-                    'image/jpeg': 'jpg',
-                    'image/jpg': 'jpg',
-                    'image/png': 'png',
-                    'image/webp': 'webp',
-                    'image/gif': 'gif',
-                    'image/bmp': 'bmp',
-                    'image/svg+xml': 'svg'
-                };
-                const extension = extensionByType[contentType] || 'jpg';
-                const fileOptions = {
-                    filename: `${videoData.vid_id_public}.${extension}`,
-                    contentType
-                };
-
-                const photoBuffer = Buffer.from(imageBuffer.data);
-                console.log('📸 [TelegramService] Enviando thumbnail a Telegram', {
-                    thumbnailUrl,
-                    responseContentType,
-                    normalizedContentType: contentType,
-                    extension,
-                    fileOptions,
-                    photoBufferLength: photoBuffer.length,
-                    captionLength: caption.length
-                });
-                
-                // Enviar el buffer directamente
-                const sendPhotoResult = await this.bot.sendPhoto(this.chatId, photoBuffer, {
-                    caption: caption,
-                    parse_mode: 'HTML'
-                }, fileOptions);
-                console.log('📸 [TelegramService] Respuesta sendPhoto', {
-                    ok: Boolean(sendPhotoResult),
-                    messageId: sendPhotoResult?.message_id,
-                    photoCount: sendPhotoResult?.photo?.length
-                });
-                
-                console.log('✅ Notificación enviada con thumbnail (buffer)');
+                }
+                console.error('⚠️ [TelegramService] Agotados reintentos de sendPhoto(URL), se enviará solo texto');
             } else {
                 console.log('ℹ️ [TelegramService] vid_thumbnail vacío, enviando solo texto');
+                await this.sendHtmlMessage(caption);
+            }
+            if (videoData.vid_thumbnail) {
                 await this.sendHtmlMessage(caption);
             }
             return true;
