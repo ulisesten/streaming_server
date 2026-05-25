@@ -88,13 +88,18 @@ class TelegramService {
         let caption = `🎬 <b>NUEVO VIDEO</b>\n\n<b>Título:</b> ${videoData.vid_title}\n`;
         caption += `<a href="${vid_url}">▶️ Ver video</a>`;
 
-        console.log(`📢 Preparando notificación para Telegram(videoData): `, videoData);
+        console.log('📢 [TelegramService] Preparando notificación', {
+            videoData,
+            domain,
+            chatId: this.chatId,
+            hasBotInstance: Boolean(this.bot)
+        });
 
         try {
             if (videoData.vid_thumbnail) {
                 const thumbnailUrl = `${domain}/api/v1/videos/thumbnails/${videoData.vid_thumbnail}`;
 
-                console.log(`📸 Obteniendo thumbnail para Telegram: ${thumbnailUrl}`);
+                console.log('📸 [TelegramService] Obteniendo thumbnail', { thumbnailUrl });
                 
                 // Simular la petición como lo haría Telegram
                 const imageBuffer = await axios.get(thumbnailUrl, {
@@ -105,6 +110,13 @@ class TelegramService {
                     }
                 });
                 
+                console.log('📸 [TelegramService] Respuesta thumbnail', {
+                    status: imageBuffer?.status,
+                    statusText: imageBuffer?.statusText,
+                    headers: imageBuffer?.headers,
+                    dataBytes: imageBuffer?.data?.byteLength
+                });
+
                 const responseContentType = imageBuffer.headers?.['content-type'];
                 const contentType = responseContentType && responseContentType.startsWith('image/')
                     ? responseContentType.split(';')[0].trim()
@@ -124,26 +136,55 @@ class TelegramService {
                     contentType
                 };
 
-                console.log(`📸 Enviando thumbnail a Telegram: ${thumbnailUrl} (Content-Type: ${contentType})`);
+                const photoBuffer = Buffer.from(imageBuffer.data);
+                console.log('📸 [TelegramService] Enviando thumbnail a Telegram', {
+                    thumbnailUrl,
+                    responseContentType,
+                    normalizedContentType: contentType,
+                    extension,
+                    fileOptions,
+                    photoBufferLength: photoBuffer.length,
+                    captionLength: caption.length
+                });
                 
                 // Enviar el buffer directamente
-                await this.bot.sendPhoto(this.chatId, Buffer.from(imageBuffer.data), {
+                const sendPhotoResult = await this.bot.sendPhoto(this.chatId, photoBuffer, {
                     caption: caption,
                     parse_mode: 'HTML'
                 }, fileOptions);
+                console.log('📸 [TelegramService] Respuesta sendPhoto', {
+                    ok: Boolean(sendPhotoResult),
+                    messageId: sendPhotoResult?.message_id,
+                    photoCount: sendPhotoResult?.photo?.length
+                });
                 
                 console.log('✅ Notificación enviada con thumbnail (buffer)');
             } else {
+                console.log('ℹ️ [TelegramService] vid_thumbnail vacío, enviando solo texto');
                 await this.sendHtmlMessage(caption);
             }
             return true;
         } catch (error) {
             console.error('❌ TelegramService NewVideoNotification Error:', error.message);
+            console.error('❌ [TelegramService] Error detallado', {
+                name: error?.name,
+                code: error?.code,
+                stack: error?.stack,
+                responseStatus: error?.response?.status,
+                responseHeaders: error?.response?.headers,
+                responseData: error?.response?.data
+            });
             // Fallback a solo texto
             try {
+                console.log('ℹ️ [TelegramService] Ejecutando fallback de texto');
                 await this.sendHtmlMessage(caption);
+                console.log('✅ [TelegramService] Fallback de texto exitoso');
                 return true;
             } catch (e) {
+                console.error('❌ [TelegramService] Fallback de texto falló', {
+                    message: e?.message,
+                    stack: e?.stack
+                });
                 return false;
             }
         }
