@@ -30,7 +30,7 @@ const video_storage = multer.diskStorage({
 // Configurar dónde se almacenarán las imágenes subidas
 const thumb_storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, settings.getApiNAS()); // Carpeta donde se guardarán las imágenes
+        cb(null, settings.API_NAS_RELATIVE); // Carpeta donde se guardarán las imágenes
     },
     filename: (req, file, cb) => {
         const thu_id_public = nanoid(id_length);

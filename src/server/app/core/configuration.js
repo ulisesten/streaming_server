@@ -23,6 +23,7 @@ class Settings extends BaseConfig {
     TEMP_VIDEOS_PATH;
     BACKEND_CORS_ORIGINS = process.env.BACKEND_CORS_ORIGINS;
     REDIRECT_HTTP_TO_HTTPS = process.env.REDIRECT_HTTP_TO_HTTPS === 'true';
+    API_NAS_RELATIVE = process.env.API_NAS_RELATIVE
 
     constructor() {
         super();
