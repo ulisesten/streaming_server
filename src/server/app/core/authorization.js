@@ -120,6 +120,12 @@ class AuthorizationService {
             maxAge: (settings.getAccessExpirationMinutes?.() || this.ACCESS_TOKEN_EXPIRATION_MINUTES) * 60000
         });
 
+        res.cookie('csrf_token', csrf_token, {
+            secure: true,
+            sameSite: 'Lax',
+            path: '/'
+        });
+
         next();
     }
 

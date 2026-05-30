@@ -7,17 +7,26 @@ const users = require("../index.js");
 const usersDto = require("../dto/users_dto.js");
 
 class UsersDomain {
+    normalize_email(email) {
+        if (typeof email !== "string") {
+            return email;
+        }
+
+        return email.trim().toLowerCase();
+    }
+
     async users_new(req) {
         const body = req.body;
 
         const hashed_password = encryptService.hash(body.usu_contrasena);
+        const normalized_email = this.normalize_email(body.usu_correo);
 
         const parametros = {
             tipoRegistro: "USUARIO_REGISTRAR",
             usu_nombre: body.usu_nombre,
             usu_ape_paterno: body.usu_ape_paterno,
             usu_ape_materno: body.usu_ape_materno,
-            usu_correo: body.usu_correo,
+            usu_correo: normalized_email,
             usu_contrasena: hashed_password,
         };
 
@@ -26,13 +35,14 @@ class UsersDomain {
 
     async users_update(req) {
         const body = req.body;
+        const normalized_email = this.normalize_email(body.usu_correo);
 
         const parametros = {
             tipoRegistro: "USUARIO_ACTUALIZAR",
             usu_nombre: body.usu_nombre,
             usu_ape_paterno: body.usu_ape_paterno,
             usu_ape_materno: body.usu_ape_materno,
-            usu_correo: body.usu_correo,
+            usu_correo: normalized_email,
         };
 
         return sqlEject.store_eject("procUsersProc",parametros,"soda_stream");
@@ -52,10 +62,11 @@ class UsersDomain {
     async user_signin(req, res) {
         try {
             const body = req.body;
+            const normalized_email = this.normalize_email(body.usu_correo);
 
             const parametros = {
                 tipoConsulta: "USUARIO_SIGN_IN_CONS",
-                usu_correo: body.usu_correo
+                usu_correo: normalized_email
             };
 
             const dao = await sqlEject.store_eject( "procUsersCons", parametros, "soda_stream" );
@@ -77,19 +88,6 @@ class UsersDomain {
 
     async users_refresh_token(req, res) {
         try {
-            /* const { refresh_token } = req.cookies['refresh_token'];;
-            if (!refresh_token) {
-                reject(res, 400, "No refresh token provided");
-                return;
-            }
-
-            //const payload = authService.refresh(req, res);
-            if (!payload) {
-                reject(res, 401, "Refresh token inválido o expirado");
-                return;
-            } */
-
-            // Generar nuevo access token y CSRF/localStorage tokens
             const user = req.user;
             const authorized = req.authorized;
 
