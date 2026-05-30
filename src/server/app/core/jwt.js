@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const encrypt = require("../encrypt/encrypt.js");
-const settings = require("../../core/configuration");
+const encrypt = require("./encrypt.js");
+const settings = require("./configuration");
 const crypto = require("crypto");
   
 class JsonWebToken {

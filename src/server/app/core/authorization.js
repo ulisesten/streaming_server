@@ -1,13 +1,15 @@
 //const { path, settings } = require("../../../server.js");
-const jwt = require("../jwt/jwt.js");
-const settings = require("../../core/configuration.js");
+const jwt = require("./jwt.js");
+const settings = require("./configuration.js");
 
 class AuthorizationService {
 
-    verify(req, res, next) {
-        const authHeader = req.headers['authorization'];
+    ACCESS_TOKEN_EXPIRATION_MINUTES = 30;
 
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    verify(req, res, next) {
+        const token = req.cookies['access_token'];
+
+        if ( !token ) {
             res.json({
                 success: false,
                 error: 1,
@@ -16,12 +18,12 @@ class AuthorizationService {
             return;
         }
 
-        const token = authHeader.split(' ')[1];
+        //const token = authHeader.split(' ')[1];
 
         let auth = jwt.gost_verify(token);
 
         if (!auth ) {
-            res.json({
+            res.status(401).json({
                 success: false,
                 error: 1,
                 msg: 'Authentication rejected.'
@@ -48,9 +50,6 @@ class AuthorizationService {
             return null
         }
 
-        /* const csrf_token = crypto.randomBytes(24).toString('hex');
-        const local_storage_token = crypto.randomBytes(32).toString('hex');
-        const refresh_token = jwtLib.write_refresh_token(data); */
         const access_token = jwt.write_gost_token(req, dao);
         const refresh_token = jwt.write_refresh_token(req, dao);
         const csrf_token = jwt.write_csrf_token(req);
@@ -60,7 +59,7 @@ class AuthorizationService {
             secure: true,
             sameSite: 'Lax',
             path: '/api/v1',
-            maxAge: (settings.getAccessExpirationMinutes?.() || 15) * 60000
+            maxAge: (settings.getAccessExpirationMinutes?.() || this.ACCESS_TOKEN_EXPIRATION_MINUTES) * 60000
         });
 
         res.cookie('refresh_token', refresh_token, {
@@ -71,15 +70,57 @@ class AuthorizationService {
             maxAge: (settings.getRefreshExpirationDays?.() || 7) * 86400000
         });
 
+        res.cookie('csrf_token', csrf_token, {
+            secure: true,
+            sameSite: 'Lax',
+            path: '/'
+        });
+
         return {
             usu_id: dao["usu_id"],
             usu_nombre: dao["usu_nombre"],
-            usu_correo: dao["usu_correo"],
-            gost_token: access_token,
-            gost_refresh_token: refresh_token,
-            gost_csrf_token: csrf_token
+            usu_correo: dao["usu_correo"]
         };
 
+    }
+
+    refresh(req, res, next) {
+        const token = req.cookies['refresh_token'];
+
+        if ( !token ) {
+            res.json({
+                success: false,
+                error: 1,
+                msg: 'No credentials are present.'
+            });
+            return;
+        }
+
+        //const token = authHeader;
+
+        let auth = jwt.gost_verify(token);
+
+        if (!auth ) {
+            res.status(401).json({
+                success: false,
+                error: 1,
+                msg: 'Authentication rejected.'
+            });
+            return;
+        }
+
+        req.user = auth;
+        req.authorized = true;
+
+        res.cookie('access_token', new_access_token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'Lax',
+            path: '/api/v1',
+            maxAge: (settings.getAccessExpirationMinutes?.() || this.ACCESS_TOKEN_EXPIRATION_MINUTES) * 60000
+        });
+
+        next();
     }
 
     /**

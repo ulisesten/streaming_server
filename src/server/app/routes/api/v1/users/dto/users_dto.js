@@ -106,7 +106,7 @@ class UsersDto {
         success: true,
         error: 0,
         data: {
-          gost_token: data["gost_token"]
+          user: data.user
         }
       }
     };

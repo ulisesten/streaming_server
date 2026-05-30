@@ -4,7 +4,7 @@
 
 
 const gost = require("gost-cryptography");
-const settings = require("../../core/configuration");
+const settings = require("./configuration");
 const { d, Q } = gost.ЭЦП.Сгенерировать_ключи();
 
 class EncryptService {

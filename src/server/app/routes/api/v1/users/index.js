@@ -2,8 +2,8 @@ const { Router } = require("express");
 const users = Router();
 const usersDto = require("./dto/users_dto.js");
 const usersDomain = require("./domain/users_domain.js");
-const authService = require("../../../../librerias/authorization/authorization.js");
-const jwtLib = require("../../../../librerias/jwt/jwt.js");
+const authService = require("../../../../core/authorization.js");
+const jwtLib = require("../../../../core/jwt.js");
 const crypto = require("crypto");
 
 // www.dominio.com/api/v1/users
@@ -27,7 +27,7 @@ users.get("/", authService.verify, async function (req, res) {
 users.post("/signin", usersDomain.user_signin);
 
 // Endpoint para refresh token
-users.post("/refresh_token", usersDomain.users_refresh_token);
+users.post("/refresh_token", authService.refresh, usersDomain.users_refresh_token);
 
 
 users.get("/:usu_id/address", async function (req, res) {
