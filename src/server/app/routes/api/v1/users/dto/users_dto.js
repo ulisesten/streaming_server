@@ -82,7 +82,7 @@ class UsersDto {
           usu_correo: data["usu_correo"],
           //gost_token: data["gost_token"],
           //gost_refresh_token: data["gost_refresh_token"],
-          gost_csrf_token: data["gost_csrf_token"]
+          //gost_csrf_token: data["gost_csrf_token"]
         }
       }
     };
