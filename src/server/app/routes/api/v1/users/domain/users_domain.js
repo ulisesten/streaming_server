@@ -62,12 +62,15 @@ class UsersDomain {
     async user_signin(req, res) {
         try {
             const body = req.body;
+            console.log("Intentando iniciar sesión para:", body.usu_correo);
             const normalized_email = this.normalize_email(body.usu_correo);
 
             const parametros = {
                 tipoConsulta: "USUARIO_SIGN_IN_CONS",
                 usu_correo: normalized_email
             };
+
+            console.log("Intentando iniciar sesión para:", normalized_email);
 
             const dao = await sqlEject.store_eject( "procUsersCons", parametros, "soda_stream" );
             const service_response = authService.user_signin(req, res, dao);
@@ -103,6 +106,17 @@ class UsersDomain {
             console.error("Error en users_refresh_token:", error);
             reject(res, 500, 'Error al procesar el refresh token');
         }
+    }
+
+    async users_get_one(user) {
+        const parametros = {
+            tipoConsulta: "USUARIO_INFO_CONS",
+            usu_id: user.usu_id
+        };
+      
+        //console.log(encryptService.decrypt("44uK6IGt44usY0wEOxvji5zogLnKq+iBt+OAiQDjgLLogJnji5/ogbzji6XogbPjgIYZOuiBnsuUMculdAYcOeiBn8qV"))
+      
+        return sqlEject.store_eject( "procUsersCons", parametros, "soda_stream" );
     }
 }
 

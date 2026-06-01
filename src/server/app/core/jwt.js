@@ -64,7 +64,7 @@ class JsonWebToken {
           init: new Date().getTime(),
           exp: fecha_exp,
           user: {
-              id: credentials.usu_id,
+              usu_id: credentials.usu_id,
               usu_nombre: credentials.usu_nombre,
               correo: credentials.usu_correo,
               ip: req.ip
@@ -136,7 +136,7 @@ class JsonWebToken {
       exp: fecha_exp,
       type: 'refresh',
       user: {
-        id: data.usu_id,
+        usu_id: data.usu_id,
         usu_nombre: data.usu_nombre,
         correo: data.usu_correo,
         ip: req.ip
@@ -178,7 +178,7 @@ class JsonWebToken {
 
     // Firma tipo HMAC (más seguro que concatenar strings)
     const sign = encrypt.hash(
-      this.secret_key + payload.rand + payload.exp + req.ip
+      this.secret_key + payload.rand + payload.exp
     );
 
     return encrypt.reversible_encrypt({
@@ -189,20 +189,19 @@ class JsonWebToken {
 
   verify_csrf_token(token) {
     try {
-      const data = encrypt.decrypt(token);
+      const decrypted_data = JSON.parse(encrypt.decrypt(token));
 
-      // 1. Expiración
-      if (Date.now() > data.exp) return false;
+      if (Date.now() > decrypted_data.exp) return false;
 
-      // 2. Recalcular firma
-      const expectedSign = encrypt.hash(
-        this.secret_key + data.rand + data.exp + data.ip
+      const expected_sign = encrypt.hash(
+        this.secret_key + decrypted_data.rand + decrypted_data.exp
       );
 
-      if (expectedSign !== data.sign) return false;
+      if (expected_sign !== decrypted_data.sign) return false;
 
       return true;
     } catch (e) {
+      console.log('catch error en verify_csrf_token:', e);
       return false;
     }
   }

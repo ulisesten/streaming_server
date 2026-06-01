@@ -5,7 +5,7 @@ const funUsersSignin = async function() {
     const values = form.getValues();
 
     try {
-        const response = await fetch('/api/v1/users/signin', {
+        const response = await fetch(urlUsersSignin, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -18,19 +18,22 @@ const funUsersSignin = async function() {
         const data = await response.json();
         console.log('Response from server:', data);
         if (data.success && data.data) {
-            
-            
-
             Gb.define('notification', {
                 message: 'Inicio de sesión exitoso',
                 type: 'success',
                 duration: 3000
             }).show();
-            // window.location.href = '/ruta-protegida';
+            form.reset();
+            window.location.href = urlSigninRedirect;
         } else {
-            alert(data.msg || 'Error en inicio de sesión');
+            Gb.define('notification', {
+                message: data.msg || 'Error en inicio de sesión'
+            }).show();
         }
     } catch (err) {
-        alert('Error de red o servidor');
+        console.error(err);
+        Gb.define('notification', {
+            message: 'Error de red o servidor'
+        }).show();
     }
 }

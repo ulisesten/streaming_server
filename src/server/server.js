@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 //const config = require('./config');
 const routes = require('./client_routes');
@@ -29,6 +30,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.json({ limit: '10gb' }));
 app.use(express.urlencoded({ extended: true, limit: '10gb' }));
+app.use(cookieParser());
 app.use("/pages", express.static(path.join(__dirname, "../../public/pages")));
 app.use("/hls/videos", express.static(path.join(__dirname, "../../public/hls/videos")));
 app.use("/hls/lives", express.static(path.join(__dirname, "../../public/hls/lives")));

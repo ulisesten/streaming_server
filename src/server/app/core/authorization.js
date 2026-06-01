@@ -8,9 +8,10 @@ class AuthorizationService {
 
     verify(req, res, next) {
         const token = req.cookies['access_token'];
+        const csrf_token = req.headers['x-csrf-token'];
 
-        if ( !token ) {
-            res.json({
+        if ( !token  || !csrf_token) {
+            res.status(401).json({
                 success: false,
                 error: 1,
                 msg: 'No credentials are present.'
@@ -18,11 +19,10 @@ class AuthorizationService {
             return;
         }
 
-        //const token = authHeader.split(' ')[1];
+        const auth = jwt.gost_verify(token);
+        const csrf_valid = jwt.verify_csrf_token(csrf_token);
 
-        let auth = jwt.gost_verify(token);
-
-        if (!auth ) {
+        if (!auth || !csrf_valid) {
             res.status(401).json({
                 success: false,
                 error: 1,
@@ -31,7 +31,7 @@ class AuthorizationService {
             return;
         }
 
-        req.user = auth;
+        req.user = auth.user;
         req.authorized = true;
 
         next();
@@ -86,9 +86,10 @@ class AuthorizationService {
 
     refresh(req, res, next) {
         const token = req.cookies['refresh_token'];
+        const csrf_token = req.headers['x-csrf-token'];
 
-        if ( !token ) {
-            res.json({
+        if ( !token || !csrf_token) {
+            res.status(401).json({
                 success: false,
                 error: 1,
                 msg: 'No credentials are present.'
@@ -98,9 +99,10 @@ class AuthorizationService {
 
         //const token = authHeader;
 
-        let auth = jwt.gost_verify(token);
+        const auth = jwt.gost_verify(token);
+        const csrf_valid = jwt.verify_csrf_token(csrf_token);
 
-        if (!auth ) {
+        if (!auth || !csrf_valid) {
             res.status(401).json({
                 success: false,
                 error: 1,
@@ -109,7 +111,7 @@ class AuthorizationService {
             return;
         }
 
-        req.user = auth;
+        req.user = auth.user;
         req.authorized = true;
 
         res.cookie('access_token', new_access_token, {

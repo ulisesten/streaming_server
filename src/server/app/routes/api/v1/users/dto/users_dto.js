@@ -111,6 +111,28 @@ class UsersDto {
       }
     };
   }
+
+    users_get_one_response(data) {
+        if (!data || !data[0])
+            return {
+              status: 404,
+              response: {
+                msg: "Ocurrió un error al consultar usuarios.",
+                success: false,
+                error: 1,
+                data: null}
+            };
+
+        return {
+            status: 200,
+            response:{
+                msg: data[0].msg || "Usuario consultado exitosamente.",
+                success: data[0].success || true,
+                error: data[0].error || 0,
+                data: data[0]
+            }
+        };
+    }
 }
 
 module.exports = new UsersDto();

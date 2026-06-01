@@ -19,9 +19,35 @@ const dateFormat = function(prm_date) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    funCargarInfoUsuario();
     funCargarFeed();
     
 });
+
+const funObtenerCookie = function(nombre) {
+    const cookies = document.cookie.split('; ');
+    const cookie = cookies.find(item => item.startsWith(`${nombre}=`));
+    return cookie ? decodeURIComponent(cookie.split('=')[1]) : '';
+}
+
+const funCargarInfoUsuario = async function() {
+    const csrfToken = funObtenerCookie('csrf_token');
+
+    try {
+        const response = await fetch(url_users_info, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            }
+        });
+        const result = await response.json();
+        console.log('Info de usuario:', result);
+    } catch (err) {
+        console.error(err);
+    }
+}
 
 
 const funCargarFeed = async function() {
@@ -96,4 +122,3 @@ const funCrearVideoCard = async function(video, feedContainer) {
     
     feedContainer.appendChild(videoCard);
 }
-
