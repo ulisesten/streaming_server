@@ -28,7 +28,7 @@ users.get("/", authService.verify, async function (req, res) {
 users.post("/signin", usersDomain.user_signin.bind(usersDomain));
 
 // Endpoint para refresh token
-users.post("/refresh_token", authService.refresh, usersDomain.users_refresh_token.bind(usersDomain));
+users.post("/refresh_token", authService.refresh.bind(authService), usersDomain.users_refresh_token.bind(usersDomain));
 
 
 users.get("/info", authService.verify, async function (req, res) {

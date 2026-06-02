@@ -99,7 +99,7 @@ class AuthorizationService {
 
         //const token = authHeader;
 
-        const auth = jwt.gost_verify(token);
+        const auth = jwt.verify_refresh_token(token);
         const csrf_valid = jwt.verify_csrf_token(csrf_token);
 
         if (!auth || !csrf_valid) {
@@ -114,6 +114,15 @@ class AuthorizationService {
         req.user = auth.user;
         req.authorized = true;
 
+        const user = {
+              usu_id: auth.user.usu_id,
+              usu_nombre: auth.user.usu_nombre,
+              usu_correo: auth.user.usu_correo
+          }
+
+        const new_access_token = jwt.write_gost_token(req, user);
+        const new_csrf_token = jwt.write_csrf_token(req);
+
         res.cookie('access_token', new_access_token, {
             httpOnly: true,
             secure: true,
@@ -122,7 +131,7 @@ class AuthorizationService {
             maxAge: (settings.getAccessExpirationMinutes?.() || this.ACCESS_TOKEN_EXPIRATION_MINUTES) * 60000
         });
 
-        res.cookie('csrf_token', csrf_token, {
+        res.cookie('csrf_token', new_csrf_token, {
             secure: true,
             sameSite: 'Lax',
             path: '/'

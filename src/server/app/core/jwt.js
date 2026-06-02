@@ -66,7 +66,7 @@ class JsonWebToken {
           user: {
               usu_id: credentials.usu_id,
               usu_nombre: credentials.usu_nombre,
-              correo: credentials.usu_correo,
+              usu_correo: credentials.usu_correo,
               ip: req.ip
           },
           sign: encrypt.hash(this.secret_key + credentials.usu_id + req.ip)
@@ -141,7 +141,7 @@ class JsonWebToken {
         correo: data.usu_correo,
         ip: req.ip
       },
-      sign: encrypt.hash(this.secret_key + data.usu_id + req.ip + 'refresh')
+      sign: encrypt.hash(this.secret_key + data.usu_id + 'refresh')
     };
 
     //return jwt.sign(payload, this.secret_key, null);
@@ -157,10 +157,9 @@ class JsonWebToken {
   verify_refresh_token(token) {
     const today = new Date().getTime();
     let decrypted_data = encrypt.decrypt(token);
-      
     const decoded_data = JSON.parse(decrypted_data);
 
-    const expected_sign = encrypt.hash(this.secret_key + decoded_data.id + decoded_data.user.ip + 'refresh');
+    const expected_sign = encrypt.hash(this.secret_key + decoded_data.id + 'refresh');
     
     if (decoded_data.sign !== expected_sign) return false;
     if (today > decoded_data.exp) return false;

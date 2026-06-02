@@ -30,11 +30,30 @@ const funObtenerCookie = function(nombre) {
     return cookie ? decodeURIComponent(cookie.split('=')[1]) : '';
 }
 
-const funCargarInfoUsuario = async function() {
+const funRefrescarToken = async function() {
+    
     const csrfToken = funObtenerCookie('csrf_token');
+    const response = await fetch(url_users_refresh, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+        }
+    });
 
+    if (!response.ok) {
+        console.error('No se pudo refrescar la sesión');
+        return false;
+    }
+
+    return true;
+}
+
+const funCargarInfoUsuario = async function() {
     try {
-        const response = await fetch(url_users_info, {
+        let csrfToken = funObtenerCookie('csrf_token');
+        let response = await fetch(url_users_info, {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -42,11 +61,54 @@ const funCargarInfoUsuario = async function() {
                 'X-CSRF-Token': csrfToken
             }
         });
+
+        if (response.status === 401) {
+            const refreshSuccess = await funRefrescarToken();
+
+            if (!refreshSuccess) {
+                return;
+            }
+
+            csrfToken = funObtenerCookie('csrf_token');
+            response = await fetch(url_users_info, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                }
+            });
+        }
+
         const result = await response.json();
         console.log('Info de usuario:', result);
     } catch (err) {
         console.error(err);
     }
+}
+
+const funHttpRequest = async function(url, method = 'GET', callback, body = null) {
+    csrfToken = funObtenerCookie('csrf_token');
+    fetch(url, {
+        method: method,
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+        }
+    }).then(response => {
+        if (!response.ok) {
+            callback(null)
+            throw new Error(`HTTP error! status: ${response.status}`);
+            return;
+        }
+        callback(response.json());
+    }).then(data => {
+        console.log('Respuesta:', data);
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+
 }
 
 
