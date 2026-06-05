@@ -24,6 +24,12 @@ class Settings extends BaseConfig {
     BACKEND_CORS_ORIGINS = process.env.BACKEND_CORS_ORIGINS;
     REDIRECT_HTTP_TO_HTTPS = process.env.REDIRECT_HTTP_TO_HTTPS === 'true';
     API_NAS_RELATIVE = process.env.API_NAS_RELATIVE
+    
+    CORREO_SECRET_KEY = process.env.CORREO_SECRET_KEY;
+    CORREO_HOST = process.env.CORREO_HOST;
+    CORREO_PORT = process.env.CORREO_PORT;
+    CORREO_USER = process.env.CORREO_USER;
+    CORREO_PASS = process.env.CORREO_PASS;
 
     constructor() {
         super();
@@ -71,6 +77,25 @@ class Settings extends BaseConfig {
 
     getPublicIdLength() {
         return this.PUBLIC_ID_LENGTH;
+    }
+
+    getCorreoConfig() {
+        return {
+            host: this.CORREO_HOST,
+            port: Number(this.CORREO_PORT),
+            secure: Number(this.CORREO_PORT) === 465,
+            auth: {
+                user: this.CORREO_USER,
+                pass: this.CORREO_PASS
+            },
+            requireTLS: false,
+            tls: {
+                rejectUnauthorized: false
+            },
+            connectionTimeout: 5000,
+            greetingTimeout: 5000,
+            socketTimeout: 5000
+        };
     }
 }
 

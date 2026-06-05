@@ -50,6 +50,9 @@ importers:
       node-telegram-bot-api:
         specifier: ^0.67.0
         version: 0.67.0(request@2.88.2)
+      nodemailer:
+        specifier: ^6.9.16
+        version: 6.10.1
       socket.io:
         specifier: ^4.7.5
         version: 4.8.3
@@ -1214,6 +1217,10 @@ packages:
   node-telegram-bot-api@0.67.0:
     resolution: {integrity: sha512-gO7o/dPcdFSUuFuPiAYBxV7bcN+vQL3pfaHN8P4z8fPtFstN05xVmhMFOth57DANGDKBpzW3rMRo7debOlUI1w==}
     engines: {node: '>=0.12'}
+
+  nodemailer@6.10.1:
+    resolution: {integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==}
+    engines: {node: '>=6.0.0'}
 
   nodemon@3.1.14:
     resolution: {integrity: sha512-jakjZi93UtB3jHMWsXL68FXSAosbLfY0In5gtKq3niLSkrWznrVBzXFNOEMJUfc9+Ke7SHWoAZsiMkNP3vq6Jw==}
@@ -3180,6 +3187,8 @@ snapshots:
     transitivePeerDependencies:
       - request
       - supports-color
+
+  nodemailer@6.10.1: {}
 
   nodemon@3.1.14:
     dependencies:
