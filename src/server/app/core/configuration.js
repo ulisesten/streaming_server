@@ -68,7 +68,14 @@ class Settings extends BaseConfig {
     }
 
     getCors() {
-        return this.BACKEND_CORS_ORIGINS;
+        if (!this.BACKEND_CORS_ORIGINS) {
+            return [];
+        }
+
+        return this.BACKEND_CORS_ORIGINS
+            .split(',')
+            .map((origin) => origin.trim())
+            .filter(Boolean);
     }
 
     getApiNAS() {

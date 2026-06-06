@@ -25,7 +25,7 @@ const app = express();
 // Middlewares
 app.use(morgan('combined'));
 app.use(cors({
-    origin: settings.BACKEND_CORS_ORIGINS,
+    origin: settings.getCors(),
     credentials: true
 }));
 app.use(express.json());
