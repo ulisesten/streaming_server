@@ -81,6 +81,9 @@ const arr_element_handler = {
     'container': (opts) => {
         return (new Container(opts));
     },
+    'tabber': (opts) => {
+        return (new Tabber(opts));
+    },
     'window': (opts) => {
         return (new Window(opts));
     },
@@ -135,6 +138,7 @@ class Header {
         this.setTitle(this.opts['title']);
         this.setNav();
         this.setSearch();
+        this.setUser();
 
     }
 
@@ -186,6 +190,44 @@ class Header {
         searchWrap.append(this.searchInput);
         searchWrap.append(searchBtn);
         this.cmp_content.append(searchWrap);
+    }
+
+    setUser() {
+        if (!this.opts.user && !this.opts.usu_thumbnail && !this.opts.usu_nombre && !this.opts.usu_id) return;
+        if (!this.userWrap) {
+            this.userWrap = document.createElement('div');
+            this.userWrap.classList.add('g_header_user');
+
+            this.userThumb = document.createElement('img');
+            this.userThumb.classList.add('g_header_user_thumbnail');
+
+            this.userName = document.createElement('span');
+            this.userName.classList.add('g_header_user_name');
+
+            this.userId = document.createElement('input');
+            this.userId.setAttribute('type', 'hidden');
+            this.userId.setAttribute('id', 'usu_id');
+            this.userId.setAttribute('name', 'usu_id');
+            this.userId.classList.add('g_header_user_id');
+
+            this.userWrap.append(this.userThumb);
+            this.userWrap.append(this.userName);
+            this.userWrap.append(this.userId);
+            this.cmp_content.append(this.userWrap);
+        }
+
+        this.userThumb.setAttribute('src', this.opts.usu_thumbnail ?? '');
+        this.userThumb.setAttribute('alt', this.opts.usu_nombre ?? 'Usuario');
+        this.userName.textContent = this.opts.usu_nombre ?? '';
+        this.userId.setAttribute('value', this.opts.usu_id ?? '');
+    }
+
+    setUserValues(usu_thumbnail, usu_nombre, usu_id) {
+        this.opts.user = true;
+        this.opts.usu_thumbnail = usu_thumbnail;
+        this.opts.usu_nombre = usu_nombre;
+        this.opts.usu_id = usu_id;
+        this.setUser();
     }
 
     getHeader() {
@@ -1077,6 +1119,101 @@ class Container {
     }
 
     getEl() { return this.container; }
+}
+
+class Tabber {
+    constructor(opt) {
+        this.opt = opt || {};
+        this.items = [];
+        this.activeIndex = this.opt.activeIndex || 0;
+        this.create();
+        this.applyStyle();
+        this.setItems();
+    }
+
+    create() {
+        this.tabber = document.createElement('div');
+        this.tabber.id = this.opt.id || '';
+
+        this.headers = document.createElement('div');
+        this.panels = document.createElement('div');
+
+        this.tabber.append(this.headers);
+        this.tabber.append(this.panels);
+    }
+
+    applyStyle() {
+        this.tabber.setAttribute('class', this.opt.cls || 'g_tabber');
+        if (this.opt.no_style) return;
+
+        const orientation = this.opt.vertical ? 'vertical' : (this.opt.orientation || 'horizontal');
+        this.tabber.classList.add('g_tabber_base');
+        this.tabber.classList.add(orientation === 'vertical' ? 'g_tabber_vertical' : 'g_tabber_horizontal');
+        this.headers.classList.add('g_tabber_headers');
+        this.panels.classList.add('g_tabber_panels');
+    }
+
+    setItems() {
+        if (!this.opt.items) return;
+
+        this.opt.items.forEach(item => {
+            this.addItem(item);
+        });
+    }
+
+    addItem(item) {
+        const index = this.items.length;
+        const header = document.createElement('button');
+        header.setAttribute('type', 'button');
+        header.classList.add('g_tabber_header');
+        header.textContent = item.title || item.text || item.label || `Tab ${index + 1}`;
+        header.addEventListener('click', () => {
+            this.setActive(index);
+        });
+
+        const panel = document.createElement('div');
+        panel.classList.add('g_tabber_panel');
+        this.appendContent(panel, item);
+
+        this.headers.append(header);
+        this.panels.append(panel);
+        this.items.push({ item, header, panel });
+        this.setActive(this.activeIndex);
+    }
+
+    appendContent(panel, item) {
+        const content = item.item || item.content;
+        const items = item.items || [];
+
+        if (content instanceof Element) {
+            panel.append(content);
+        } else if (content && typeof content.getEl === 'function') {
+            panel.append(content.getEl());
+        } else if (typeof content === 'string') {
+            panel.textContent = content;
+        }
+
+        items.forEach(el => {
+            if (el instanceof Element) {
+                panel.append(el);
+            } else if (el && typeof el.getEl === 'function') {
+                panel.append(el.getEl());
+            }
+        });
+    }
+
+    setActive(index) {
+        this.activeIndex = index;
+        this.items.forEach((tab, tabIndex) => {
+            const isActive = tabIndex === index;
+            tab.header.classList.toggle('g_tabber_header_active', isActive);
+            tab.panel.classList.toggle('g_tabber_panel_active', isActive);
+        });
+    }
+
+    getValue() { return this.activeIndex; }
+    getValues() { return this.items.map(tab => tab.item); }
+    getEl() { return this.tabber; }
 }
 
 class Card {

@@ -12,10 +12,13 @@ const settings = require("../../../../core/configuration.js");
 videos.get("/", videos_domain.get_videos);
 // Obtener thumbnails para combobox
 videos.get("/thumbnails", videos_domain.get_cat_thumbnails.bind(videos_domain));
+//! Obtener videos para el feed
+videos.get("/table_format", videos_domain.get_table_format_videos);
 //! Obtener videos de la serie relacionada al video
 videos.get("/:vid_id/series/relacionados", videos_domain.get_series_videos);
 // Obtener video por id
 videos.get("/:vid_id", videos_domain.video_get_by_id);
+
 
 /// Subir videos
 videos.post('/', videos_service.progress_handler, videos_service.upload_video.single("video"), async (req, res) => {

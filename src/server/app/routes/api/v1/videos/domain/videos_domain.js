@@ -80,6 +80,10 @@ class VideosDomain {
 
         const imagen = result[0];
         let imagePath = imagen.thu_path;
+        if(settings.NODE_ENV != 'production'){ 
+            imagePath = imagePath.replace('../../nas/images/videos', settings.getApiNAS());
+        }
+        console.log('image path',imagePath)
 
         const pathObj = path.parse(imagePath);
         const fallbackExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
@@ -139,6 +143,23 @@ class VideosDomain {
     async get_videos(req, res) {
         const parametros = {
             tipoConsulta: "CAT_VIDEOS_CONS"
+        };
+
+        const dao = await sqlEject.store_eject("procCatVideosCons", parametros, "soda_stream");
+        
+        res.json(videos_dto.get_videos_response(dao));
+    }
+
+
+    /**
+     * @brief Esta funcion es para obtener los videos ...
+     * @param {*} req contiene los datos para hacer la consulta
+     * @returns Array, retorna un array con los videos
+     */
+    async get_table_format_videos(req, res) {
+        const parametros = {
+            tipoConsulta: "CAT_VIDEOS_TABLE_FORMAT_CONS",
+            usuario_alta: 1
         };
 
         const dao = await sqlEject.store_eject("procCatVideosCons", parametros, "soda_stream");

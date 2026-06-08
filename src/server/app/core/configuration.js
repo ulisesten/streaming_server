@@ -24,6 +24,7 @@ class Settings extends BaseConfig {
     BACKEND_CORS_ORIGINS = process.env.BACKEND_CORS_ORIGINS;
     REDIRECT_HTTP_TO_HTTPS = process.env.REDIRECT_HTTP_TO_HTTPS === 'true';
     API_NAS_RELATIVE = process.env.API_NAS_RELATIVE
+    NODE_ENV = process.env.NODE_ENV || 'production';
     
     CORREO_SECRET_KEY = process.env.CORREO_SECRET_KEY;
     CORREO_HOST = process.env.CORREO_HOST;

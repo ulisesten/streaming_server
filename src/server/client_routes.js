@@ -170,6 +170,10 @@ router.get('/', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/videos_feed/index.html'));
 });
 
+router.get('/v2', (req, res) => {
+    res.sendFile(path.join(config.publicPath, 'pages/videos_feed_v2/index.html'));
+});
+
 router.get('/signin', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/sign_in/index.html'));
 });

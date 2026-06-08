@@ -68,7 +68,7 @@ if (NODE_ENV === 'production') {
 
 } else {
     app.listen(PORT, '0.0.0.0', () => {
-        console.log(`[DEVELOPMENT] Servidor de streaming ejecutándose en el puerto ${PORT}`);
+        console.log(`[DEVELOPMENT] Servidor de streaming ejecutándose http://localhost:${PORT}`);
     });
 }
 

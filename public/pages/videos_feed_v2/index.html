@@ -15,29 +15,32 @@
     <script src="/pages/general/librerias/graphic/lib.js"></script>
 
     <!-- Functions -->
-    <script src="/pages/videos_subir_v2/functions/fun.constants.js"></script>
-    <script src="/pages/videos_subir_v2/functions/fun.subir_videos.js"></script>
+    <script src="/pages/videos_feed_v2/functions/fun.constants.js"></script>
+    <script src="/pages/videos_feed_v2/functions/fun.videos_feed_v2.js"></script>
+
+    <!-- Grids -->
+    <script src="/pages/videos_feed_v2/grids/grid.home.js"></script>
+
+    <!-- Tabbers -->
+    <script src="/pages/videos_feed_v2/tabbers/tabber.home.js"></script>
 
     <!-- Combos -->
-    <script src="/pages/videos_subir_v2/combos/combo.series.js"></script>
+    <!-- <script src="/pages/videos_subir_v2/combos/combo.series.js"></script>
     <script src="/pages/videos_subir_v2/combos/combo.temporadas.js"></script>
-    <script src="/pages/videos_subir_v2/combos/combo.thumbnails.js"></script>
+    <script src="/pages/videos_subir_v2/combos/combo.thumbnails.js"></script> -->
 
     <!-- Forms -->
-    <script src="/pages/videos_subir_v2/forms/form.videos_subir.js"></script>
+    <!-- <script src="/pages/videos_subir_v2/forms/form.videos_subir.js"></script>
     <script src="/pages/videos_subir_v2/forms/form.videos_buscar.js"></script>
     <script src="/pages/videos_subir_v2/forms/form.videos_subir.thumbnail_subir.js"></script>
     <script src="/pages/videos_subir_v2/forms/form.videos_subir.nueva_serie.js"></script>
-    <script src="/pages/videos_subir_v2/forms/form.videos_subir.nueva_temporada.js"></script>
-
-    <!-- Grids -->
-    <script src="/pages/videos_subir_v2/grids/grid.videos.js"></script>
+    <script src="/pages/videos_subir_v2/forms/form.videos_subir.nueva_temporada.js"></script> -->
 
     <!-- Windows -->
-    <script src="/pages/videos_subir_v2/windows/windows.js"></script>
+    <!-- <script src="/pages/videos_subir_v2/windows/windows.js"></script> -->
 
     <!-- Toolbars -->
-    <script src="/pages/videos_subir_v2/toolbars/toolbar.videos_subir.js"></script>
+    <!-- <script src="/pages/videos_subir_v2/toolbars/toolbar.videos_subir.js"></script> -->
 
     <script>
         let root = document.getElementById('root');
@@ -45,7 +48,7 @@
 
         Gb.define('header', {
             type: 'header',
-            id: 'header.signin',
+            id: 'header.home',
             title: 'Soda Stream',
             //cls: 'header_signin',
             search: true,
@@ -58,17 +61,17 @@
 
         Gb.define('container', {
             type: 'container',
-            id: 'container_videos_subir',
+            id: 'container_home',
             items: [
-                Gb.getComponent('header.signin').getEl(),
-                Gb.getComponent('frm_videos_buscar').getEl(),
-                Gb.getComponent('tlb_videos_subir').getEl(),
-                Gb.getComponent('grid_videos').getEl(),
+                Gb.getComponent('header.home').getEl(),
+                Gb.getComponent('tabber.home').getEl(),
+                /* Gb.getComponent('frm_videos_buscar').getEl(),
+                Gb.getComponent('tlb_videos_subir').getEl(), */
             ]
         })
 
 
-        root.append(Gb.getComponent('container_videos_subir').getEl());
+        root.append(Gb.getComponent('container_home').getEl());
     </script>
 </body>
 
