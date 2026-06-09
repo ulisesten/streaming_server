@@ -25,6 +25,9 @@ class Settings extends BaseConfig {
     REDIRECT_HTTP_TO_HTTPS = process.env.REDIRECT_HTTP_TO_HTTPS === 'true';
     API_NAS_RELATIVE = process.env.API_NAS_RELATIVE
     NODE_ENV = process.env.NODE_ENV || 'production';
+
+    REFRESH_TOKEN_EXPIRATION_DAYS = process.env.REFRESH_TOKEN_EXPIRATION_DAYS;
+    ACCESS_TOKEN_EXPIRATION_MINUTES = process.env.ACCESS_TOKEN_EXPIRATION_MINUTES;
     
     CORREO_SECRET_KEY = process.env.CORREO_SECRET_KEY;
     CORREO_HOST = process.env.CORREO_HOST;
@@ -65,7 +68,7 @@ class Settings extends BaseConfig {
     }
 
     getExpirationDays() {
-        return process.env.EXPIRATION_DAYS;
+        return process.env.REFRESH_TOKEN_EXPIRATION_DAYS;
     }
 
     getCors() {

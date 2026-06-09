@@ -2,7 +2,9 @@
 Gb.define('form',{
     type: 'form',
     id: 'frm_videos_subir',
-    cls: 'form_signin',
+    //cls: 'form_signin',
+    no_border: true,
+    no_margin: true,
     fields: [
         {
             type: 'textfield',

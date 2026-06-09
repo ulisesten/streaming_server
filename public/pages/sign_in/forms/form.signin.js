@@ -3,14 +3,16 @@
 Gb.define('form',{
     type: 'form',
     id: 'frm_signin',
-    cls: 'form_signin',
+    //cls: 'form_signin',
+    no_border: true,
+    no_margin: true,
     fields: [
         {
             type: 'textfield',
             label: 'Correo',
             id: 'usu_correo'
         },{
-            type: 'textfield',
+            type: 'password',
             label: 'Contraseña',
             id: 'usu_contrasena'
         }

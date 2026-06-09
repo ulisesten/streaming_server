@@ -522,6 +522,8 @@ class Toolbar {
     applyStyle() {
         if (this.opt.no_style) return;
         this.toolbar.classList.add('g_toolbar_base');
+        if (this.opt.no_border) this.toolbar.classList.add('g_toolbar_no_border');
+        if (this.opt.no_margin) this.toolbar.classList.add('g_toolbar_no_margin');
     }
 
     addButton(btn) {
@@ -664,6 +666,8 @@ class Form {
     create() {
         this.form = document.createElement('form');
         this.form.setAttribute('class', this.opt['cls'] || 'g_form');
+        if (this.opt.no_border) this.form.classList.add('g_form_no_border');
+        if (this.opt.no_margin) this.form.classList.add('g_form_no_margin');
         if (!this.opt.title) return;
 
         const title = document.createElement('h3');
@@ -680,6 +684,11 @@ class Form {
             textfield: (field) => {
                 const inp = document.createElement('input');
                 inp.setAttribute('type', 'text');
+                return inp;
+            },
+            password: (field) => {
+                const inp = document.createElement('input');
+                inp.setAttribute('type', 'password');
                 return inp;
             },
             file: (field) => {
@@ -942,27 +951,30 @@ class Window {
     create() {
         this.window = document.createElement('div');
         this.title_bar = document.createElement('div');
-        this.close_btn = document.createElement('button');
-        this.maxim_btn = document.createElement('button');
-        this.minim_btn = document.createElement('button');
-        this.action_btn_panel = document.createElement('div');
         this.window_title = document.createElement('div');
-
-        this.close_btn.setAttribute('type', 'button');
-        this.maxim_btn.setAttribute('type', 'button');
-        this.minim_btn.setAttribute('type', 'button');
-        this.close_btn.setAttribute('aria-label', 'Close');
-        this.maxim_btn.setAttribute('aria-label', 'Maximize');
-        this.minim_btn.setAttribute('aria-label', 'Minimize');
 
         this.window_title.append(this.opt.title);
         this.title_bar.append(this.window_title);
 
-        this.action_btn_panel.append(this.minim_btn);
-        this.action_btn_panel.append(this.maxim_btn);
-        this.action_btn_panel.append(this.close_btn);
+        if (!this.opt.no_controls) {
+            this.close_btn = document.createElement('button');
+            this.maxim_btn = document.createElement('button');
+            this.minim_btn = document.createElement('button');
+            this.action_btn_panel = document.createElement('div');
 
-        this.title_bar.append(this.action_btn_panel);
+            this.close_btn.setAttribute('type', 'button');
+            this.maxim_btn.setAttribute('type', 'button');
+            this.minim_btn.setAttribute('type', 'button');
+            this.close_btn.setAttribute('aria-label', 'Close');
+            this.maxim_btn.setAttribute('aria-label', 'Maximize');
+            this.minim_btn.setAttribute('aria-label', 'Minimize');
+
+            this.action_btn_panel.append(this.minim_btn);
+            this.action_btn_panel.append(this.maxim_btn);
+            this.action_btn_panel.append(this.close_btn);
+
+            this.title_bar.append(this.action_btn_panel);
+        }
 
         this.window.append(this.title_bar);
     }
@@ -971,10 +983,12 @@ class Window {
         this.window.classList.add('g_window', 'g_window_hidden');
         this.window_title.classList.add('g_window_title');
         this.title_bar.classList.add('g_window_title_bar');
-        this.close_btn.classList.add('g_window_action_btn', 'g_window_action_btn_close');
-        this.maxim_btn.classList.add('g_window_action_btn', 'g_window_action_btn_max');
-        this.minim_btn.classList.add('g_window_action_btn', 'g_window_action_btn_min');
-        this.action_btn_panel.classList.add('g_window_action_btn_panel');
+        if (!this.opt.no_controls) {
+            this.close_btn.classList.add('g_window_action_btn', 'g_window_action_btn_close');
+            this.maxim_btn.classList.add('g_window_action_btn', 'g_window_action_btn_max');
+            this.minim_btn.classList.add('g_window_action_btn', 'g_window_action_btn_min');
+            this.action_btn_panel.classList.add('g_window_action_btn_panel');
+        }
         this.setAlignment();
 
         if (this.opt.width) {
@@ -997,6 +1011,7 @@ class Window {
     }
 
     bindEvents() {
+        if (this.opt.no_controls) return;
         this.close_btn.addEventListener('click', () => this.close());
         this.minim_btn.addEventListener('click', () => this.toggleMinimize());
         this.maxim_btn.addEventListener('click', () => this.toggleMaximize());
@@ -1297,10 +1312,26 @@ class Card {
 class BaseGrid {
     constructor() {
         this.url = '';
+        this.opt = this.opt || {};
     }
 
     setUrl(url) {
         this.url = url;
+    }
+
+    setHeaders(headers) {
+        this.opt.headers = Object.assign({}, this.opt.headers || {}, headers);
+    }
+
+    buildFetchOptions() {
+        const options = {};
+        if (this.opt.credentials) {
+            options.credentials = this.opt.credentials;
+        }
+        if (this.opt.headers && Object.keys(this.opt.headers).length > 0) {
+            options.headers = this.opt.headers;
+        }
+        return Object.keys(options).length > 0 ? options : undefined;
     }
 
     load(extraParams = {}) {
@@ -1316,7 +1347,9 @@ class BaseGrid {
             fetchUrl += `${separator}${params.toString()}`;
         }
 
-        fetch(fetchUrl)
+        const fetchOptions = this.buildFetchOptions();
+
+        fetch(fetchUrl, fetchOptions)
             .then(response => response.json())
             .then(data => {
                 this.onLoadData(data);
@@ -1357,6 +1390,8 @@ class CardGrid extends BaseGrid {
         if (this.opt.no_style) return;
 
         this.grid.classList.add('g_card_grid');
+        if (this.opt.no_border) this.grid.classList.add('g_no_border');
+        if (this.opt.no_margin) this.grid.classList.add('g_no_margin');
     }
 
     setItems() {
@@ -1410,6 +1445,8 @@ class TableGrid extends BaseGrid {
     constructor(opt) {
         super();
         this.opt = opt || {};
+        this.selectedRow = null;
+        this.selectedData = null;
         if (this.opt.url) this.setUrl(this.opt.url);
         this.create();
         this.applyStyle();
@@ -1424,18 +1461,29 @@ class TableGrid extends BaseGrid {
         this.grid = document.createElement('div');
         this.grid.setAttribute('class', this.opt.cls || 'g_table_grid');
         this.grid.id = this.opt.id || '';
+        this.wrapper = document.createElement('div');
+        this.wrapper.classList.add('g_table_wrapper');
         this.table = document.createElement('table');
         this.table.classList.add('g_table');
         this.thead = document.createElement('thead');
         this.tbody = document.createElement('tbody');
         this.table.append(this.thead);
         this.table.append(this.tbody);
-        this.grid.append(this.table);
+        this.wrapper.append(this.table);
+        this.grid.append(this.wrapper);
     }
 
     applyStyle() {
         if (this.opt.no_style) return;
         this.grid.classList.add('g_table_grid_base');
+        if (this.opt.no_border) this.grid.classList.add('g_no_border');
+        if (this.opt.no_margin) this.grid.classList.add('g_no_margin');
+        if (this.opt.height) {
+            this.grid.style.height = typeof this.opt.height === 'number' ? `${this.opt.height}px` : this.opt.height;
+        }
+        if (this.opt.width) {
+            this.grid.style.width = typeof this.opt.width === 'number' ? `${this.opt.width}px` : this.opt.width;
+        }
     }
 
     setColumns(rows) {
@@ -1462,17 +1510,42 @@ class TableGrid extends BaseGrid {
         const columns = this.setColumns(safeRows);
         this.renderHeader(columns);
         this.tbody.innerHTML = '';
+        this.selectedRow = null;
+        this.selectedData = null;
 
         safeRows.forEach(row => {
             const tr = document.createElement('tr');
+            tr.classList.add('g_table_row');
             columns.forEach(col => {
                 const td = document.createElement('td');
                 const value = row && typeof row === 'object' ? row[col.key] : '';
                 td.textContent = value ?? '';
                 tr.append(td);
             });
+            tr.addEventListener('click', () => {
+                this.setSelection(tr, row);
+            });
             this.tbody.append(tr);
         });
+    }
+
+    setSelection(rowEl, rowData) {
+        if (this.selectedRow) {
+            this.selectedRow.classList.remove('g_table_row_selected');
+        }
+        this.selectedRow = rowEl;
+        this.selectedRow.classList.add('g_table_row_selected');
+        this.selectedData = rowData;
+        if (typeof this.opt.onSelectionChange === 'function') {
+            this.opt.onSelectionChange(rowData, rowEl);
+        }
+    }
+
+    getSelection() {
+        return {
+            row: this.selectedRow,
+            data: this.selectedData
+        };
     }
 
     onLoadData(data) {
@@ -1645,6 +1718,12 @@ class ProgressBar {
         if (win && typeof win.open === 'function') {
             win.open();
         }
+    }
+
+    close(){
+        if (this.opt.window !== true) return;
+
+        this.opt.window.close();
     }
 
     getEl() {

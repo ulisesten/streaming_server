@@ -1,8 +1,10 @@
 Gb.define('form',{
     type: 'form',
     id: 'frm_videos_buscar',
-    title: 'Subir video',
-    cls: 'form_signin',
+    //title: 'Subir video',
+    //cls: 'form_signin',
+    no_border: true,
+    no_margin: true,
     fields: [
         {
             type: 'textfield',
@@ -20,11 +22,12 @@ Gb.define('form',{
     ],
     buttons: [{
             type: 'button',
-            text: 'Subir',
+            text: 'Buscar',
             id: 'btn_videos_subir',
             onClick: function() {
                 let form = Gb.getComponent('frm_videos_buscar');
                 console.log( form.getValues() );
+                funVideosSubirCons();
             }
         },{
             type: 'button',

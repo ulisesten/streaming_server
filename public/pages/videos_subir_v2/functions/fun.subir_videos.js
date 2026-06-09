@@ -1,3 +1,12 @@
+document.addEventListener("DOMContentLoaded", async () => {
+    funCargarInfoUsuario((data) => {
+        Gb.getComponent('header.videos_subir').setUserValues(
+            data.usu_thumbnail || url_miniatura_default,
+            data.usu_nombre,
+            data.usu_id
+        ); 
+    });
+});
 
 
 const funVideosSubir = async () => {
@@ -269,11 +278,12 @@ const funVidSubTemporadaNueva = async function() {
         const progressBar = Gb.getEl('progress_bar_videos_temporada_nueva') || Gb.getComponent('progress_bar_videos_temporada_nueva');
         if (progressBar && typeof progressBar.reset === 'function') {
             progressBar.reset();
+            progressBar.close();
         }
-        const win = Gb.getEl('win_videos_temporada_nueva') || Gb.getComponent('win_videos_temporada_nueva');
+        /* const win = Gb.getEl('win_videos_temporada_nueva') || Gb.getComponent('win_videos_temporada_nueva');
         if (win && typeof win.close === 'function') {
             win.close();
-        }
+        } */
 
         const idSerie = payload.sea_id_serie;
         if (idSerie) {
@@ -286,4 +296,13 @@ const funVidSubTemporadaNueva = async function() {
         Gb.define('notification', { message: `Error al crear temporada: ${err.message}` });
         throw err;
     }
+}
+
+const funVideosSubirCons = function() {
+    const grid = Gb.getComponent('grid_videos');
+    grid.setHeaders({
+        'X-CSRF-Token': funObtenerCookie('csrf_token')
+    });
+
+    grid.load();
 }

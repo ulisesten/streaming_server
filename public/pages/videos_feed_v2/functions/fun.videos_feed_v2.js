@@ -1,16 +1,12 @@
-document.addEventListener("DOMContentLoaded", async () => {
-    funCargarInfoUsuario();
-    funCargarFeed();
-    
-});
 
-const funObtenerCookie = function(nombre) {
+
+/* const funObtenerCookie = function(nombre) {
     const cookies = document.cookie.split('; ');
     const cookie = cookies.find(item => item.startsWith(`${nombre}=`));
     return cookie ? decodeURIComponent(cookie.split('=')[1]) : '';
-}
+} */
 
-const funRefrescarToken = async function() {
+/* const funRefrescarToken = async function() {
     
     const csrfToken = funObtenerCookie('csrf_token');
     const response = await fetch(url_users_refresh, {
@@ -28,36 +24,17 @@ const funRefrescarToken = async function() {
     }
 
     return true;
-}
+} */
 
-const funCargarInfoUsuario = async function() {
+/* const funCargarInfoUsuario = async function() {
     try {
-        let csrfToken = funObtenerCookie('csrf_token');
-        let response = await fetch(url_users_info, {
-            method: 'GET',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-Token': csrfToken
-            }
+        const response = await funProtectedFetch(url_users_info, {
+            method: 'GET'
         });
 
-        if (response.status === 401) {
-            const refreshSuccess = await funRefrescarToken();
-
-            if (!refreshSuccess) {
-                return;
-            }
-
-            csrfToken = funObtenerCookie('csrf_token');
-            response = await fetch(url_users_info, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': csrfToken
-                }
-            });
+        if (!response.ok) {
+            console.error('No se pudo obtener la información del usuario');
+            return;
         }
 
         const result = await response.json();
@@ -73,4 +50,16 @@ const funCargarInfoUsuario = async function() {
     } catch (err) {
         console.error(err);
     }
-}
+} */
+
+document.addEventListener("DOMContentLoaded", async () => {
+    funCargarInfoUsuario((data) => {
+        Gb.getComponent('header.home').setUserValues(
+            data.usu_thumbnail || url_miniatura_default,
+            data.usu_nombre,
+            data.usu_id
+        ); 
+    });
+    funCargarFeed();
+    
+});

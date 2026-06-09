@@ -3,6 +3,10 @@ Gb.define('table_grid', {
     id: 'grid_videos',
     url: url_videos_table_format,
     result: 'data',
+    no_border: true,
+    no_margin: true,
+    autoload: false,
+    credentials: 'include',
     columns: [
         { key: 'vid_id', label: 'ID' },
         { key: 'vid_id_public', label: 'ID Publico' },

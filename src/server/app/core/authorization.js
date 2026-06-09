@@ -4,8 +4,6 @@ const settings = require("./configuration.js");
 
 class AuthorizationService {
 
-    ACCESS_TOKEN_EXPIRATION_MINUTES = 30;
-
     verify(req, res, next) {
         const token = req.cookies['access_token'];
         const csrf_token = req.headers['x-csrf-token'];
@@ -59,15 +57,18 @@ class AuthorizationService {
             secure: true,
             sameSite: 'Lax',
             path: '/api/v1',
-            maxAge: (settings.getAccessExpirationMinutes?.() || this.ACCESS_TOKEN_EXPIRATION_MINUTES) * 60000
+            maxAge: (settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 60000
         });
+
+        const maxAge = (settings.REFRESH_TOKEN_EXPIRATION_DAYS || 7) * 86400000;
+        console.log('refresh token', maxAge)
 
         res.cookie('refresh_token', refresh_token, {
             httpOnly: true,
             secure: true,
             sameSite: 'Strict',
             path: '/api/v1/users/refresh_token',
-            maxAge: (settings.getRefreshExpirationDays?.() || 7) * 86400000
+            maxAge: maxAge
         });
 
         res.cookie('csrf_token', csrf_token, {
@@ -128,7 +129,7 @@ class AuthorizationService {
             secure: true,
             sameSite: 'Lax',
             path: '/api/v1',
-            maxAge: (settings.getAccessExpirationMinutes?.() || this.ACCESS_TOKEN_EXPIRATION_MINUTES) * 60000
+            maxAge: (settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 60000
         });
 
         res.cookie('csrf_token', new_csrf_token, {

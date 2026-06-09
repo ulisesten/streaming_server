@@ -14,11 +14,11 @@
     <div id="root"></div>
     <script src="/pages/general/librerias/graphic/lib.js"></script>
 
-    <!-- Forms -->
+ <!-- Forms -->
     <script src="/pages/sign_in/forms/form.signin.js"></script>
 
-    <!-- Containers -->
-    <script src="/pages/sign_in/containers/container.signin.js"></script>
+    <!-- Windows -->
+    <script src="/pages/sign_in/windows/window.signin.js"></script>
 
     <!-- Functions -->
     <script src="/pages/sign_in/functions/fun.constants.js"></script>
@@ -34,20 +34,22 @@
             type: 'header',
             id: 'header.signin',
             title: 'Soda Stream',
-            //cls: 'header_signin'
         })
 
-        Gb.define('container', {
-            type: 'container',
-            id: 'main_container',
+        root.append(Gb.getComponent('header.signin').getEl());
+
+        Gb.define('window', {
+            type: 'window',
+            id: 'win_signin',
+            title: 'Iniciar sesión',
+            no_controls: true,
+            width: 500,
             items: [
-                Gb.getComponent('header.signin').getEl(),
-                Gb.getComponent('container_signin').getEl()
+                Gb.getComponent('frm_signin').getEl()
             ]
         })
 
-
-        root.append(Gb.getComponent('main_container').getEl());
+        Gb.getComponent('win_signin').open();
     </script>
 </body>
 

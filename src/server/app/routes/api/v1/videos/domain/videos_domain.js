@@ -80,10 +80,6 @@ class VideosDomain {
 
         const imagen = result[0];
         let imagePath = imagen.thu_path;
-        if(settings.NODE_ENV != 'production'){ 
-            imagePath = imagePath.replace('../../nas/images/videos', settings.getApiNAS());
-        }
-        console.log('image path',imagePath)
 
         const pathObj = path.parse(imagePath);
         const fallbackExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];

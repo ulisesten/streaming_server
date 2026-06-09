@@ -4,7 +4,7 @@ Gb.define('tabber', {
     orientation: 'horizontal',
     items: [
         {
-            title: 'Feed',
+            title: 'Videos',
             item: Gb.getComponent('grid.home')
         }
     ]

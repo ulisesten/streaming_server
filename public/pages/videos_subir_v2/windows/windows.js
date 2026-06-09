@@ -3,7 +3,7 @@ Gb.define('window', {
     id: 'win_videos_subir',
     title: 'Subir video',
     width: 700,
-    height: 450,
+    height: 700,
     'x-align': 'center',
     'y-align': 'center',
     items: [
@@ -15,8 +15,8 @@ Gb.define('window', {
     type: 'window',
     id: 'win_videos_serie_nueva',
     title: 'Nueva serie',
-    width: 700,
-    height: 200,
+    width: 675,
+    height: 250,
     'x-align': 'center',
     'y-align': 'center',
     items: [
@@ -29,7 +29,7 @@ Gb.define('window', {
     id: 'win_videos_temporada_nueva',
     title: 'Nueva Temporada',
     width: 700,
-    height: 260,
+    height: 300,
     'x-align': 'center',
     'y-align': 'center',
     items: [
@@ -42,7 +42,7 @@ Gb.define('window', {
     id: 'win_videos_thumbnail_subir',
     title: 'Subir miniatura',
     width: 700,
-    height: 240,
+    height: 170,
     'x-align': 'center',
     'y-align': 'center',
     items: [

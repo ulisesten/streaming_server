@@ -6,6 +6,7 @@ const videos_service = require("./service/videos_service.js");
 const telegram_bot = require('../general/services/service_telegram_bot.js');
 const { reject } = require("../../../../core/errors.js");
 const settings = require("../../../../core/configuration.js");
+const authService = require("../../../../core/authorization.js");
 
 
 //! Obtener videos para el feed
@@ -13,7 +14,7 @@ videos.get("/", videos_domain.get_videos);
 // Obtener thumbnails para combobox
 videos.get("/thumbnails", videos_domain.get_cat_thumbnails.bind(videos_domain));
 //! Obtener videos para el feed
-videos.get("/table_format", videos_domain.get_table_format_videos);
+videos.get("/table_format", authService.verify,videos_domain.get_table_format_videos.bind(videos_domain));
 //! Obtener videos de la serie relacionada al video
 videos.get("/:vid_id/series/relacionados", videos_domain.get_series_videos);
 // Obtener video por id
