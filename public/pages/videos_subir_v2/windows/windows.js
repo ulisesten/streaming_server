@@ -49,3 +49,16 @@ Gb.define('window', {
         Gb.getComponent('frm_videos_thumbnail_subir').getEl()
     ]
 })
+
+Gb.define('window', {
+    type: 'window',
+    id: 'win_videos_subir_editar',
+    title: 'Editar video',
+    width: 700,
+    height: 650,
+    'x-align': 'center',
+    'y-align': 'center',
+    items: [
+        Gb.getComponent('frm_videos_subir_editar').getEl()
+    ]
+})

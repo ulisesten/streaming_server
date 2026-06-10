@@ -16,7 +16,7 @@ class JsonWebToken {
     const credentials = settings.getCredentials();
 
     const fecha_exp =
-      new Date().getTime() + settings.getExpirationDays() * 86400000;
+      new Date().getTime() + (settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 86400000;
 
     const payload = {
       id: credentials.usu_id,

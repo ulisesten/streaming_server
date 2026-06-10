@@ -14,6 +14,7 @@ Gb.define('combobox',{
     fields: campos,
     onSelect: function(serieId) {
         //console.log(serieId)
-        funInitComboTemporadasBySerie(serieId);
+        
+        funInitComboTemporadasBySerie(serieId, Gb.getEl('frm_videos_subir'));
     }
 })

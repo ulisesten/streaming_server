@@ -1,14 +1,20 @@
 Gb.define('toolbar',{
     type: 'toolbar',
     id: 'tlb_videos_subir',
-    items: [
-        {
+    items: [{
+            type: 'button',
+            text: 'Editar Video',
+            id: 'tlb_video_editar',
+            onClick: function() {
+                funVentanaEditarVideo();
+            }
+        },{
+            type: '-'
+        },{
             type: 'button',
             text: 'Nuevo Video',
-            id: 'tlb_serie_nueva',
+            id: 'tlb_video_subir',
             onClick: function() {
-                
-                //console.log( 'hi toolbar');
                 Gb.getEl('win_videos_subir').open();
             }
         },

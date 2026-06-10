@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", async () => {
     funCargarInfoUsuario((data) => {
+        if (!data || data.error) {
+            window.location.href = url_login; // Redirige al login si no hay datos de usuario válidos
+            return;
+        }
+
         Gb.getComponent('header.videos_subir').setUserValues(
             data.usu_thumbnail || url_miniatura_default,
             data.usu_nombre,
@@ -84,11 +89,12 @@ const funVideosSubir = async () => {
         }
         if (typeof prgres_bar.reset === 'function') {
             prgres_bar.reset();
+            prgres_bar.close();
         }
-        const win = Gb.getEl('win_videos_subir') || Gb.getComponent('win_videos_subir');
+        /* const win = Gb.getEl('win_videos_subir') || Gb.getComponent('win_videos_subir');
         if (win && typeof win.close === 'function') {
             win.close();
-        }
+        } */
 
     } catch (err) {
         prgres_bar.update(0, files[0].size);
@@ -216,8 +222,8 @@ const funSerieNueva = async function() {
 }
 
 
-const funInitComboTemporadasBySerie = function(ser_id) {
-    const cbxTemporadas = Gb.getEl('cbx_temporadas');
+const funInitComboTemporadasBySerie = function(ser_id, form) {
+    const cbxTemporadas = form.getField('cbx_temporadas');
     console.log('connected', cbxTemporadas.getEl()?.isConnected);
     console.log('options', cbxTemporadas.getEl()?.options?.length);
     console.log('html', cbxTemporadas.getEl()?.outerHTML);
@@ -305,4 +311,81 @@ const funVideosSubirCons = function() {
     });
 
     grid.load();
+}
+
+const funVentanaEditarVideo = function() {
+
+    const grid = Gb.getComponent('grid_videos');
+    const selected = grid.getSelection();
+
+    console.log('Selected video for editing:', selected);
+
+    if (!selected.data || selected.data.length === 0) {
+        Gb.define('notification', { message: 'Selecciona un video para editar.' });
+        //win.close();
+        return;
+    }
+
+    const win = Gb.getEl('win_videos_subir_editar');
+    win.open();
+
+    const s = selected.data[0];
+    //console.log('Video seleccionado para editar, ID:', vid);
+
+    const formVidEdit = Gb.getEl('frm_videos_subir_editar');
+    funInitComboTemporadasBySerie(s.vid_id_serie, formVidEdit);
+
+    const video = {
+        vid_id: s.vid_id,
+        vid_nombre: s.vid_nombre,
+        vid_capitulo: s.vid_chapter,
+        vid_descripcion: s.vid_descripcion,
+        vid_tags: s.vid_tags,
+        //vid_id_usuario: s.vid_id_usuario,
+        cbx_series: s.vid_id_serie || '',
+        cbx_temporadas: s.vid_id_temporada || ''
+    };
+
+    formVidEdit.setValues(video)
+    //funVideosSubirEditarCargar(vidId);
+}
+
+const funVideosSubirEditar = async function() {
+    const formCmp = Gb.getEl('frm_videos_subir_editar');
+    if (!formCmp) {
+        console.error('Formulario de edición no encontrado');
+        return;
+    }
+
+    const vals = formCmp.getValues();
+    console.log('Valores a editar:', vals);
+
+    return
+
+    try {
+        const res = await fetch(`${urlVideosSubir}/${vals.vid_id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(vals)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || (data && data.error > 0)) {
+            const errMsg = data && data.msg ? data.msg : 'No se pudo editar el video.';
+            throw new Error(errMsg);
+        }
+
+        Gb.define('notification', { message: data.msg || 'Video editado correctamente.' });
+        const win = Gb.getEl('win_videos_subir_editar');
+        if (win && typeof win.close === 'function') {
+            win.close();
+        }
+        funVideosSubirCons();
+    } catch (err) {
+        console.error('Error al editar video:', err);
+        Gb.define('notification', { message: `Error al editar video: ${err.message}` });
+    }
 }

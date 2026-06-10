@@ -1,8 +1,6 @@
 Gb.define('form',{
     type: 'form',
     id: 'frm_videos_buscar',
-    //title: 'Subir video',
-    //cls: 'form_signin',
     no_border: true,
     no_margin: true,
     fields: [
@@ -34,8 +32,8 @@ Gb.define('form',{
             text: 'Limpiar',
             id: 'btn_videos_subir_limpiar',
             onClick: function() {
-                //let form = Gb.getComponent('frm_signin');
-                //form.reset()
+                const form = Gb.getComponent('frm_videos_buscar');
+                form.reset()
             }
         }
     ]

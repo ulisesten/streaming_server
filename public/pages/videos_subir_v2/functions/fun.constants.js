@@ -1,4 +1,5 @@
 const urlVideosSubir = '/api/v1/videos';
+const url_login = '/signin';
 const url_videos_table_format = `${urlVideosSubir}/table_format`;
 const url_vid_subir_series = "/api/v1/series";
 const url_vid_subir_temporadas = "/api/v1/series/{vid_id_serie}/temporadas";

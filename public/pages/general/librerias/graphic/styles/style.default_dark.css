@@ -751,6 +751,18 @@ input[type="submit"] {
     outline: 1px solid var(--secondary-color);
 }
 
+.g_table_checkbox_col {
+    width: 40px;
+    text-align: center !important;
+}
+
+.g_table_checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--secondary-color);
+}
+
 .g_progress_bar {
     margin: 8px 10px 10px 10px;
     padding: 0;

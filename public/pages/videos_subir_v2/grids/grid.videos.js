@@ -18,6 +18,8 @@ Gb.define('table_grid', {
         { key: 'vid_descripcion', label: 'Descripcion' },
         { key: 'vid_tags', label: 'Tags' },
         { key: 'vid_tipo', label: 'Tipo' },
-        { key: 'vid_fecha', label: 'Fecha' }
+        { key: 'vid_fecha', label: 'Fecha' },
+        { key: 'vid_id_serie', label: 'Serie' },
+        { key: 'vid_id_temporada', label: 'Temporada' }
     ]
 });

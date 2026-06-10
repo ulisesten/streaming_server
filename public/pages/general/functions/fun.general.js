@@ -73,6 +73,7 @@ const funCargarInfoUsuario = async function(cb) {
 
         if (!response.ok) {
             console.error('No se pudo obtener la información del usuario');
+            cb(null);
             return;
         }
 

@@ -552,7 +552,7 @@ class Toolbar {
             items.forEach(item => {
                 if (!item || typeof item !== 'object') return;
 
-                if (item.type === 'separator') {
+                if (item.type === 'separator' || item.type === '-') {
                     this.addSeparator();
                     return;
                 }
@@ -576,11 +576,9 @@ class Toolbar {
 
         const buttons = Array.isArray(this.opt.buttons) ? this.opt.buttons : [];
         const menus = Array.isArray(this.opt.menus) ? this.opt.menus : [];
-        const separators = Array.isArray(this.opt.separators) ? this.opt.separators : [];
 
         buttons.forEach(btn => this.addButton(btn));
         menus.forEach(menu => this.addMenu(menu));
-        separators.forEach(() => this.addSeparator());
     }
 
     getEl() {
@@ -656,11 +654,25 @@ class Form {
     arr_field_refs = {};
     arr_field_instances = {};
     values = {};
+    static _counter = 0;
     constructor(opt) {
         this.opt = opt;
+        this._formId = ++Form._counter;
         this.create();
         this.setFields();
         this.setButtons();
+    }
+
+    _resolveFieldKey(field) {
+        const baseId = field.id || (typeof field.type === 'string' ? field.type : null);
+        if (!baseId) return null;
+        return `${baseId}__form_${this._formId}`;
+    }
+
+    _resolveFieldDomId(field) {
+        const baseId = field.id || null;
+        if (!baseId) return null;
+        return `${baseId}__form_${this._formId}`;
     }
 
     create() {
@@ -717,7 +729,7 @@ class Form {
             let instanceFromGb = null;
             if (!field_builder && typeof el.type === 'string') {
                 if (aliasedDef && aliasedDef.type && arr_element_handler[aliasedDef.type]) {
-                    const aliasOpts = Object.assign({}, aliasedDef, el.id ? { id: el.id } : {});
+                    const aliasOpts = Object.assign({}, aliasedDef, el.id ? { id: this._resolveFieldDomId(el) } : {});
                     instanceFromGb = arr_element_handler[aliasedDef.type](aliasOpts);
                 } else {
                     instanceFromGb = Gb.getEl(el.type) || Gb.getComponent(el.type);
@@ -729,7 +741,7 @@ class Form {
                 continue;
             }
 
-            const fieldKey = el.id || (typeof el.type === 'string' ? el.type : null);
+            const fieldKey = this._resolveFieldKey(el);
             if (fieldKey) this.arr_field_ids.push(fieldKey);
 
             let inp = null;
@@ -741,12 +753,9 @@ class Form {
                 if (!aliasedDef && instanceFromGb && !(instanceFromGb instanceof Element)
                     && instanceFromGb.opt && typeof instanceFromGb.constructor === 'function') {
                     // Si viene de una instancia reusable (ej. Combobox), crear una nueva con su misma config.
-                    const clonedOpts = Object.assign({}, instanceFromGb.opt, el.id ? { id: el.id } : {});
+                    const clonedOpts = Object.assign({}, instanceFromGb.opt, el.id ? { id: this._resolveFieldDomId(el) } : {});
                     const freshInstance = new instanceFromGb.constructor(clonedOpts);
                     fieldInstance = freshInstance;
-                    if (el.id) {
-                        Gb.arr_elements[el.id] = freshInstance;
-                    }
                     inp = typeof freshInstance.getEl === 'function' ? freshInstance.getEl() : null;
                 } else {
                     if (!(instanceFromGb instanceof Element)) {
@@ -760,12 +769,10 @@ class Form {
                 }
             } else {
                 if (typeof el.type === 'string' && arr_element_handler[el.type]) {
-                    const builtInstance = arr_element_handler[el.type](el);
+                    const fieldOpt = Object.assign({}, el, el.id ? { id: this._resolveFieldDomId(el) } : {});
+                    const builtInstance = arr_element_handler[el.type](fieldOpt);
                     if (builtInstance && typeof builtInstance.getEl === 'function') {
                         fieldInstance = builtInstance;
-                        if (el.id) {
-                            Gb.arr_elements[el.id] = builtInstance;
-                        }
                         inp = builtInstance.getEl();
                     } else {
                         inp = builtInstance;
@@ -774,9 +781,6 @@ class Form {
                     const builtField = field_builder(el);
                     if (builtField && typeof builtField.getEl === 'function') {
                         fieldInstance = builtField;
-                        if (el.id) {
-                            Gb.arr_elements[el.id] = builtField;
-                        }
                         inp = builtField.getEl();
                     } else {
                         inp = builtField;
@@ -788,15 +792,14 @@ class Form {
                 continue;
             }
 
-            if (el.id && !inp.id) {
-                inp.setAttribute('id', el.id);
-            }
+            const domId = this._resolveFieldDomId(el);
+            if (domId) inp.setAttribute('id', domId);
             if (el.id && fieldInstance) {
                 if (fieldInstance.opt && typeof fieldInstance.opt === 'object') {
-                    fieldInstance.opt.id = el.id;
+                    fieldInstance.opt.id = domId;
                 }
                 if (typeof fieldInstance.getEl === 'function') {
-                    fieldInstance.getEl(el.id);
+                    fieldInstance.getEl(domId);
                 }
             }
             if (fieldKey) {
@@ -812,6 +815,7 @@ class Form {
                 let l = document.createElement('label')
                 l.innerText = el.label;
                 l.setAttribute('class', 'g_form_label');
+                if (domId) l.setAttribute('for', domId);
                 d.append(l);
             }
             d.append(inp)
@@ -835,7 +839,7 @@ class Form {
             let b = document.createElement('input');
             b.setAttribute('type', 'submit')
             b.setAttribute('value', el.text);
-            b.setAttribute('id', el.id);
+            if (el.id) b.setAttribute('id', `${el.id}__form_${this._formId}`);
 
             b.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -858,37 +862,34 @@ class Form {
     getValues() {
         this.arr_field_ids.forEach((fieldId) => {
             try {
-                const gbField = Gb.getEl(fieldId) || Gb.getComponent(fieldId);
-                if (gbField && typeof gbField.getValue === 'function') {
-                    this.values[fieldId] = gbField.getValue();
-                    return;
-                }
+                const baseId = fieldId.split('__form_')[0];
                 const instanceField = this.arr_field_instances[fieldId];
                 if (instanceField && typeof instanceField.getValue === 'function') {
-                    this.values[fieldId] = instanceField.getValue();
+                    this.values[baseId] = instanceField.getValue();
                     return;
                 }
 
-                const fieldEl = this.arr_field_refs[fieldId] || document.getElementById(fieldId);
+                const fieldEl = this.arr_field_refs[fieldId];
                 if (!fieldEl) {
-                    this.values[fieldId] = null;
+                    this.values[baseId] = null;
                     return;
                 }
 
                 if (fieldEl.tagName === 'SELECT') {
-                    this.values[fieldId] = fieldEl.value ?? null;
+                    this.values[baseId] = fieldEl.value ?? null;
                     return;
                 }
 
                 if (fieldEl.type === 'file') {
-                    this.values[fieldId] = fieldEl.files ?? null;
+                    this.values[baseId] = fieldEl.files ?? null;
                     return;
                 }
 
-                this.values[fieldId] = fieldEl.value ?? null;
+                this.values[baseId] = fieldEl.value ?? null;
             } catch (error) {
                 console.error(`Form.getValues: error reading field "${fieldId}"`, error);
-                this.values[fieldId] = null;
+                const baseId = fieldId.split('__form_')[0];
+                this.values[baseId] = null;
             }
         });
 
@@ -896,12 +897,39 @@ class Form {
     }
 
     setValues(values) {
-        let value;
         this.values = values;
 
-        this.arr_field_ids.forEach((el) => {
-            value = this.values[el] ? this.values[el] : value
-            document.getElementById(el).value = value;
+        this.arr_field_ids.forEach((fieldId) => {
+            const baseId = fieldId.split('__form_')[0];
+            const value = values[baseId] ?? values[fieldId] ?? null;
+            const instanceField = this.arr_field_instances[fieldId];
+            const fieldEl = this.arr_field_refs[fieldId];
+
+            if (instanceField) {
+                if (typeof instanceField.setValue === 'function') {
+                    instanceField.setValue(value);
+                } else if (instanceField.select && instanceField.select.tagName === 'SELECT') {
+                    instanceField.select.value = value ?? '';
+                } else if (instanceField.hiddenInput && instanceField.hiddenInput.type === 'hidden') {
+                    instanceField.hiddenInput.value = value ?? '';
+                    const match = (instanceField.optionsData || []).find(opt => String(opt.value) === String(value));
+                    if (match) {
+                        instanceField.trigger.innerHTML = '';
+                        if (match.thumbnail) {
+                            const tImg = document.createElement('img');
+                            tImg.src = match.thumbnail;
+                            tImg.alt = match.text || 'thumb';
+                            tImg.classList.add('g_dropdown_thumb');
+                            instanceField.trigger.append(tImg);
+                        }
+                        const tLabel = document.createElement('span');
+                        tLabel.textContent = match.text;
+                        instanceField.trigger.append(tLabel);
+                    }
+                }
+            } else if (fieldEl) {
+                fieldEl.value = value ?? '';
+            }
         })
     }
 
@@ -912,11 +940,11 @@ class Form {
             }
 
             this.arr_field_ids.forEach((fieldId) => {
-                const gbField = Gb.getEl(fieldId) || Gb.getComponent(fieldId);
-                const fieldEl = this.arr_field_refs[fieldId] || document.getElementById(fieldId);
+                const instanceField = this.arr_field_instances[fieldId];
+                const fieldEl = this.arr_field_refs[fieldId];
 
-                if (gbField && typeof gbField.setValue === 'function') {
-                    gbField.setValue('');
+                if (instanceField && typeof instanceField.setValue === 'function') {
+                    instanceField.setValue('');
                 } else if (fieldEl && fieldEl.tagName === 'SELECT') {
                     fieldEl.selectedIndex = 0;
                 } else if (fieldEl && fieldEl.type === 'file') {
@@ -930,6 +958,11 @@ class Form {
         } catch (error) {
             console.error('Form.reset: error resetting form', error);
         }
+    }
+
+    getField(id = null) {
+        console.log('form elements', this.arr_field_instances, this.arr_field_refs);
+        return this.arr_field_instances[id + '__form_' + this._formId];
     }
 }
 
@@ -1447,6 +1480,10 @@ class TableGrid extends BaseGrid {
         this.opt = opt || {};
         this.selectedRow = null;
         this.selectedData = null;
+        this.selectedRows = [];
+        this.selectedDataArr = [];
+        this.headerCheckbox = null;
+        this.rowCheckboxes = [];
         if (this.opt.url) this.setUrl(this.opt.url);
         this.create();
         this.applyStyle();
@@ -1496,7 +1533,21 @@ class TableGrid extends BaseGrid {
 
     renderHeader(columns) {
         this.thead.innerHTML = '';
+        this.headerCheckbox = null;
         const tr = document.createElement('tr');
+        if (this.opt.multiple_selection) {
+            const th = document.createElement('th');
+            th.classList.add('g_table_checkbox_col');
+            const cb = document.createElement('input');
+            cb.setAttribute('type', 'checkbox');
+            cb.classList.add('g_table_checkbox');
+            cb.addEventListener('change', () => {
+                this.toggleSelectAll(cb.checked);
+            });
+            this.headerCheckbox = cb;
+            th.append(cb);
+            tr.append(th);
+        }
         columns.forEach(col => {
             const th = document.createElement('th');
             th.textContent = col.label || col.key || '';
@@ -1512,17 +1563,34 @@ class TableGrid extends BaseGrid {
         this.tbody.innerHTML = '';
         this.selectedRow = null;
         this.selectedData = null;
+        this.selectedRows = [];
+        this.selectedDataArr = [];
+        this.rowCheckboxes = [];
 
         safeRows.forEach(row => {
             const tr = document.createElement('tr');
             tr.classList.add('g_table_row');
+            if (this.opt.multiple_selection) {
+                const td = document.createElement('td');
+                td.classList.add('g_table_checkbox_col');
+                const cb = document.createElement('input');
+                cb.setAttribute('type', 'checkbox');
+                cb.classList.add('g_table_checkbox');
+                cb.addEventListener('change', () => {
+                    this.setRowSelection(tr, row, cb.checked);
+                });
+                this.rowCheckboxes.push(cb);
+                td.append(cb);
+                tr.append(td);
+            }
             columns.forEach(col => {
                 const td = document.createElement('td');
                 const value = row && typeof row === 'object' ? row[col.key] : '';
                 td.textContent = value ?? '';
                 tr.append(td);
             });
-            tr.addEventListener('click', () => {
+            tr.addEventListener('click', (e) => {
+                if (e.target.classList.contains('g_table_checkbox')) return;
                 this.setSelection(tr, row);
             });
             this.tbody.append(tr);
@@ -1530,21 +1598,78 @@ class TableGrid extends BaseGrid {
     }
 
     setSelection(rowEl, rowData) {
-        if (this.selectedRow) {
-            this.selectedRow.classList.remove('g_table_row_selected');
+        if (!this.opt.multiple_selection) {
+            if (this.selectedRow) {
+                this.selectedRow.classList.remove('g_table_row_selected');
+            }
+            this.selectedRow = rowEl;
+            this.selectedRow.classList.add('g_table_row_selected');
+            this.selectedData = rowData;
+            this.selectedRows = [rowEl];
+            this.selectedDataArr = [rowData];
         }
-        this.selectedRow = rowEl;
-        this.selectedRow.classList.add('g_table_row_selected');
-        this.selectedData = rowData;
         if (typeof this.opt.onSelectionChange === 'function') {
-            this.opt.onSelectionChange(rowData, rowEl);
+            this.opt.onSelectionChange(this.getSelection(), rowEl);
         }
+    }
+
+    setRowSelection(rowEl, rowData, checked) {
+        if (checked) {
+            if (!this.selectedRows.includes(rowEl)) {
+                this.selectedRows.push(rowEl);
+                this.selectedDataArr.push(rowData);
+            }
+            rowEl.classList.add('g_table_row_selected');
+        } else {
+            const idx = this.selectedRows.indexOf(rowEl);
+            if (idx > -1) {
+                this.selectedRows.splice(idx, 1);
+                this.selectedDataArr.splice(idx, 1);
+            }
+            rowEl.classList.remove('g_table_row_selected');
+            if (this.headerCheckbox) this.headerCheckbox.checked = false;
+        }
+        this.selectedRow = this.selectedRows.length > 0 ? this.selectedRows[this.selectedRows.length - 1] : null;
+        this.selectedData = this.selectedDataArr.length > 0 ? this.selectedDataArr[this.selectedDataArr.length - 1] : null;
+        if (typeof this.opt.onSelectionChange === 'function') {
+            this.opt.onSelectionChange(this.getSelection(), rowEl);
+        }
+    }
+
+    toggleSelectAll(checked) {
+        this.selectedRows = [];
+        this.selectedDataArr = [];
+        const rows = this.tbody.querySelectorAll('tr');
+        rows.forEach((tr, idx) => {
+            const cb = this.rowCheckboxes[idx];
+            if (cb) cb.checked = checked;
+            if (checked) {
+                tr.classList.add('g_table_row_selected');
+                this.selectedRows.push(tr);
+                const rowData = this._getRowData(idx);
+                if (rowData) this.selectedDataArr.push(rowData);
+            } else {
+                tr.classList.remove('g_table_row_selected');
+            }
+        });
+        this.selectedRow = this.selectedRows.length > 0 ? this.selectedRows[this.selectedRows.length - 1] : null;
+        this.selectedData = this.selectedDataArr.length > 0 ? this.selectedDataArr[this.selectedDataArr.length - 1] : null;
+        if (typeof this.opt.onSelectionChange === 'function') {
+            this.opt.onSelectionChange(this.getSelection());
+        }
+    }
+
+    _getRowData(idx) {
+        if (this.opt.items && this.opt.items[idx]) return this.opt.items[idx];
+        if (this._lastRows && this._lastRows[idx]) return this._lastRows[idx];
+        return null;
     }
 
     getSelection() {
         return {
-            row: this.selectedRow,
-            data: this.selectedData
+            rows: this.selectedRows,
+            data: this.selectedDataArr,
+            count: this.selectedDataArr.length
         };
     }
 
@@ -1557,6 +1682,7 @@ class TableGrid extends BaseGrid {
         } else if (Array.isArray(data?.items)) {
             items = data.items;
         }
+        this._lastRows = items;
         this.setRows(items);
     }
 

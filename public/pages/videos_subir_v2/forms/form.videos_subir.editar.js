@@ -1,6 +1,6 @@
 Gb.define('form',{
     type: 'form',
-    id: 'frm_videos_subir',
+    id: 'frm_videos_subir_editar',
     no_border: true,
     no_margin: true,
     fields: [
@@ -32,18 +32,14 @@ Gb.define('form',{
             type: 'cbx_temporadas',
             label: 'Temporada',
             id: 'cbx_temporadas'
-        },{
-            type: 'file',
-            label: 'Archivo de video',
-            id: 'vid_archivo'
         }
     ],
     buttons: [{
             type: 'button',
-            text: 'Subir',
-            id: 'btn_videos_subir',
+            text: 'Editar',
+            id: 'btn_videos_subir_editar',
             onClick: function() {
-                funVideosSubir();
+                funVideosSubirEditar();
             }
         },{
             type: 'button',
