@@ -116,6 +116,9 @@ const arr_element_handler = {
     },
     'notification': (opts) => {
         return (new GNotification(opts));
+    },
+    'video_player': (opts) => {
+        return (new VideoPlayer(opts));
     }
 }
 
@@ -1960,6 +1963,212 @@ class GNotification {
   }
 
   getEl() { return this.notification; }
+}
+
+class VideoPlayer {
+    cmp = null;
+    video = null;
+    hls = null;
+    _viewsCounted = false;
+
+    /**
+     * @brief Componente reproductor de video con soporte HLS.
+     * @param opt Opciones: { id, src, title, description, views, likes, dislikes, onPlay, onEnded }
+     */
+    constructor(opt) {
+        this.opt = opt || {};
+        this._viewsCounted = false;
+        this.create();
+        this.applyStyle();
+        if (this.opt.src) {
+            this.setSrc(this.opt.src);
+        }
+        if (this.opt.title) {
+            this.setTitle(this.opt.title);
+        }
+        if (this.opt.description) {
+            this.setDescription(this.opt.description);
+        }
+        if (this.opt.views !== undefined) {
+            this.setViews(this.opt.views);
+        }
+        if (this.opt.likes !== undefined) {
+            this.setLikes(this.opt.likes);
+        }
+        if (this.opt.dislikes !== undefined) {
+            this.setDislikes(this.opt.dislikes);
+        }
+    }
+
+    create() {
+        this.cmp = document.createElement('div');
+        this.cmp.classList.add('g_video_player');
+        this.cmp.id = this.opt.id || '';
+
+        this.videoContainer = document.createElement('div');
+        this.videoContainer.classList.add('g_video_container');
+
+        this.video = document.createElement('video');
+        this.video.controls = true;
+        this.video.classList.add('g_video_el');
+        this.videoContainer.append(this.video);
+
+        this.infoSection = document.createElement('div');
+        this.infoSection.classList.add('g_video_info');
+
+        this.titleEl = document.createElement('h1');
+        this.titleEl.classList.add('g_video_title');
+
+        this.descriptionEl = document.createElement('p');
+        this.descriptionEl.classList.add('g_video_description');
+
+        this.statsEl = document.createElement('div');
+        this.statsEl.classList.add('g_video_stats');
+
+        this.viewsEl = document.createElement('span');
+        this.viewsEl.classList.add('g_video_views');
+
+        this.likesEl = document.createElement('span');
+        this.likesEl.classList.add('g_video_likes');
+
+        this.dislikesEl = document.createElement('span');
+        this.dislikesEl.classList.add('g_video_dislikes');
+
+        this.statsEl.append(this.viewsEl);
+        this.statsEl.append(this.likesEl);
+        this.statsEl.append(this.dislikesEl);
+
+        this.infoSection.append(this.titleEl);
+        this.infoSection.append(this.descriptionEl);
+        this.infoSection.append(this.statsEl);
+
+        this.cmp.append(this.videoContainer);
+        this.cmp.append(this.infoSection);
+    }
+
+    applyStyle() {
+        if (this.opt.no_style) return;
+    }
+
+    /**
+     * @brief Establece la fuente del video. Soporta HLS (.m3u8) y mp4.
+     * @param src URL del video.
+     */
+    setSrc(src) {
+        this.opt.src = src;
+
+        if (typeof Hls !== 'undefined' && Hls.isSupported() && src.includes('.m3u8')) {
+            if (this.hls) {
+                this.hls.destroy();
+            }
+            this.hls = new Hls();
+            this.hls.loadSource(src);
+            this.hls.attachMedia(this.video);
+            this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                this.video.play();
+                this.cmp.classList.add('g_video_playing');
+                this._fireOnPlay();
+            });
+            return;
+        }
+
+        if (this.video.canPlayType('application/vnd.apple.mpegurl') && src.includes('.m3u8')) {
+            this.video.src = src;
+            this.video.addEventListener('loadedmetadata', () => this.video.play());
+            this.video.addEventListener('play', () => {
+                this.cmp.classList.add('g_video_playing');
+                this._fireOnPlay();
+            });
+            return;
+        }
+
+        this.video.src = src;
+    }
+
+    /**
+     * @brief Establece el titulo del video.
+     * @param title Texto del titulo.
+     */
+    setTitle(title) {
+        this.opt.title = title;
+        this.titleEl.textContent = title;
+    }
+
+    /**
+     * @brief Establece la descripcion del video.
+     * @param desc Texto de la descripcion.
+     */
+    setDescription(desc) {
+        this.opt.description = desc;
+        this.descriptionEl.textContent = desc;
+    }
+
+    /**
+     * @brief Establece el contador de vistas.
+     * @param count Numero de vistas.
+     */
+    setViews(count) {
+        this.opt.views = count;
+        this.viewsEl.innerHTML = `<i class="icon-eye"></i> ${count} vistas`;
+    }
+
+    /**
+     * @brief Establece el contador de likes.
+     * @param count Numero de likes.
+     */
+    setLikes(count) {
+        this.opt.likes = count;
+        this.likesEl.innerHTML = `<i class="icon-thumbs-up"></i> ${count}`;
+    }
+
+    /**
+     * @brief Establece el contador de dislikes.
+     * @param count Numero de dislikes.
+     */
+    setDislikes(count) {
+        this.opt.dislikes = count;
+        this.dislikesEl.innerHTML = `<i class="icon-thumbs-down"></i> ${count}`;
+    }
+
+    /**
+     * @brief Marca que la vista ya fue contada para evitar duplicados.
+     */
+    markViewCounted() {
+        this._viewsCounted = true;
+    }
+
+    /**
+     * @brief Indica si la vista ya fue contada.
+     * @return boolean
+     */
+    isViewCounted() {
+        return this._viewsCounted;
+    }
+
+    /**
+     * @brief Carga datos del video desde un objeto.
+     * @param data Objeto con: vid_nombre, vid_descripcion, vid_views, vid_likes, vid_dislikes, vid_path
+     * @param baseUrl URL base para construir la fuente HLS.
+     */
+    setData(data, baseUrl) {
+        if (data.vid_nombre) this.setTitle(data.vid_nombre);
+        if (data.vid_descripcion) this.setDescription(data.vid_descripcion);
+        if (data.vid_views !== undefined) this.setViews(data.vid_views || 0);
+        if (data.vid_likes !== undefined) this.setLikes(data.vid_likes || 0);
+        if (data.vid_dislikes !== undefined) this.setDislikes(data.vid_dislikes || 0);
+        if (data.vid_path && baseUrl) {
+            this.setSrc(`${baseUrl}/${data.vid_path.replace('/hls/videos', '')}`);
+        }
+    }
+
+    _fireOnPlay() {
+        if (this.opt.onPlay && !this._viewsCounted) {
+            this.opt.onPlay(this);
+            this._viewsCounted = true;
+        }
+    }
+
+    getEl() { return this.cmp; }
 }
 
 const Gb = new Global();

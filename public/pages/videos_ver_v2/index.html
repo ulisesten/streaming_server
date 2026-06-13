@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Soda Stream</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Nunito:400,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/pages/general/icons/fontello/css/fontello.css" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
+    <link rel="stylesheet" href="/pages/general/librerias/graphic/styles/style.default_dark.css" />
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="/pages/general/librerias/graphic/lib.js"></script>
+    <script src="/pages/general/functions/fun.constants.js"></script>
+    <script src="/pages/general/functions/fun.general.js"></script>
+
+    <!-- Functions -->
+    <script src="/pages/videos_ver_v2/functions/fun.constants.js"></script>
+    <script src="/pages/videos_ver_v2/functions/fun.videos_ver.js"></script>
+
+    <script>
+        let root = document.getElementById('root');
+
+        Gb.define('header', {
+            type: 'header',
+            id: 'header.video_ver',
+            title: 'Soda Stream',
+            search: true,
+            onSearchClick: function(value) {
+                console.log('Search for:', value);
+            }
+        });
+
+        Gb.define('video_player', {
+            type: 'video_player',
+            id: 'video_player',
+            title: 'Cargando...'
+        });
+
+        Gb.define('container', {
+            type: 'container',
+            id: 'container_video',
+            items: [
+                Gb.getComponent('header.video_ver').getEl(),
+                Gb.getComponent('video_player').getEl(),
+            ]
+        });
+
+        root.append(Gb.getComponent('container_video').getEl());
+
+        const relatedWrapper = document.createElement('div');
+        relatedWrapper.classList.add('g_video_related_wrapper');
+        relatedWrapper.innerHTML = '<h3 style="color: var(--text-color); margin: 0 0 0 0; padding: 0;">Videos relacionados</h3>';
+        const relatedContainer = document.createElement('div');
+        relatedContainer.classList.add('g_video_related');
+        relatedContainer.id = 'related_videos_container';
+        relatedWrapper.append(relatedContainer);
+        root.append(relatedWrapper);
+    </script>
+</body>
+
+</html>

@@ -166,6 +166,10 @@ router.get('/video/:video', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/videos_ver/index.html'));
 });
 
+router.get('/video_v2/:video', (req, res) => {
+    res.sendFile(path.join(config.publicPath, 'pages/videos_ver_v2/index.html'));
+});
+
 /* router.get('/', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/videos_feed/index.html'));
 }); */
