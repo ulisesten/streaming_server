@@ -31,6 +31,7 @@ Gb.define('form',{
             type: 'button',
             text: 'Limpiar',
             id: 'btn_videos_subir_limpiar',
+            color: 'yellow',
             onClick: function() {
                 const form = Gb.getComponent('frm_videos_buscar');
                 form.reset()

@@ -22,7 +22,7 @@ videos.get("/:vid_id", videos_domain.video_get_by_id);
 
 
 /// Subir videos
-videos.post('/', videos_service.progress_handler, videos_service.upload_video.single("video"), async (req, res) => {
+videos.post('/', authService.verify, videos_service.progress_handler, videos_service.upload_video.single("video"), async (req, res) => {
     try {
         const video_status = await videos_service.process_uploaded(req)
 
@@ -49,6 +49,11 @@ videos.post('/', videos_service.progress_handler, videos_service.upload_video.si
     }
 })
 
+/// Actualizar vistas de video
+videos.put('/:vid_id/views', videos_domain.insert_view.bind(videos_domain))
+
+videos.put('/:vid_id', authService.verify, videos_domain.update_video.bind(videos_domain))
+
 videos.get('/progress/:session_id', async (req, res) => {
     const { session_id } = req.params;
     const progress = videos_service.getProgress().get(session_id) || { progress: 0, status: 'unknown' };
@@ -62,8 +67,7 @@ videos.get('/progress/:session_id', async (req, res) => {
     });
 })
 
-/// Actualizar vistas de video
-videos.put('/:vid_id/views', videos_domain.insert_view.bind(videos_domain))
+
 /// Reportar video
 videos.post('/:vid_id/report', async (req, res) => {
     const vid_id = req.params.vid_id;

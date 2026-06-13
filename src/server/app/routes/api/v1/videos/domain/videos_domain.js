@@ -171,10 +171,12 @@ class VideosDomain {
      * @returns 
      */
     async insert_video(req) {
+        const vid_id_usuario = req.user.usu_id;
+
         const parametros = {
             tipoRegistro: "CAT_VIDEOS_INS",
             vid_id_public: req.vid_id_public,
-            vid_id_usuario: req.body.vid_id_usuario,
+            vid_id_usuario: vid_id_usuario,
             vid_nombre: req.body.vid_nombre,
             vid_path: `/${path.parse(req.file.filename).name}/playlist.m3u8`,
             vid_descripcion: req.body.vid_descripcion || "",
@@ -186,6 +188,39 @@ class VideosDomain {
         };
 
         return sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
+    }
+
+
+
+    /**
+     * 
+     * @param {vid_id_usuario, vid_id_public, vid_nombre, vid_descripcion, vid_tags, vid_id_serie, vid_temporada, vid_path } videoData 
+     * @returns 
+     */
+    async update_video(req, res) {
+
+        const vid_id = req.params.vid_id;
+        const vid_id_usuario = req.user.usu_id;
+
+        console.log('update_video: ', { vid_id, vid_id_usuario, body: req.body })
+
+        const parametros = {
+            tipoRegistro: "CAT_VIDEOS_UPDATE",
+            vid_id: vid_id,
+            vid_id_usuario: vid_id_usuario,
+            vid_nombre: req.body.vid_nombre,
+            vid_descripcion: req.body.vid_descripcion || "",
+            vid_tags: req.body.vid_tags || "",
+            vid_id_serie: req.body.vid_id_serie,
+            vid_id_temporada: req.body.vid_id_temporada,
+            vid_capitulo: req.body.vid_capitulo
+        };
+
+        console.log('Parametros para update_video: ', parametros);
+
+        const dao = await sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
+        const dto = videos_dto.update_response(dao);
+        res.status(dto.status).json(dto.response);
     }
 
 

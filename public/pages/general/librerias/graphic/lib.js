@@ -596,6 +596,8 @@ class Button {
         this.button = document.createElement('button');
         this.button.setAttribute('type', 'button');
         this.button.classList.add('g_toolbar_button');
+        if (this.opt.color === 'purple') this.button.classList.add('g_btn_purple');
+        else if (this.opt.color === 'yellow') this.button.classList.add('g_btn_yellow');
         if (this.opt.id) this.button.id = this.opt.id;
         this.button.textContent = this.opt.text || this.opt.label || 'Button';
         if (typeof this.opt.onClick === 'function') {
@@ -824,88 +826,101 @@ class Form {
         }
     }
 
-    //// Buttons
-    setButtons = () => {
-        if (this.opt.buttons == undefined)
-            return;
+  //// Buttons
+  setButtons = () => {
+    if (this.opt.buttons == undefined)
+      return;
 
-        const btn_panel = document.createElement('div');
-        btn_panel.setAttribute('class', 'frm_btn_panel')
-        for (let i = 0; i < this.opt.buttons.length; i++) {
-            let el = this.opt.buttons[i];
-            if (el.type != 'button')
-                throw new Error('No valid button: You are passing a tag that does not exist');
+    const btn_panel = document.createElement('div');
+    btn_panel.setAttribute('class', 'frm_btn_panel')
+    for (let i = 0; i < this.opt.buttons.length; i++) {
+      let el = this.opt.buttons[i];
+      if (el.type != 'button')
+        throw new Error('No valid button: You are passing a tag that does not exist');
 
-            let b = document.createElement('input');
-            b.setAttribute('type', 'submit')
-            b.setAttribute('value', el.text);
-            if (el.id) b.setAttribute('id', `${el.id}__form_${this._formId}`);
+      const btnKey = el.id ? `${el.id}__form_${this._formId}` : null;
 
-            b.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (el.action === 'reset') {
-                    this.reset();
-                    if (typeof el.onClick === 'function') el.onClick.call();
-                    return;
-                }
-                el.onClick.call()
-            });
+      let b = document.createElement('input');
+      b.setAttribute('type', 'submit')
+      b.setAttribute('value', el.text);
+      if (btnKey) b.setAttribute('id', btnKey);
+      if (el.color === 'purple') b.classList.add('g_btn_purple');
+      else if (el.color === 'yellow') b.classList.add('g_btn_yellow');
 
-            btn_panel.prepend(b)
-            this.form.append(btn_panel);
+      if (btnKey) {
+        this.arr_field_refs[btnKey] = b;
+        if (el.id) this.arr_field_ids.push(btnKey);
+      }
+
+      b.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (el.action === 'reset') {
+          this.reset();
+          if (typeof el.onClick === 'function') el.onClick.call();
+          return;
         }
+        el.onClick.call()
+      });
+
+      btn_panel.prepend(b)
+      this.form.append(btn_panel);
     }
+  }
 
     getForm() { return this.form; }
     getEl() { return this.form; }
 
-    getValues() {
-        this.arr_field_ids.forEach((fieldId) => {
-            try {
-                const baseId = fieldId.split('__form_')[0];
-                const instanceField = this.arr_field_instances[fieldId];
-                if (instanceField && typeof instanceField.getValue === 'function') {
-                    this.values[baseId] = instanceField.getValue();
-                    return;
-                }
+  getValues() {
+    this.arr_field_ids.forEach((fieldId) => {
+      try {
+        const baseId = fieldId.split('__form_')[0];
+        const fieldEl = this.arr_field_refs[fieldId];
+        if (fieldEl && fieldEl.type === 'submit') return;
 
-                const fieldEl = this.arr_field_refs[fieldId];
-                if (!fieldEl) {
-                    this.values[baseId] = null;
-                    return;
-                }
+        const instanceField = this.arr_field_instances[fieldId];
+        if (instanceField && typeof instanceField.getValue === 'function') {
+          this.values[baseId] = instanceField.getValue();
+          return;
+        }
 
-                if (fieldEl.tagName === 'SELECT') {
-                    this.values[baseId] = fieldEl.value ?? null;
-                    return;
-                }
+        if (!fieldEl) {
+          this.values[baseId] = null;
+          return;
+        }
 
-                if (fieldEl.type === 'file') {
-                    this.values[baseId] = fieldEl.files ?? null;
-                    return;
-                }
+        if (fieldEl.tagName === 'SELECT') {
+          this.values[baseId] = fieldEl.value ?? null;
+          return;
+        }
 
-                this.values[baseId] = fieldEl.value ?? null;
-            } catch (error) {
-                console.error(`Form.getValues: error reading field "${fieldId}"`, error);
-                const baseId = fieldId.split('__form_')[0];
-                this.values[baseId] = null;
-            }
-        });
+        if (fieldEl.type === 'file') {
+          this.values[baseId] = fieldEl.files ?? null;
+          return;
+        }
 
-        return this.values;
-    }
+        this.values[baseId] = fieldEl.value ?? null;
+      } catch (error) {
+        console.error(`Form.getValues: error reading field "${fieldId}"`, error);
+        const baseId = fieldId.split('__form_')[0];
+        this.values[baseId] = null;
+      }
+    });
 
-    setValues(values) {
-        this.values = values;
+    return this.values;
+  }
 
-        this.arr_field_ids.forEach((fieldId) => {
-            const baseId = fieldId.split('__form_')[0];
-            const value = values[baseId] ?? values[fieldId] ?? null;
-            const instanceField = this.arr_field_instances[fieldId];
-            const fieldEl = this.arr_field_refs[fieldId];
+  setValues(values) {
+    this.values = values;
 
-            if (instanceField) {
+    this.arr_field_ids.forEach((fieldId) => {
+      const baseId = fieldId.split('__form_')[0];
+      const fieldEl = this.arr_field_refs[fieldId];
+      if (fieldEl && fieldEl.type === 'submit') return;
+
+      const value = values[baseId] ?? values[fieldId] ?? null;
+      const instanceField = this.arr_field_instances[fieldId];
+
+      if (instanceField) {
                 if (typeof instanceField.setValue === 'function') {
                     instanceField.setValue(value);
                 } else if (instanceField.select && instanceField.select.tagName === 'SELECT') {
@@ -927,41 +942,42 @@ class Form {
                         instanceField.trigger.append(tLabel);
                     }
                 }
-            } else if (fieldEl) {
-                fieldEl.value = value ?? '';
-            }
-        })
-    }
+      } else if (this.arr_field_refs[fieldId]) {
+        this.arr_field_refs[fieldId].value = value ?? '';
+      }
+    })
+  }
 
-    reset() {
-        try {
-            if (this.form && typeof this.form.reset === 'function') {
-                this.form.reset();
-            }
+  reset() {
+    try {
+      if (this.form && typeof this.form.reset === 'function') {
+        this.form.reset();
+      }
 
-            this.arr_field_ids.forEach((fieldId) => {
-                const instanceField = this.arr_field_instances[fieldId];
-                const fieldEl = this.arr_field_refs[fieldId];
+      this.arr_field_ids.forEach((fieldId) => {
+        const fieldEl = this.arr_field_refs[fieldId];
+        if (fieldEl && fieldEl.type === 'submit') return;
 
-                if (instanceField && typeof instanceField.setValue === 'function') {
-                    instanceField.setValue('');
-                } else if (fieldEl && fieldEl.tagName === 'SELECT') {
-                    fieldEl.selectedIndex = 0;
-                } else if (fieldEl && fieldEl.type === 'file') {
-                    fieldEl.value = '';
-                } else if (fieldEl) {
-                    fieldEl.value = '';
-                }
+        const instanceField = this.arr_field_instances[fieldId];
 
-                this.values[fieldId] = null;
-            });
-        } catch (error) {
-            console.error('Form.reset: error resetting form', error);
+        if (instanceField && typeof instanceField.setValue === 'function') {
+          instanceField.setValue('');
+        } else if (fieldEl && fieldEl.tagName === 'SELECT') {
+          fieldEl.selectedIndex = 0;
+        } else if (fieldEl && fieldEl.type === 'file') {
+          fieldEl.value = '';
+        } else if (fieldEl) {
+          fieldEl.value = '';
         }
+
+        this.values[fieldId] = null;
+      });
+    } catch (error) {
+      console.error('Form.reset: error resetting form', error);
     }
+  }
 
     getField(id = null) {
-        console.log('form elements', this.arr_field_instances, this.arr_field_refs);
         return this.arr_field_instances[id + '__form_' + this._formId];
     }
 }
@@ -1847,9 +1863,17 @@ class ProgressBar {
     }
 
     close(){
-        if (this.opt.window !== true) return;
-
-        this.opt.window.close();
+        if (this.opt.window && typeof this.opt.window.close === 'function') {
+            this.opt.window.close();
+            return;
+        }
+        const winId = this.opt.window_id;
+        if (winId) {
+            const win = Gb.getEl(winId) || Gb.getComponent(winId);
+            if (win && typeof win.close === 'function') {
+                win.close();
+            }
+        }
     }
 
     getEl() {
@@ -1858,62 +1882,80 @@ class ProgressBar {
 }
 
 class GNotification {
-    constructor(opt) {
-        this.opt = opt;
-        // Default timeout to 3000ms (3 seconds) if not provided, passing 0 disables it.
-        this.timeout = (opt.timeout !== undefined) ? opt.timeout : 3000;
-        this.message = opt.message || '';
-        this.create();
-        this.applyStyle();
-        if (opt.auto_show !== false) {
-            this.show();
-        }
+  constructor(opt) {
+    this.opt = opt;
+    this.timeout = (opt.timeout !== undefined) ? opt.timeout : 3000;
+    this.message = opt.message || '';
+    this.type = opt.type || 'info';
+    this.create();
+    this.applyStyle();
+    if (opt.auto_show !== false) {
+      this.show();
+    }
+  }
+
+  create() {
+    this.notification = document.createElement('div');
+    this.notification.classList.add('g_notification');
+    this.notification.classList.add(`g_notification_${this.type}`);
+
+    const icon = document.createElement('span');
+    icon.classList.add('g_notification_icon');
+    const icons = { success: '\u2713', error: '\u2717', info: '\u24D8', warning: '\u26A0' };
+    icon.textContent = icons[this.type] || icons.info;
+    this.notification.append(icon);
+
+    const body = document.createElement('div');
+    body.classList.add('g_notification_body');
+
+    const msgSpan = document.createElement('span');
+    msgSpan.classList.add('g_notification_msg');
+    msgSpan.textContent = this.message;
+    body.append(msgSpan);
+
+    if (this.opt.closable) {
+      let closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.classList.add('g_notification_close');
+      closeBtn.textContent = '\u2715';
+      closeBtn.addEventListener('click', () => this.hide());
+      body.append(closeBtn);
     }
 
-    create() {
-        this.notification = document.createElement('div');
-        this.notification.setAttribute('class', this.opt.cls || 'g_notification');
+    this.notification.append(body);
+  }
 
-        let msgSpan = document.createElement('span');
-        msgSpan.textContent = this.message;
-        this.notification.append(msgSpan);
+  applyStyle() {
+  }
 
-        if (this.opt.closable) {
-            let closeBtn = document.createElement('span');
-            closeBtn.textContent = '✕';
-            closeBtn.classList.add('g_notification_close');
-            closeBtn.addEventListener('click', () => this.hide());
-            this.notification.append(closeBtn);
-        }
+  show() {
+    if (!document.body) return;
+    this.notification.classList.remove('g_notification_hidden');
+    if (!this.notification.parentNode) {
+      document.body.appendChild(this.notification);
     }
-
-    applyStyle() {
-        // Estilos manejados por clases CSS
+    requestAnimationFrame(() => {
+      this.notification.classList.add('g_notification_visible');
+    });
+    if (this.timeout > 0) {
+      clearTimeout(this._hideTimer);
+      this._hideTimer = setTimeout(() => this.hide(), this.timeout);
     }
+  }
 
-    show() {
-        if (!document.body) return;
-        // Reset opacity in case it is being reused
-        this.notification.classList.remove('g_notification_hidden');
-        document.body.appendChild(this.notification);
-
-        if (this.timeout > 0) {
-            setTimeout(() => this.hide(), this.timeout);
-        }
-    }
-
-    hide() {
+  hide() {
+    if (this.notification && this.notification.parentNode) {
+      this.notification.classList.remove('g_notification_visible');
+      this.notification.classList.add('g_notification_hidden');
+      setTimeout(() => {
         if (this.notification && this.notification.parentNode) {
-            this.notification.classList.add('g_notification_hidden');
-            setTimeout(() => {
-                if (this.notification && this.notification.parentNode) {
-                    this.notification.parentNode.removeChild(this.notification);
-                }
-            }, 300);
+          this.notification.parentNode.removeChild(this.notification);
         }
+      }, 300);
     }
+  }
 
-    getEl() { return this.notification; }
+  getEl() { return this.notification; }
 }
 
 const Gb = new Global();

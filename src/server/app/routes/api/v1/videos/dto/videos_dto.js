@@ -73,7 +73,7 @@ class VideosDTO {
                 data: null
             };
 
-        console.log('subir_video_response', data)
+        //console.log('subir_video_response', data)
 
         return {
             msg: data[0].msg,
@@ -107,6 +107,28 @@ class VideosDTO {
                 success: data[0].success || true,
                 error: data[0].error || 0,
                 data: data
+            }
+        };
+    }
+
+    update_response(data) {
+        if (!data || data[0] == null)
+            return {
+                status: 500,
+                response: {
+                    msg: "Error al actualizar los datos.",
+                    success: true,
+                    error: 0,
+                    data: null
+                }
+            };
+
+        return {
+            status: 200,
+            response: {
+                msg: data[0].msg || 'Se actualizaron los datos correctamente.',
+                success: data[0].success || true,
+                error: data[0].error || 0
             }
         };
     }

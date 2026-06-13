@@ -16,7 +16,7 @@ class JsonWebToken {
     const credentials = settings.getCredentials();
 
     const fecha_exp =
-      new Date().getTime() + (settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 86400000;
+      new Date().getTime() + ((settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 60000);
 
     const payload = {
       id: credentials.usu_id,
@@ -57,7 +57,7 @@ class JsonWebToken {
   write_gost_token(req, data) {
       const credentials = data;
 
-      const fecha_exp = new Date().getTime() + (settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 60000;
+      const fecha_exp = new Date().getTime() + ((settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 60000);
 
       const payload = {
           id: credentials.usu_id,
@@ -130,7 +130,7 @@ class JsonWebToken {
    * @returns string
    */
   write_refresh_token(req, data) {
-    const fecha_exp = new Date().getTime() + (settings.REFRESH_TOKEN_EXPIRATION_DAYS || 7) * 86400000;
+    const fecha_exp = new Date().getTime() + ((settings.REFRESH_TOKEN_EXPIRATION_DAYS || 7) * 86400000);
     const payload = {
       id: data.usu_id,
       exp: fecha_exp,
@@ -143,8 +143,6 @@ class JsonWebToken {
       },
       sign: encrypt.hash(this.secret_key + data.usu_id + 'refresh')
     };
-
-    //return jwt.sign(payload, this.secret_key, null);
 
     return encrypt.reversible_encrypt(payload);
   }

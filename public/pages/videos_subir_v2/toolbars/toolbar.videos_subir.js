@@ -5,6 +5,7 @@ Gb.define('toolbar',{
             type: 'button',
             text: 'Editar Video',
             id: 'tlb_video_editar',
+            color:'purple',
             onClick: function() {
                 funVentanaEditarVideo();
             }

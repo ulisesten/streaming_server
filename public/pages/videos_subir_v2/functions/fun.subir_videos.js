@@ -51,6 +51,8 @@ const funVideosSubir = async () => {
     
     fd.append('video', files[0]); // primer archivo
 
+    const currentSessionId = 'upload_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
     prgres_bar.update(0, files[0].size);
     prgres_bar.setProgressMsg('Subiendo...');
 
@@ -58,10 +60,8 @@ const funVideosSubir = async () => {
         funSubirVideosProgressGet(currentSessionId);
     }, 1000);
 
-    const currentSessionId = 'upload_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-
     try {
-        const res = await fetch(urlVideosSubir, {
+        const res = await funProtectedFetch(urlVideosSubir, {
             method: 'POST',
             body: fd,
             headers: {
@@ -358,17 +358,21 @@ const funVideosSubirEditar = async function() {
     }
 
     const vals = formCmp.getValues();
-    console.log('Valores a editar:', vals);
-
-    return
+    const editar_body = {
+        vid_nombre: vals.vid_nombre,
+        vid_capitulo: vals.vid_capitulo,
+        vid_descripcion: vals.vid_descripcion,
+        vid_tags: vals.vid_tags,
+        vid_id_usuario: vals.vid_id_usuario,
+        vid_id_serie: vals.cbx_series || null,
+        vid_id_temporada: vals.cbx_temporadas || null
+    };
+    console.log('Valores a editar:', editar_body);
 
     try {
-        const res = await fetch(`${urlVideosSubir}/${vals.vid_id}`, {
+        const res = await funProtectedFetch(`${urlVideosSubir}/${vals.vid_id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(vals)
+            body: JSON.stringify(editar_body)
         });
 
         const data = await res.json();

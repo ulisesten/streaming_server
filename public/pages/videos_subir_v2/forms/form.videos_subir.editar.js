@@ -45,9 +45,10 @@ Gb.define('form',{
             type: 'button',
             text: 'Limpiar',
             id: 'btn_videos_subir_limpiar',
+            color: 'yellow',
             onClick: function() {
-                let form = Gb.getComponent('frm_signin');
-                //form.reset()
+                let form = Gb.getComponent('frm_videos_subir_editar');
+                form.reset()
             }
         }
     ]
