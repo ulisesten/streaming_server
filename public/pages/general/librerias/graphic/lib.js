@@ -1430,17 +1430,21 @@ class CardGrid extends BaseGrid {
     }
 
     create() {
+        this.wrapper = document.createElement('div');
+        this.wrapper.classList.add('g_card_grid_wrapper');
         this.grid = document.createElement('div');
         this.grid.setAttribute('class', this.opt.cls || 'g_grid');
         this.grid.id = this.opt.id || '';
+        this.wrapper.append(this.grid);
     }
 
     applyStyle() {
         if (this.opt.no_style) return;
 
+        this.wrapper.classList.add('g_card_grid_base');
         this.grid.classList.add('g_card_grid');
-        if (this.opt.no_border) this.grid.classList.add('g_no_border');
-        if (this.opt.no_margin) this.grid.classList.add('g_no_margin');
+        if (this.opt.no_border) this.wrapper.classList.add('g_no_border');
+        if (this.opt.no_margin) this.wrapper.classList.add('g_no_margin');
     }
 
     setItems() {
@@ -1487,7 +1491,7 @@ class CardGrid extends BaseGrid {
         this.grid.append(card.getEl());
     }
 
-    getEl() { return this.grid; }
+    getEl() { return this.wrapper; }
 }
 
 class TableGrid extends BaseGrid {
