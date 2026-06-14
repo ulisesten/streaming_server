@@ -48,7 +48,7 @@ class VideosDomain {
 
         const parametros = {
             tipoRegistro: "CAT_VIDEOS_VIEW",
-            vid_id: videoData.vid_id
+            vid_id: vid_id
         };
 
         const dao = await sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
