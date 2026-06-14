@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/pages/general/librerias/graphic/styles/style.default_dark.css" />
 </head>
 
-<body>
+<body class="g_video_scrollable">
     <div id="root"></div>
     <script src="/pages/general/librerias/graphic/lib.js"></script>
     <script src="/pages/general/functions/fun.constants.js"></script>
@@ -53,7 +53,10 @@
 
         const relatedWrapper = document.createElement('div');
         relatedWrapper.classList.add('g_video_related_wrapper');
-        relatedWrapper.innerHTML = '<h3 style="color: var(--text-color); margin: 0 0 0 0; padding: 0;">Videos relacionados</h3>';
+        const relatedHeader = document.createElement('div');
+        relatedHeader.classList.add('g_video_related_header');
+        relatedHeader.innerHTML = '<h3>Videos relacionados</h3><button type="button" class="g_video_related_refresh" onclick="funRecargarRelacionados()"><i class="icon-arrows-ccw"></i></button>';
+        relatedWrapper.append(relatedHeader);
         const relatedContainer = document.createElement('div');
         relatedContainer.classList.add('g_video_related');
         relatedContainer.id = 'related_videos_container';

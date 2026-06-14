@@ -182,7 +182,7 @@ class Header {
 
         const searchBtn = document.createElement('button');
         searchBtn.setAttribute('type', 'button');
-        searchBtn.textContent = this.opts.search_text || 'Buscar';
+        searchBtn.innerHTML = '<i class="icon-search"></i>';
         searchBtn.classList.add('g_header_search_btn');
         searchBtn.addEventListener('click', () => {
             if (typeof this.opts.onSearchClick === 'function') {

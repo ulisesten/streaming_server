@@ -1,3 +1,5 @@
+let currentVidId = null;
+
 document.addEventListener("DOMContentLoaded", async () => {
     funCargarVideo();
 });
@@ -16,14 +18,14 @@ const funCargarVideo = async () => {
         }
 
         const videoData = result.data;
-        const vid_id = videoData.vid_id;
+        currentVidId = videoData.vid_id;
 
         Gb.getComponent('video_player').setData(videoData, url_hls_base);
         Gb.getComponent('video_player').opt.onPlay = () => {
-            funIncrementarVistas(vid_id);
+            funIncrementarVistas(currentVidId);
         };
 
-        funCargarVideosRelacionados(vid_id);
+        funCargarVideosRelacionados(currentVidId);
     } catch (err) {
         console.error("Error al cargar el video:", err);
         Gb.getComponent('video_player').setTitle("Error al cargar el video.");
@@ -42,13 +44,14 @@ const funCargarVideosRelacionados = async (prm_vid_id) => {
     try {
         const response = await fetch(url_series_videos(prm_vid_id));
         const result = await response.json();
-        const currentVideoId = prm_vid_id;
         const container = document.getElementById('related_videos_container');
 
         if (!container || !result.data) return;
 
+        container.innerHTML = '';
+
         result.data.forEach(video => {
-            const card = funCrearVideoCard(currentVideoId, video);
+            const card = funCrearVideoCard(prm_vid_id, video);
             container.append(card);
         });
 
@@ -58,6 +61,12 @@ const funCargarVideosRelacionados = async (prm_vid_id) => {
         }
     } catch (err) {
         console.error("Error al cargar videos relacionados:", err);
+    }
+};
+
+const funRecargarRelacionados = () => {
+    if (currentVidId) {
+        funCargarVideosRelacionados(currentVidId);
     }
 };
 

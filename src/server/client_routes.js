@@ -162,11 +162,11 @@ router.get('/upload', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/videos_subir/index.html'));
 });
 
-router.get('/video/:video', (req, res) => {
+/* router.get('/video/:video', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/videos_ver/index.html'));
-});
+}); */
 
-router.get('/video_v2/:video', (req, res) => {
+router.get('/video/:video', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/videos_ver_v2/index.html'));
 });
 
