@@ -24,7 +24,7 @@ const funUsersSignin = async function() {
                 duration: 3000
             }).show();
             form.reset();
-            window.location.href = urlSigninRedirect;
+            window.location.href = funGetSigninRedirect();
         } else {
             Gb.define('notification', {
                 message: data.msg || 'Error en inicio de sesión'

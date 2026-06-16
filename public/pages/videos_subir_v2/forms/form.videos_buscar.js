@@ -23,8 +23,6 @@ Gb.define('form',{
             text: 'Buscar',
             id: 'btn_videos_subir',
             onClick: function() {
-                let form = Gb.getComponent('frm_videos_buscar');
-                console.log( form.getValues() );
                 funVideosSubirCons();
             }
         },{

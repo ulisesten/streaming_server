@@ -22,7 +22,27 @@ Gb.define('card_grid', {
     items: []
 });
 
-const funCargarFeed = function() {
-    Gb.getComponent('grid.home').setUrl(url_videos_feed);
-    Gb.getComponent('grid.home').load();
+const funCargarFeed = async function(search) {
+    try {
+        let fetchUrl = url_videos_feed;
+        if (search) {
+            const params = new URLSearchParams({ search });
+            fetchUrl += `?${params.toString()}`;
+        }
+
+        const response = await funProtectedFetch(fetchUrl, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response || !response.ok) {
+            console.error('No se pudo cargar el feed');
+            return;
+        }
+
+        const result = await response.json();
+        Gb.getComponent('grid.home').loadData(result);
+    } catch (err) {
+        console.error(err);
+    }
 }

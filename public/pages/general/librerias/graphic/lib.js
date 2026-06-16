@@ -213,8 +213,8 @@ class Header {
             this.userId.setAttribute('name', 'usu_id');
             this.userId.classList.add('g_header_user_id');
 
-            this.userWrap.append(this.userThumb);
             this.userWrap.append(this.userName);
+            this.userWrap.append(this.userThumb);
             this.userWrap.append(this.userId);
             this.cmp_content.append(this.userWrap);
         }
@@ -1407,6 +1407,10 @@ class BaseGrid {
                 this.onLoadData(data);
             })
             .catch(error => console.error('BaseGrid Load Error:', error));
+    }
+
+    loadData(data) {
+        this.onLoadData(data);
     }
 
     onLoadData(data) {

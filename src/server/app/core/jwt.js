@@ -166,16 +166,34 @@ class JsonWebToken {
   }
 
   write_csrf_token(req) {
-    const exp = Date.now() + (1000 * 60 * 60 * 2); // 2 horas
+    const exp = Date.now() + (1000 * 60 * 60 * 2);
 
     const payload = {
       exp,
       rand: crypto.randomBytes(32).toString('hex')
     };
 
-    // Firma tipo HMAC (más seguro que concatenar strings)
     const sign = encrypt.hash(
       this.secret_key + payload.rand + payload.exp
+    );
+
+    return encrypt.reversible_encrypt({
+      ...payload,
+      sign
+    });
+  }
+
+  write_refresh_csrf_token(req) {
+    const exp = Date.now() + ((settings.REFRESH_TOKEN_EXPIRATION_DAYS || 7) * 86400000);
+
+    const payload = {
+      exp,
+      rand: crypto.randomBytes(32).toString('hex'),
+      type: 'refresh_csrf'
+    };
+
+    const sign = encrypt.hash(
+      this.secret_key + payload.rand + payload.exp + 'refresh_csrf'
     );
 
     return encrypt.reversible_encrypt({
@@ -190,8 +208,9 @@ class JsonWebToken {
 
       if (Date.now() > decrypted_data.exp) return false;
 
+      const suffix = decrypted_data.type === 'refresh_csrf' ? 'refresh_csrf' : '';
       const expected_sign = encrypt.hash(
-        this.secret_key + decrypted_data.rand + decrypted_data.exp
+        this.secret_key + decrypted_data.rand + decrypted_data.exp + suffix
       );
 
       if (expected_sign !== decrypted_data.sign) return false;

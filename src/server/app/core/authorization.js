@@ -1,6 +1,7 @@
 //const { path, settings } = require("../../../server.js");
 const jwt = require("./jwt.js");
 const settings = require("./configuration.js");
+//const url_refresh_token = settings.SERVER_HOST + '/api/v1/users/refresh_token`';
 
 class AuthorizationService {
 
@@ -12,8 +13,10 @@ class AuthorizationService {
             res.status(401).json({
                 success: false,
                 error: 1,
-                msg: 'No credentials are present.'
+                msg: 'No credentials are present.',
+                status: 401
             });
+            res.end()
             return;
         }
 
@@ -24,8 +27,10 @@ class AuthorizationService {
             res.status(401).json({
                 success: false,
                 error: 1,
-                msg: 'Authentication rejected.'
+                msg: 'Authentication rejected.',
+                status: 401
             });
+            res.end();
             return;
         }
 
@@ -51,30 +56,41 @@ class AuthorizationService {
         const access_token = jwt.write_gost_token(req, dao);
         const refresh_token = jwt.write_refresh_token(req, dao);
         const csrf_token = jwt.write_csrf_token(req);
+        const refresh_csrf_token = jwt.write_refresh_csrf_token(req);
 
+        const isProduction = settings.NODE_ENV === 'production';
+        const refreshMaxAge = (settings.REFRESH_TOKEN_EXPIRATION_DAYS || 7) * 86400000;
+
+        /// Tokens
         res.cookie('access_token', access_token, {
             httpOnly: true,
-            secure: true,
+            secure: isProduction,
             sameSite: 'Lax',
             path: '/api/v1',
             maxAge: (settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 60000
         });
 
-        const maxAge = (settings.REFRESH_TOKEN_EXPIRATION_DAYS || 7) * 86400000;
-        console.log('refresh token', maxAge)
-
-        res.cookie('refresh_token', refresh_token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'Strict',
-            path: '/api/v1/users/refresh_token',
-            maxAge: maxAge
+        res.cookie('csrf_token', csrf_token, {
+            secure: isProduction,
+            sameSite: 'Lax',
+            path: '/',
+            maxAge: (settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 60000
         });
 
-        res.cookie('csrf_token', csrf_token, {
-            secure: true,
+        /// Refresh tokens
+        res.cookie('refresh_token', refresh_token, {
+            httpOnly: true,
+            secure: isProduction,
             sameSite: 'Lax',
-            path: '/'
+            path: '/api/v1/users/refresh_token',
+            maxAge: refreshMaxAge
+        });
+
+        res.cookie('refresh_csrf_token', refresh_csrf_token, {
+            secure: isProduction,
+            sameSite: 'Lax',
+            path: '/',
+            maxAge: refreshMaxAge
         });
 
         return {
@@ -87,9 +103,9 @@ class AuthorizationService {
 
     refresh(req, res, next) {
         const token = req.cookies['refresh_token'];
-        const csrf_token = req.headers['x-csrf-token'];
+        const refresh_csrf_token = req.headers['x-csrf-token'];
 
-        if ( !token || !csrf_token) {
+        if (!token || !refresh_csrf_token) {
             res.status(401).json({
                 success: false,
                 error: 1,
@@ -98,10 +114,8 @@ class AuthorizationService {
             return;
         }
 
-        //const token = authHeader;
-
         const auth = jwt.verify_refresh_token(token);
-        const csrf_valid = jwt.verify_csrf_token(csrf_token);
+        const csrf_valid = jwt.verify_csrf_token(refresh_csrf_token);
 
         if (!auth || !csrf_valid) {
             res.status(401).json({
@@ -123,19 +137,30 @@ class AuthorizationService {
 
         const new_access_token = jwt.write_gost_token(req, user);
         const new_csrf_token = jwt.write_csrf_token(req);
+        const new_refresh_csrf_token = jwt.write_refresh_csrf_token(req);
+
+        const isProduction = settings.NODE_ENV === 'production';
 
         res.cookie('access_token', new_access_token, {
             httpOnly: true,
-            secure: true,
+            secure: isProduction,
             sameSite: 'Lax',
             path: '/api/v1',
             maxAge: (settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 60000
         });
 
         res.cookie('csrf_token', new_csrf_token, {
-            secure: true,
+            secure: isProduction,
             sameSite: 'Lax',
-            path: '/'
+            path: '/',
+            maxAge: (settings.ACCESS_TOKEN_EXPIRATION_MINUTES || 15) * 60000
+        });
+
+        res.cookie('refresh_csrf_token', new_refresh_csrf_token, {
+            secure: isProduction,
+            sameSite: 'Lax',
+            path: '/',
+            maxAge: (settings.REFRESH_TOKEN_EXPIRATION_DAYS || 7) * 86400000
         });
 
         next();

@@ -304,13 +304,17 @@ const funVidSubTemporadaNueva = async function() {
     }
 }
 
-const funVideosSubirCons = function() {
+const funVideosSubirCons = async function() {
     const grid = Gb.getComponent('grid_videos');
-    grid.setHeaders({
-        'X-CSRF-Token': funObtenerCookie('csrf_token')
-    });
 
-    grid.load();
+    const response = await funProtectedFetch(url_videos_table_format, {
+        method: 'GET',
+        credentials: 'include'
+    })
+
+    const result = await response.json();
+    
+    grid.loadData(result);
 }
 
 const funVentanaEditarVideo = function() {
