@@ -5,6 +5,7 @@ Gb.define('card_grid', {
     card_cls: 'grid_home_card',
     result: 'data',
     theme: 'dark',
+    no_border: true,
     fields: {
         image: function(video) {
             return video.vid_thumbnail
