@@ -1,6 +1,12 @@
 let currentVidId = null;
 let tvFocusManager = null;
 
+const funRequestFullscreen = function(el) {
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if (el.msRequestFullscreen) el.msRequestFullscreen();
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
     const videoId = window.location.pathname.split("/").pop();
     await funCargarVideoTV(videoId);
@@ -56,7 +62,8 @@ const funConstruirPaginaTV = (videoData) => {
     playerSection.classList.add('g_tv_player_section');
 
     const videoContainer = document.createElement('div');
-    videoContainer.classList.add('g_tv_video_container');
+    videoContainer.classList.add('g_tv_video_container', 'g_tv_focusable');
+    videoContainer.setAttribute('tabindex', '0');
 
     const video = document.createElement('video');
     video.classList.add('g_tv_video');
@@ -71,13 +78,20 @@ const funConstruirPaginaTV = (videoData) => {
         hls.loadSource(hlsUrl);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            video.play();
+            video.play().then(() => {
+                funRequestFullscreen(video);
+            }).catch(() => {});
         });
         hls.on(Hls.Events.ERROR, (event, data) => {
             console.error('HLS Error:', data);
         });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.setAttribute('src', hlsUrl);
+        video.addEventListener('loadedmetadata', () => {
+            video.play().then(() => {
+                funRequestFullscreen(video);
+            }).catch(() => {});
+        });
     }
 
     video.addEventListener('play', () => {
@@ -283,13 +297,18 @@ class TVFocusManager {
         });
     }
 
-    focus(index) {
+    focus(index, skipVideoFocus) {
         this.focusables.forEach(el => el.classList.remove('g_tv_focused'));
         if (index < 0 || index >= this.focusables.length) return;
         this.currentIndex = index;
         const el = this.focusables[this.currentIndex];
         el.classList.add('g_tv_focused');
         el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+
+        if (!skipVideoFocus && el.classList.contains('g_tv_video_container')) {
+            const vid = el.querySelector('video');
+            if (vid) vid.focus();
+        }
     }
 
     handleMouseMove(e) {
@@ -316,6 +335,25 @@ class TVFocusManager {
         const el = this.focusables[this.currentIndex];
         if (!el) return;
 
+        if (el.classList.contains('g_tv_video_container')) {
+            const vid = el.querySelector('video');
+            if (vid && document.activeElement === vid) {
+                if (e.key === 'ArrowDown' && !document.fullscreenElement) {
+                    e.preventDefault();
+                    vid.blur();
+                    const nextIdx = this.findNext('down');
+                    if (nextIdx >= 0) this.focus(nextIdx, true);
+                    return;
+                }
+                if (e.key === 'ArrowDown' && document.fullscreenElement) {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                    return;
+                }
+                return;
+            }
+        }
+
         if (e.key === 'Enter') {
             e.preventDefault();
             el.click();
@@ -327,40 +365,6 @@ class TVFocusManager {
             return;
         }
 
-        const rect = el.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-
-        let bestIndex = -1;
-        let bestDist = Infinity;
-
-        const findNearest = (direction) => {
-            this.focusables.forEach((candidate, idx) => {
-                if (idx === this.currentIndex) return;
-                const r = candidate.getBoundingClientRect();
-                const candCx = r.left + r.width / 2;
-                const candCy = r.top + r.height / 2;
-
-                let valid = false;
-                if (direction === 'up' && candCy < cy - 10) valid = true;
-                if (direction === 'down' && candCy > cy + 10) valid = true;
-                if (direction === 'left' && candCx < cx - 10) valid = true;
-                if (direction === 'right' && candCx > cx + 10) valid = true;
-
-                if (valid) {
-                    const dist = Math.sqrt((candCx - cx) ** 2 + (candCy - cy) ** 2);
-                    const weight = direction === 'left' || direction === 'right'
-                        ? Math.abs(candCy - cy) * 3
-                        : Math.abs(candCx - cx) * 3;
-                    const score = dist + weight;
-                    if (score < bestDist) {
-                        bestDist = score;
-                        bestIndex = idx;
-                    }
-                }
-            });
-        };
-
         const directionMap = {
             'ArrowUp': 'up',
             'ArrowDown': 'down',
@@ -371,8 +375,47 @@ class TVFocusManager {
         const direction = directionMap[e.key];
         if (direction) {
             e.preventDefault();
-            findNearest(direction);
-            if (bestIndex >= 0) this.focus(bestIndex);
+            const nextIdx = this.findNext(direction);
+            if (nextIdx >= 0) this.focus(nextIdx);
         }
+    }
+
+    findNext(direction) {
+        const el = this.focusables[this.currentIndex];
+        if (!el) return -1;
+
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        let bestIndex = -1;
+        let bestDist = Infinity;
+
+        this.focusables.forEach((candidate, idx) => {
+            if (idx === this.currentIndex) return;
+            const r = candidate.getBoundingClientRect();
+            const candCx = r.left + r.width / 2;
+            const candCy = r.top + r.height / 2;
+
+            let valid = false;
+            if (direction === 'up' && candCy < cy - 10) valid = true;
+            if (direction === 'down' && candCy > cy + 10) valid = true;
+            if (direction === 'left' && candCx < cx - 10) valid = true;
+            if (direction === 'right' && candCx > cx + 10) valid = true;
+
+            if (valid) {
+                const dist = Math.sqrt((candCx - cx) ** 2 + (candCy - cy) ** 2);
+                const weight = direction === 'left' || direction === 'right'
+                    ? Math.abs(candCy - cy) * 3
+                    : Math.abs(candCx - cx) * 3;
+                const score = dist + weight;
+                if (score < bestDist) {
+                    bestDist = score;
+                    bestIndex = idx;
+                }
+            }
+        });
+
+        return bestIndex;
     }
 }

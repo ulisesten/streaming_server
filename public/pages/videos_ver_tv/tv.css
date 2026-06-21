@@ -35,6 +35,14 @@ body.g_tv_body .g_container {
     align-items: center;
 }
 
+.g_tv_video_container.g_tv_focusable {
+    outline: none;
+}
+
+.g_tv_video_container.g_tv_focused {
+    box-shadow: 0 0 0 4px rgba(74, 203, 111, 0.35);
+}
+
 .g_tv_video {
     width: 100%;
     max-height: 70vh;
