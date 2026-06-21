@@ -28,7 +28,7 @@ const funEsSmartTV = function() {
 document.addEventListener("DOMContentLoaded", async () => {
     if (funEsSmartTV()) {
         const search = window.location.search;
-        window.location.replace(`/feed_tv${search}`);
+        window.location.replace(`/tv${search}`);
         return;
     }
     funCargarInfoUsuario((data) => {
