@@ -3,6 +3,11 @@ body.g_tv_body {
     height: auto;
     min-height: 100vh;
     background: linear-gradient(135deg, #070a0f 0%, #0d1117 40%, #080c12 100%);
+    cursor: none;
+}
+
+body.g_tv_body * {
+    cursor: none !important;
 }
 
 body.g_tv_body #root {

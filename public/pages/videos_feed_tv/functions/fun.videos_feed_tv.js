@@ -112,12 +112,16 @@ class TVFeedFocusManager {
     constructor() {
         this.focusables = [];
         this.currentIndex = 0;
+        this._mouseActive = false;
+        this._mouseTimer = null;
         this.init();
     }
 
     init() {
         this.refresh();
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        document.addEventListener('mouseover', (e) => this.handleMouseOver(e));
 
         if (this.focusables.length > 0) {
             this.focus(0);
@@ -129,6 +133,9 @@ class TVFeedFocusManager {
         if (this.currentIndex >= this.focusables.length) {
             this.currentIndex = 0;
         }
+        this.focusables.forEach((el, idx) => {
+            el.setAttribute('data-tv-idx', idx);
+        });
     }
 
     focus(index) {
@@ -140,7 +147,27 @@ class TVFeedFocusManager {
         el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     }
 
+    handleMouseMove(e) {
+        this._mouseActive = true;
+        clearTimeout(this._mouseTimer);
+        this._mouseTimer = setTimeout(() => {
+            this._mouseActive = false;
+        }, 2000);
+    }
+
+    handleMouseOver(e) {
+        if (!this._mouseActive) return;
+        const target = e.target.closest('.g_tv_focusable');
+        if (!target) return;
+        const idx = parseInt(target.getAttribute('data-tv-idx'), 10);
+        if (!isNaN(idx) && idx !== this.currentIndex) {
+            this.focus(idx);
+        }
+    }
+
     handleKeyDown(e) {
+        this._mouseActive = false;
+
         const el = this.focusables[this.currentIndex];
         if (!el) return;
 
@@ -162,6 +189,18 @@ class TVFeedFocusManager {
         let bestIndex = -1;
         let bestDist = Infinity;
 
+        const directionMap = {
+            'ArrowUp': 'up',
+            'ArrowDown': 'down',
+            'ArrowLeft': 'left',
+            'ArrowRight': 'right'
+        };
+
+        const direction = directionMap[e.key];
+        if (!direction) return;
+
+        e.preventDefault();
+
         this.focusables.forEach((candidate, idx) => {
             if (idx === this.currentIndex) return;
             const r = candidate.getBoundingClientRect();
@@ -169,14 +208,14 @@ class TVFeedFocusManager {
             const candCy = r.top + r.height / 2;
 
             let valid = false;
-            if (e.key === 'ArrowUp' && candCy < cy - 10) valid = true;
-            if (e.key === 'ArrowDown' && candCy > cy + 10) valid = true;
-            if (e.key === 'ArrowLeft' && candCx < cx - 10) valid = true;
-            if (e.key === 'ArrowRight' && candCx > cx + 10) valid = true;
+            if (direction === 'up' && candCy < cy - 10) valid = true;
+            if (direction === 'down' && candCy > cy + 10) valid = true;
+            if (direction === 'left' && candCx < cx - 10) valid = true;
+            if (direction === 'right' && candCx > cx + 10) valid = true;
 
             if (valid) {
                 const dist = Math.sqrt((candCx - cx) ** 2 + (candCy - cy) ** 2);
-                const isHorizontal = e.key === 'ArrowLeft' || e.key === 'ArrowRight';
+                const isHorizontal = direction === 'left' || direction === 'right';
                 const weight = isHorizontal
                     ? Math.abs(candCy - cy) * 3
                     : Math.abs(candCx - cx) * 3;
@@ -188,9 +227,6 @@ class TVFeedFocusManager {
             }
         });
 
-        if (bestIndex >= 0) {
-            e.preventDefault();
-            this.focus(bestIndex);
-        }
+        if (bestIndex >= 0) this.focus(bestIndex);
     }
 }

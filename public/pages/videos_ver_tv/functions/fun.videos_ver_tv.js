@@ -257,12 +257,16 @@ class TVFocusManager {
     constructor() {
         this.focusables = [];
         this.currentIndex = 0;
+        this._mouseActive = false;
+        this._mouseTimer = null;
         this.init();
     }
 
     init() {
         this.refresh();
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        document.addEventListener('mouseover', (e) => this.handleMouseOver(e));
 
         if (this.focusables.length > 0) {
             this.focus(0);
@@ -274,6 +278,9 @@ class TVFocusManager {
         if (this.currentIndex >= this.focusables.length) {
             this.currentIndex = 0;
         }
+        this.focusables.forEach((el, idx) => {
+            el.setAttribute('data-tv-idx', idx);
+        });
     }
 
     focus(index) {
@@ -285,9 +292,40 @@ class TVFocusManager {
         el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     }
 
+    handleMouseMove(e) {
+        this._mouseActive = true;
+        clearTimeout(this._mouseTimer);
+        this._mouseTimer = setTimeout(() => {
+            this._mouseActive = false;
+        }, 2000);
+    }
+
+    handleMouseOver(e) {
+        if (!this._mouseActive) return;
+        const target = e.target.closest('.g_tv_focusable');
+        if (!target) return;
+        const idx = parseInt(target.getAttribute('data-tv-idx'), 10);
+        if (!isNaN(idx) && idx !== this.currentIndex) {
+            this.focus(idx);
+        }
+    }
+
     handleKeyDown(e) {
+        this._mouseActive = false;
+
         const el = this.focusables[this.currentIndex];
         if (!el) return;
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            el.click();
+            return;
+        }
+        if (e.key === 'Backspace' || e.key === 'Escape') {
+            e.preventDefault();
+            window.history.back();
+            return;
+        }
 
         const rect = el.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
@@ -323,36 +361,18 @@ class TVFocusManager {
             });
         };
 
-        switch (e.key) {
-            case 'ArrowUp':
-                e.preventDefault();
-                findNearest('up');
-                if (bestIndex >= 0) this.focus(bestIndex);
-                break;
-            case 'ArrowDown':
-                e.preventDefault();
-                findNearest('down');
-                if (bestIndex >= 0) this.focus(bestIndex);
-                break;
-            case 'ArrowLeft':
-                e.preventDefault();
-                findNearest('left');
-                if (bestIndex >= 0) this.focus(bestIndex);
-                break;
-            case 'ArrowRight':
-                e.preventDefault();
-                findNearest('right');
-                if (bestIndex >= 0) this.focus(bestIndex);
-                break;
-            case 'Enter':
-                e.preventDefault();
-                el.click();
-                break;
-            case 'Backspace':
-            case 'Escape':
-                e.preventDefault();
-                window.history.back();
-                break;
+        const directionMap = {
+            'ArrowUp': 'up',
+            'ArrowDown': 'down',
+            'ArrowLeft': 'left',
+            'ArrowRight': 'right'
+        };
+
+        const direction = directionMap[e.key];
+        if (direction) {
+            e.preventDefault();
+            findNearest(direction);
+            if (bestIndex >= 0) this.focus(bestIndex);
         }
     }
 }
