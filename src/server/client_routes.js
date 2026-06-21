@@ -186,4 +186,12 @@ router.get('/upload_v2', (req, res) => {
     res.sendFile(path.join(config.publicPath, 'pages/videos_subir_v2/index.html'));
 });
 
+router.get('/tv', (req, res) => {
+    res.sendFile(path.join(config.publicPath, 'pages/videos_feed_tv/index.html'));
+});
+
+router.get('/video_tv/:video', (req, res) => {
+    res.sendFile(path.join(config.publicPath, 'pages/videos_ver_tv/index.html'));
+});
+
 module.exports = router;

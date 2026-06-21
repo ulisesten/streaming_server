@@ -1,58 +1,36 @@
 
+const funEsSmartTV = function() {
+    const ua = navigator.userAgent;
+    const tvPatterns = [
+        /SmartHub/i, /SMART-TV/i, /HbbTV/i, /NetCast/i,
+        /Tizen/i, /webOS/i, /DuckDuckGo-SSB/i,
+        /Viera/i, /Bravia/i, /AFT/i, /AFTS/i, /AFTM/i,
+        /Roku/i, /CrKey/i, /AppleTV/i, /tvOS/i,
+        /Xbox/i, /PLAYSTATION/i, /Nintendo/i,
+        /Android TV/i, /Android\/[0-9]+.*\s\(.*TV/i,
+        /Opera TV Store/i, /Opera\/9.80.*Linux/i,
+        /Hisense/i, /Changhong/i, /Skyworth/i, /TCL/i
+    ];
+    if (tvPatterns.some(p => p.test(ua))) return true;
 
-/* const funObtenerCookie = function(nombre) {
-    const cookies = document.cookie.split('; ');
-    const cookie = cookies.find(item => item.startsWith(`${nombre}=`));
-    return cookie ? decodeURIComponent(cookie.split('=')[1]) : '';
-} */
-
-/* const funRefrescarToken = async function() {
-    
-    const csrfToken = funObtenerCookie('csrf_token');
-    const response = await fetch(url_users_refresh, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-        }
-    });
-
-    if (!response.ok) {
-        console.error('No se pudo refrescar la sesión');
-        return false;
+    if (/Android/i.test(ua) && !/Mobile/i.test(ua) && !/Tablet/i.test(ua)) {
+        const screenArea = screen.width * screen.height;
+        if (screenArea >= 1920 * 1080) return true;
     }
 
-    return true;
-} */
-
-/* const funCargarInfoUsuario = async function() {
-    try {
-        const response = await funProtectedFetch(url_users_info, {
-            method: 'GET'
-        });
-
-        if (!response.ok) {
-            console.error('No se pudo obtener la información del usuario');
-            return;
-        }
-
-        const result = await response.json();
-        console.log('Info de usuario:', result);
-
-        const data = result.data;
-
-        Gb.getComponent('header.home').setUserValues(
-            data.usu_thumbnail || url_miniatura_default,
-            data.usu_nombre,
-            data.usu_id
-        );
-    } catch (err) {
-        console.error(err);
+    if (screen.width >= 1920 && !/Mobile|Tablet|iPhone|iPad|iPod/i.test(ua)) {
+        if ('ontouchstart' in window && !window.chrome?.runtime) return true;
     }
-} */
+
+    return false;
+};
 
 document.addEventListener("DOMContentLoaded", async () => {
+    if (funEsSmartTV()) {
+        const search = window.location.search;
+        window.location.replace(`/feed_tv${search}`);
+        return;
+    }
     funCargarInfoUsuario((data) => {
         Gb.getComponent('header.home').setUserValues(
             data.usu_thumbnail || url_miniatura_default,

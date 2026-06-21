@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Soda Stream TV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/pages/general/librerias/graphic/styles/style.default_dark.css" />
+    <link rel="stylesheet" href="/pages/videos_feed_tv/feed_tv.css" />
+</head>
+
+<body class="g_tv_body">
+    <div id="root"></div>
+    <script src="/pages/general/librerias/graphic/lib.js"></script>
+    <script src="/pages/general/functions/fun.constants.js"></script>
+    <script src="/pages/general/functions/fun.general.js"></script>
+
+    <!-- Functions -->
+    <script src="/pages/videos_feed_tv/functions/fun.constants.js"></script>
+    <script src="/pages/videos_feed_tv/functions/fun.videos_feed_tv.js"></script>
+
+    <script>
+        let root = document.getElementById('root');
+
+        const headerBar = document.createElement('div');
+        headerBar.classList.add('g_tv_header');
+
+        const logoLink = document.createElement('a');
+        logoLink.href = '/feed_tv';
+        logoLink.classList.add('g_tv_header_logo');
+        logoLink.textContent = 'Soda Stream';
+
+        const searchWrap = document.createElement('div');
+        searchWrap.classList.add('g_tv_header_search');
+
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.classList.add('g_tv_header_search_input', 'g_tv_focusable');
+        searchInput.placeholder = 'Buscar videos...';
+        searchInput.id = 'tv_search_input';
+
+        const searchBtn = document.createElement('button');
+        searchBtn.type = 'button';
+        searchBtn.classList.add('g_tv_header_search_btn', 'g_tv_focusable');
+        searchBtn.innerHTML = '<i class="icon-search"></i>';
+        searchBtn.addEventListener('click', () => {
+            const val = searchInput.value.trim();
+            funCargarFeedTV(val || null);
+        });
+
+        searchWrap.append(searchInput);
+        searchWrap.append(searchBtn);
+
+        headerBar.append(logoLink);
+        headerBar.append(searchWrap);
+
+        const feedContainer = document.createElement('div');
+        feedContainer.classList.add('g_tv_feed');
+        feedContainer.id = 'tv_feed_container';
+
+        root.append(headerBar);
+        root.append(feedContainer);
+    </script>
+</body>
+
+</html>

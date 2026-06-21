@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Soda Stream TV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.10/dist/hls.min.js"></script>
+    <link rel="stylesheet" href="/pages/general/librerias/graphic/styles/style.default_dark.css" />
+    <link rel="stylesheet" href="/pages/videos_ver_tv/tv.css" />
+</head>
+
+<body class="g_tv_body">
+    <div id="root"></div>
+    <script src="/pages/general/librerias/graphic/lib.js"></script>
+    <script src="/pages/general/functions/fun.constants.js"></script>
+    <script src="/pages/general/functions/fun.general.js"></script>
+
+    <!-- Functions -->
+    <script src="/pages/videos_ver_tv/functions/fun.constants.js"></script>
+    <script src="/pages/videos_ver_tv/functions/fun.videos_ver_tv.js"></script>
+
+    <script>
+        let root = document.getElementById('root');
+
+        Gb.define('container', {
+            type: 'container',
+            id: 'container_tv',
+            items: []
+        });
+
+        root.append(Gb.getComponent('container_tv').getEl());
+    </script>
+</body>
+
+</html>
