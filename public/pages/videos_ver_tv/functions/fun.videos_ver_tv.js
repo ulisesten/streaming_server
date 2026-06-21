@@ -64,11 +64,7 @@ const funConstruirPaginaTV = (videoData) => {
     video.autoplay = true;
     video.id = 'tv_video_el';
 
-    const hlsUrl = `${url_hls_base_tv}/${videoData.vid_hls_path}`;
-    const source = document.createElement('source');
-    source.setAttribute('src', hlsUrl);
-    source.setAttribute('type', 'application/x-mpegURL');
-    video.append(source);
+    const hlsUrl = `${url_hls_base_tv}/${(videoData.vid_path || '').replace('/hls/videos', '')}`;
 
     if (Hls.isSupported()) {
         const hls = new Hls();
