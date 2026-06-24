@@ -14,7 +14,7 @@ videos.get("/", videos_domain.get_videos);
 // Obtener thumbnails para combobox
 videos.get("/thumbnails", videos_domain.get_cat_thumbnails.bind(videos_domain));
 //! Obtener videos para el feed
-videos.get("/table_format", authService.verify,videos_domain.get_table_format_videos.bind(videos_domain));
+videos.get("/table_format", authService.verify.bind(authService),videos_domain.get_table_format_videos.bind(videos_domain));
 //! Obtener videos de la serie relacionada al video
 videos.get("/:vid_id/series/relacionados", videos_domain.get_series_videos);
 // Obtener video por id
@@ -22,7 +22,7 @@ videos.get("/:vid_id", videos_domain.video_get_by_id);
 
 
 /// Subir videos
-videos.post('/', authService.verify, videos_service.progress_handler, videos_service.upload_video.single("video"), async (req, res) => {
+videos.post('/', authService.verify.bind(authService), videos_service.progress_handler, videos_service.upload_video.single("video"), async (req, res) => {
     try {
         const video_status = await videos_service.process_uploaded(req)
 
@@ -52,7 +52,7 @@ videos.post('/', authService.verify, videos_service.progress_handler, videos_ser
 /// Actualizar vistas de video
 videos.put('/:vid_id/views', videos_domain.insert_view.bind(videos_domain))
 
-videos.put('/:vid_id', authService.verify, videos_domain.update_video.bind(videos_domain))
+videos.put('/:vid_id', authService.verify.bind(authService), videos_domain.update_video.bind(videos_domain))
 
 videos.get('/progress/:session_id', async (req, res) => {
     const { session_id } = req.params;

@@ -14,15 +14,15 @@ users.post("/", async function (req, res) {
     res.json(usersDto.user_new_response(db_res));
 });
 
-users.put("/:usu_id", async function (req, res) {
+/* users.put("/:usu_id", async function (req, res) {
     const db_res = await usersDomain.users_update(req);
     res.json(usersDto.user_update_response(db_res));
-});
+}); */
 
-users.get("/", authService.verify, async function (req, res) {
+/* users.get("/", authService.verify, async function (req, res) {
     const db_res = await usersDomain.users_get();
     res.json(usersDto.users_get_response(db_res));
-});
+}); */
 
 
 users.post("/signin", usersDomain.user_signin.bind(usersDomain));
@@ -31,7 +31,7 @@ users.post("/signin", usersDomain.user_signin.bind(usersDomain));
 users.post("/refresh_token", authService.refresh.bind(authService), usersDomain.users_refresh_token.bind(usersDomain));
 
 
-users.get("/info", authService.verify, async function (req, res) {
+users.get("/info", authService.verify.bind(authService), async function (req, res) {
     if (!req.user) {
         reject(res, 401, "No autorizado");
     }

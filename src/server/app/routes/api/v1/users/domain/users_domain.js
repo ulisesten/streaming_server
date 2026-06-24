@@ -1,10 +1,10 @@
 const { reject } = require("../../../../../core/errors.js");
 const encryptService = require("../../../../../core/encrypt.js");
 const sqlEject = require("../../../../../librerias/sql_server/sql_eject.js");
-const jwtLib = require("../../../../../core/jwt.js");
-const authService = require("../../../../../core/authorization.js"); /// IGNORE
-const users = require("../index.js");
+const authService = require("../../../../../core/authorization.js");
 const usersDto = require("../dto/users_dto.js");
+
+const PROC_USU_REGISTRAR = 1
 
 class UsersDomain {
     normalize_email(email) {
@@ -22,7 +22,7 @@ class UsersDomain {
         const normalized_email = this.normalize_email(body.usu_correo);
 
         const parametros = {
-            tipoRegistro: "USUARIO_REGISTRAR",
+            tipoRegistro: PROC_USU_REGISTRAR,
             usu_nombre: body.usu_nombre,
             usu_ape_paterno: body.usu_ape_paterno,
             usu_ape_materno: body.usu_ape_materno,
@@ -33,7 +33,7 @@ class UsersDomain {
         return sqlEject.store_eject("procUsersProc", parametros, "soda_stream");
     }
 
-    async users_update(req) {
+    /* async users_update(req) {
         const body = req.body;
         const normalized_email = this.normalize_email(body.usu_correo);
 
@@ -46,9 +46,9 @@ class UsersDomain {
         };
 
         return sqlEject.store_eject("procUsersProc",parametros,"soda_stream");
-    }
+    } */
 
-    async users_get() {
+    /* async users_get() {
         const parametros = {
             tipoConsulta: "USUARIOS_CONS",
         };
@@ -56,26 +56,22 @@ class UsersDomain {
         //console.log(encryptService.decrypt("44uK6IGt44usY0wEOxvji5zogLnKq+iBt+OAiQDjgLLogJnji5/ogbzji6XogbPjgIYZOuiBnsuUMculdAYcOeiBn8qV"))
       
         return sqlEject.store_eject( "procUsersCons", parametros, "soda_stream" );
-    }
+    } */
 
     /// Inicio de sesión de usuario
     async user_signin(req, res) {
         try {
-            const body = req.body;
-            console.log("Intentando iniciar sesión para:", body.usu_correo);
-            const normalized_email = this.normalize_email(body.usu_correo);
+            const service_response = await authService.user_signin(req, res);
 
-            const parametros = {
-                tipoConsulta: "USUARIO_SIGN_IN_CONS",
-                usu_correo: normalized_email
-            };
+            if (!service_response) {
+                return res.status(401).json({
+                    msg: "El usuario no fue autorizado o no existe.",
+                    success: false,
+                    error: 1
+                });
+            }
 
-            console.log("Intentando iniciar sesión para:", normalized_email);
-
-            const dao = await sqlEject.store_eject( "procUsersCons", parametros, "soda_stream" );
-            const service_response = authService.user_signin(req, res, dao);
             const dto_response = usersDto.user_signin_response(service_response);
-
             res.status(dto_response.status).json(dto_response.response);
         } catch (error) {
             console.error("Error en user_signin:", error);

@@ -9,6 +9,7 @@ const routes = require('./client_routes');
 const settings = require('./app/core/configuration.js');
 /** API  */
 const users = require('./app/routes/api/v1/users/')
+const users_v2 = require('./app/routes/api/v2/users/routes.js')
 const videos = require('./app/routes/api/v1/videos/routes.js');
 const series = require('./app/routes/api/v1/series/');
 const seasons = require('./app/routes/api/v1/seasons/');
@@ -52,6 +53,9 @@ app.use('/api/v1/series', series);
 app.use('/api/v1/seasons', seasons);
 app.use('/api/v1/genres', genres);
 app.use('/api/v1/email', email);
+
+
+app.use('/api/v2/users', users_v2);
 
 // Manejo de errores
 app.use((err, req, res, next) => {
