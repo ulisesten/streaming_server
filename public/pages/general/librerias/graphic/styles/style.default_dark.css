@@ -210,7 +210,7 @@ body {
 .g_card_grid_base {
   border: 1px solid var(--tirtiary-color);
   border-radius: 10px;
-  background-color: var(--primary-color);
+  background-color: var(--background-color);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
 }
 
@@ -294,9 +294,8 @@ body {
 .g_tabber_base {
   display: flex;
   flex-direction: column;
-  background-color: var(--primary-color);
-  border: 1px solid var(--tirtiary-color);
-  border-radius: 10px;
+  background-color: var(--background-color);
+  border: none; 
   overflow: hidden;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
   height: 100%;
@@ -312,9 +311,9 @@ body {
 
 .g_tabber_headers {
     display: flex;
-    background-color: var(--fourth-color);
+    background-color: var(--background-color);
     gap: 2px;
-    padding: 4px;
+    padding: 4px 4px 0 4px;
 }
 
 .g_tabber_horizontal .g_tabber_headers {
@@ -344,7 +343,6 @@ body {
 
 .g_tabber_header:hover {
     background-color: #253244;
-    color: #e7edf5;
 }
 
 .g_tabber_header_active {
@@ -362,7 +360,7 @@ body {
 
 .g_tabber_panel {
   display: none;
-  padding: 14px;
+  padding: 8px;
 }
 
 .g_tabber_panel_active {
