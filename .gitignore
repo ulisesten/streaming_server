@@ -6,5 +6,8 @@
 
 /videos
 .env
+.env.example
+
+http_files/
 
 package-lock.json

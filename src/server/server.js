@@ -29,9 +29,8 @@ app.use(cors({
     origin: settings.getCors(),
     credentials: true
 }));
-app.use(express.json());
-app.use(express.json({ limit: '10gb' }));
-app.use(express.urlencoded({ extended: true, limit: '10gb' }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use("/pages", express.static(path.join(__dirname, "../../public/pages")));
 app.use("/hls/videos", express.static(path.join(__dirname, "../../public/hls/videos")));
@@ -120,8 +119,7 @@ function startHttpsServer(prm_app) {
 
     } catch (error) {
         console.error('❌ Error iniciando HTTPS:', error.message);
-        console.error('⚠️ Usando HTTP sin SSL temporalmente.');
-        prm_app.listen(PORT, () => console.log(`🟡 HTTP en puerto ${PORT}`));
+        process.exit(1);
     }
 }
 
