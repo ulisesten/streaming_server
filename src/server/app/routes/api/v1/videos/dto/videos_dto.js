@@ -65,6 +65,7 @@ class VideosDTO {
     }
 
     subir_video_response(data) {
+        console.log('[DTO subir_video_response] data recibida:', JSON.stringify(data));
         if (!data || data[0] == null)
             return {
                 msg: "Error al procesar el resultado.",

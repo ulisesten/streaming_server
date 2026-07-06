@@ -24,16 +24,27 @@ videos.get("/:vid_id", videos_domain.video_get_by_id);
 /// Subir videos
 videos.post('/', authService.verify.bind(authService), videos_service.progress_handler, videos_service.upload_video.single("video"), async (req, res) => {
     try {
+        console.log('[UPLOAD] Iniciando upload de video');
+        console.log('[UPLOAD] req.file:', req.file ? { filename: req.file.filename, size: req.file.size, path: req.file.path } : 'NO FILE');
+        console.log('[UPLOAD] req.body:', { vid_nombre: req.body.vid_nombre, vid_id_serie: req.body.vid_id_serie, vid_id_temporada: req.body.vid_id_temporada });
+        console.log('[UPLOAD] req.vid_id_public:', req.vid_id_public);
+        console.log('[UPLOAD] req.user:', req.user ? { usu_id: req.user.usu_id, usu_nombre: req.user.usu_nombre } : 'NO USER');
+
         const video_status = await videos_service.process_uploaded(req)
+        console.log('[UPLOAD] video_status:', video_status);
 
         if (video_status != 0) {
+            console.error('[UPLOAD] Error procesando video, status:', video_status);
             reject(res, 500, "Error procesando video");
             return;
         }
 
+        console.log('[UPLOAD] Insertando video en BD...');
         const result = await videos_domain.insert_video(req);
+        console.log('[UPLOAD] Result insert_video:', result);
 
         const dto_result = videos_dto.subir_video_response(result);
+        console.log('[UPLOAD] DTO result:', dto_result);
 
         telegram_bot.sendNewVideoNotification({
             vid_title: req.body.vid_nombre,
@@ -41,10 +52,11 @@ videos.post('/', authService.verify.bind(authService), videos_service.progress_h
             vid_thumbnail: dto_result.data['vid_thumbnail']
         });
 
+        console.log('[UPLOAD] Enviando respuesta OK');
         res.json(dto_result);
 
     } catch (exc) {
-        console.log('Subir videos: [ERROR] ', exc)
+        console.error('[UPLOAD] Excepción:', exc)
         reject(res, 500, "Error en el proceso");
     }
 })

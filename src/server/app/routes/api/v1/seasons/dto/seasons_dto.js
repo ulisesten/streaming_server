@@ -33,9 +33,9 @@ class SeasonsDTO {
     }
 
     seasons_new_response(dao) {
-        if (!dao) {
+        if (dao === null) {
             return {
-                status: 500,  
+                status: 500,
                 response: {
                     success: false,
                     error: 1,
