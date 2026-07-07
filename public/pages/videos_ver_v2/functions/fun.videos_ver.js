@@ -106,6 +106,8 @@ const funCrearVideoCard = (current_id, video) => {
     const videoLink = `/video/${video.vid_id_public}`;
     const chapter = video.vid_chapter || video.vid_capitulo;
     const videoTitle = chapter ? `${chapter} - ${video.vid_nombre}` : video.vid_nombre;
+    const videoSeries = video.vid_serie ? `${video.vid_serie}` : '';
+    const videoSeason = video.vid_temporada ? `T ${video.vid_temporada} - ${videoSeries}` : '';
 
     const card = document.createElement('a');
     card.classList.add('g_video_related_card');
@@ -132,7 +134,7 @@ const funCrearVideoCard = (current_id, video) => {
 
     const title = document.createElement('p');
     title.classList.add('g_video_related_title');
-    title.textContent = videoTitle;
+    title.textContent = videoSeason ? `${videoSeason}` : videoTitle;
 
     card.append(thumb);
     card.append(title);
