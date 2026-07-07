@@ -11,8 +11,10 @@ const id_length = settings.getPublicIdLength();
 const video_storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadPath = path.join(settings.TEMP_VIDEOS_PATH);
-        console.log('[MULTER] destination uploadPath:', uploadPath);
-        console.log('[MULTER] uploadPath existe:', fs.existsSync(uploadPath));
+        if (!fs.existsSync(uploadPath)) {
+            console.error('[MULTER] uploadPath no existe:', uploadPath);
+            return cb(new Error(`Upload path no existe: ${uploadPath}`));
+        }
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
@@ -120,8 +122,6 @@ class VideosService {
                     total: contentLength,
                     status: 'uploading'
                 });
-
-                console.log(`Upload ${sessionId}: ${progress}%`);
             });
 
             req.on('end', () => {

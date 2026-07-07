@@ -24,7 +24,6 @@ sql.on('error', err => {
 class SqlEject {
 
     async store_eject(sp_name, params, database) {
-        console.log('[STORE_EJECT] sp_name:', sp_name, 'database:', database, 'params:', params);
         const login_id = 1;
         const valores = {};
         const localConfig = { ...config, database };
@@ -93,7 +92,6 @@ class SqlEject {
             });
         
             const result = await sp_request.execute(sp_name);
-            console.log('[STORE_EJECT] result.recordset:', result.recordset);
             return result.recordset;
         })
         .catch(err => {
