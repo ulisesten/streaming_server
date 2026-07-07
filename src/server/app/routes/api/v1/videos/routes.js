@@ -22,7 +22,7 @@ videos.get("/:vid_id", videos_domain.video_get_by_id);
 
 
 /// Subir videos
-videos.post('/', authService.verify.bind(authService), videos_service.progress_handler, videos_service.upload_video.single("video"), async (req, res) => {
+videos.post('/', authService.verify.bind(authService), videos_service.upload_video.single("video"), async (req, res) => {
     try {
         console.log('[UPLOAD] Iniciando upload de video');
         console.log('[UPLOAD] req.file:', req.file ? { filename: req.file.filename, size: req.file.size, path: req.file.path } : 'NO FILE');
