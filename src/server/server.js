@@ -32,6 +32,17 @@ app.use(cors({
 app.use(express.json({ limit: '10gb' }));
 app.use(express.urlencoded({ extended: true, limit: '10gb' }));
 app.use(cookieParser());
+
+app.use((req, res, next) => {
+    if (req.method === 'POST' && req.path === '/api/v1/videos') {
+        console.log('[SERVER] POST /api/v1/videos recibido');
+        console.log('[SERVER] Content-Type:', req.headers['content-type']);
+        console.log('[SERVER] Content-Length:', req.headers['content-length']);
+        console.log('[SERVER] TEMP_VIDEOS_PATH:', settings.TEMP_VIDEOS_PATH);
+        console.log('[SERVER] VIDEO_OUTPUT_PATH:', settings.VIDEO_OUTPUT_PATH);
+    }
+    next();
+});
 app.use("/pages", express.static(path.join(__dirname, "../../public/pages")));
 app.use("/hls/videos", express.static(path.join(__dirname, "../../public/hls/videos")));
 app.use("/hls/lives", express.static(path.join(__dirname, "../../public/hls/lives")));

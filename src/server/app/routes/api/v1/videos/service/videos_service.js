@@ -11,7 +11,8 @@ const id_length = settings.getPublicIdLength();
 const video_storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadPath = path.join(settings.TEMP_VIDEOS_PATH);
-        //fs.mkdirSync(uploadPath, { recursive: true });
+        console.log('[MULTER] destination uploadPath:', uploadPath);
+        console.log('[MULTER] uploadPath existe:', fs.existsSync(uploadPath));
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
