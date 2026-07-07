@@ -1276,6 +1276,14 @@ body.g_video_scrollable .g_container {
     opacity: 0;
 }
 
+.g_video_related_new_season {
+    color: #fff;
+    background-color: rgba(238, 236, 236, 0.255);
+    padding: 0 8px 0 4px;
+    border-radius: 6px;
+    display: inline-flex;
+}
+
 @media screen and (min-width: 400px) {
     .g_video_el { width: 400px; }
 }

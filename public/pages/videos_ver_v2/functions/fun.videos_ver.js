@@ -108,6 +108,7 @@ const funCrearVideoCard = (current_id, video) => {
     const videoTitle = chapter ? `${chapter} - ${video.vid_nombre}` : video.vid_nombre;
     const videoSeries = video.vid_serie ? `${video.vid_serie}` : '';
     const videoSeason = video.vid_temporada ? `T ${video.vid_temporada} - ${videoSeries}` : '';
+    const new_season = v_season_stored !== video.vid_temporada;
 
     const card = document.createElement('a');
     card.classList.add('g_video_related_card');
@@ -132,12 +133,17 @@ const funCrearVideoCard = (current_id, video) => {
     placeholder.textContent = videoTitle;
     thumb.append(placeholder);
 
-    const title = document.createElement('p');
-    title.classList.add('g_video_related_title');
-    title.textContent = videoSeason ? `${videoSeason}` : videoTitle;
+    const season = document.createElement('p');
+    season.classList.add('g_video_related_title');
+    season.textContent = videoSeason ? `${videoSeason}` : videoTitle;
+
+    if(new_season) {
+        season.classList.add('g_video_related_new_season');
+        v_season_stored = video.vid_temporada;
+    }
 
     card.append(thumb);
-    card.append(title);
+    card.append(season);
 
     return card;
 };
