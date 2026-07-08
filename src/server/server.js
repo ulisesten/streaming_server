@@ -33,14 +33,28 @@ app.use(express.json({ limit: '10gb' }));
 app.use(express.urlencoded({ extended: true, limit: '10gb' }));
 app.use(cookieParser());
 app.use("/pages", express.static(path.join(__dirname, "../../public/pages")));
-app.use("/hls/videos", express.static(path.join(__dirname, "../../public/hls/videos")));
-app.use("/hls/lives", express.static(path.join(__dirname, "../../public/hls/lives")));
-
-//app.use(express.static(config.publicPath));
-app.use('hls/videos', express.static(hlsBaseDir, {
+app.use("/hls/videos", express.static(path.join(__dirname, "../../public/hls/videos"), {
     setHeaders: (res, p) => {
-        if (p.endsWith('.m3u8')) res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
-        if (p.endsWith('.ts')) res.setHeader('Content-Type', 'video/mp2t');
+        if (p.endsWith('.m3u8')) {
+            res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+            res.setHeader('Cache-Control', 'no-cache');
+        }
+        if (p.endsWith('.ts')) {
+            res.setHeader('Content-Type', 'video/mp2t');
+            res.setHeader('Cache-Control', 'public, max-age=31536000');
+        }
+    }
+}));
+app.use("/hls/lives", express.static(path.join(__dirname, "../../public/hls/lives"), {
+    setHeaders: (res, p) => {
+        if (p.endsWith('.m3u8')) {
+            res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+            res.setHeader('Cache-Control', 'no-cache');
+        }
+        if (p.endsWith('.ts')) {
+            res.setHeader('Content-Type', 'video/mp2t');
+            res.setHeader('Cache-Control', 'public, max-age=31536000');
+        }
     }
 }));
 
