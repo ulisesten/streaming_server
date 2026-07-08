@@ -74,7 +74,21 @@ const funConstruirPaginaTV = (videoData) => {
     const hlsUrl = `${url_hls_base_tv}/${(videoData.vid_path || '').replace('/hls/videos', '')}`;
 
     if (Hls.isSupported()) {
-        const hls = new Hls();
+        const hls = new Hls({
+            maxBufferLength: 30,
+            maxMaxBufferLength: 60,
+            maxBufferSize: 60 * 1000 * 1000,
+            maxBufferHole: 0.5,
+            lowLatencyMode: false,
+            backBufferLength: 30,
+            fragLoadingMaxRetry: 2,
+            fragLoadingRetryDelay: 500,
+            manifestLoadingMaxRetry: 2,
+            manifestLoadingRetryDelay: 500,
+            levelLoadingMaxRetry: 2,
+            levelLoadingRetryDelay: 500,
+            enableWorker: true
+        });
         hls.loadSource(hlsUrl);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -83,7 +97,22 @@ const funConstruirPaginaTV = (videoData) => {
             }).catch(() => {});
         });
         hls.on(Hls.Events.ERROR, (event, data) => {
-            console.error('HLS Error:', data);
+            if (data.fatal) {
+                switch(data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                        console.error('[HLS TV] Error fatal de red:', data.details);
+                        hls.startLoad();
+                        break;
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                        console.error('[HLS TV] Error fatal de media:', data.details);
+                        hls.recoverMediaError();
+                        break;
+                    default:
+                        console.error('[HLS TV] Error fatal:', data.details);
+                        hls.destroy();
+                        break;
+                }
+            }
         });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.setAttribute('src', hlsUrl);

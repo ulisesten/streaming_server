@@ -53,9 +53,9 @@ const funProtectedFetch = async (url, opt = {}) => {
 
     const refreshSuccess = await funRefrescarToken();
 
-    if (!refreshSuccess) {
-        window.location.href = `${url_login}?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
-        return null;
+    if (!refreshSuccess || isFormData) {
+      window.location.href = `${url_login}?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+      return null;
     }
 
     csrfToken = funObtenerCookie('csrf_token');

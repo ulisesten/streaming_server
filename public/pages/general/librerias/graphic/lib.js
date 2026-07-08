@@ -2065,13 +2065,45 @@ class VideoPlayer {
             if (this.hls) {
                 this.hls.destroy();
             }
-            this.hls = new Hls();
+            this.hls = new Hls({
+                maxBufferLength: 30,
+                maxMaxBufferLength: 60,
+                maxBufferSize: 60 * 1000 * 1000,
+                maxBufferHole: 0.5,
+                lowLatencyMode: false,
+                backBufferLength: 30,
+                fragLoadingMaxRetry: 2,
+                fragLoadingRetryDelay: 500,
+                manifestLoadingMaxRetry: 2,
+                manifestLoadingRetryDelay: 500,
+                levelLoadingMaxRetry: 2,
+                levelLoadingRetryDelay: 500,
+                enableWorker: true
+            });
             this.hls.loadSource(src);
             this.hls.attachMedia(this.video);
             this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
                 this.video.play();
                 this.cmp.classList.add('g_video_playing');
                 this._fireOnPlay();
+            });
+            this.hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    switch(data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            console.error('[HLS] Error fatal de red:', data.details);
+                            this.hls.startLoad();
+                            break;
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            console.error('[HLS] Error fatal de media:', data.details);
+                            this.hls.recoverMediaError();
+                            break;
+                        default:
+                            console.error('[HLS] Error fatal:', data.details);
+                            this.hls.destroy();
+                            break;
+                    }
+                }
             });
             return;
         }

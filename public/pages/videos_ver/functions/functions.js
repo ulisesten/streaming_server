@@ -45,7 +45,21 @@ const funCargarVideo = async function () {
 
         /// Validando sopote nativo
         if (Hls.isSupported()) {
-            const hls = new Hls();
+            const hls = new Hls({
+                maxBufferLength: 30,
+                maxMaxBufferLength: 60,
+                maxBufferSize: 60 * 1000 * 1000,
+                maxBufferHole: 0.5,
+                lowLatencyMode: false,
+                backBufferLength: 30,
+                fragLoadingMaxRetry: 2,
+                fragLoadingRetryDelay: 500,
+                manifestLoadingMaxRetry: 2,
+                manifestLoadingRetryDelay: 500,
+                levelLoadingMaxRetry: 2,
+                levelLoadingRetryDelay: 500,
+                enableWorker: true
+            });
             hls.loadSource(videoSrc);
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -53,6 +67,24 @@ const funCargarVideo = async function () {
                 if (!viewsCounted) {
                     incrementViews(vid_id);
                     viewsCounted = true;
+                }
+            });
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal) {
+                    switch(data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            console.error('[HLS] Error fatal de red:', data.details);
+                            hls.startLoad();
+                            break;
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            console.error('[HLS] Error fatal de media:', data.details);
+                            hls.recoverMediaError();
+                            break;
+                        default:
+                            console.error('[HLS] Error fatal:', data.details);
+                            hls.destroy();
+                            break;
+                    }
                 }
             });
             return;
