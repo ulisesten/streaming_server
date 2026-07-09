@@ -79,13 +79,19 @@ app.use((err, req, res, next) => {
 
 
 // Iniciar servidor
-if (NODE_ENV === 'production') {
+const USE_PROXY = process.env.USE_PROXY === 'true';
+
+if (NODE_ENV === 'production' && !USE_PROXY) {
 
     startHttpsServer(app);
 
 } else {
     app.listen(PORT, '0.0.0.0', () => {
-        console.log(`[DEVELOPMENT] Servidor de streaming ejecutándose http://localhost:${PORT}`);
+        if (USE_PROXY) {
+            console.log(`[PROXY] Servidor de streaming en HTTP puerto ${PORT} (nginx maneja SSL)`);
+        } else {
+            console.log(`[DEVELOPMENT] Servidor de streaming ejecutándose http://localhost:${PORT}`);
+        }
     });
 }
 
