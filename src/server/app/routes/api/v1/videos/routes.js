@@ -15,6 +15,17 @@ videos.get("/", videos_domain.get_videos);
 videos.get("/thumbnails", videos_domain.get_cat_thumbnails.bind(videos_domain));
 //! Obtener videos para el feed
 videos.get("/table_format", authService.verify.bind(authService),videos_domain.get_table_format_videos.bind(videos_domain));
+// Progreso de subida
+videos.get("/progress/:session_id", (req, res) => {
+    const progress = videos_service.getProgress().get(req.params.session_id) || { progress: 0, status: 'unknown' };
+    res.json({
+        sessionId: req.params.session_id,
+        progress: progress.progress,
+        loaded: progress.loaded,
+        total: progress.total,
+        status: progress.status
+    });
+});
 //! Obtener videos de la serie relacionada al video
 videos.get("/:vid_id/series/relacionados", videos_domain.get_series_videos);
 // Obtener video por id
@@ -60,19 +71,6 @@ videos.post('/', authService.verify.bind(authService), videos_service.progress_h
 videos.put('/:vid_id/views', videos_domain.insert_view.bind(videos_domain))
 
 videos.put('/:vid_id', authService.verify.bind(authService), videos_domain.update_video.bind(videos_domain))
-
-videos.get('/progress/:session_id', async (req, res) => {
-    const { session_id } = req.params;
-    const progress = videos_service.getProgress().get(session_id) || { progress: 0, status: 'unknown' };
-
-    res.json({
-        sessionId: session_id,
-        progress: progress.progress,
-        loaded: progress.loaded,
-        total: progress.total,
-        status: progress.status
-    });
-})
 
 
 /// Reportar video
