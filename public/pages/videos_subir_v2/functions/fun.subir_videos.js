@@ -117,8 +117,68 @@ const funSubirVideosProgressGet = async (sessionId) => {
 }
 
 
+const funVideosSubirExterno = async () => {
+    const formCmp = Gb.getEl('frm_videos_subir_externo') || Gb.getComponent('frm_videos_subir_externo');
+    if (!formCmp) {
+        console.error('Formulario no encontrado');
+        return;
+    }
+
+    const vals = formCmp.getValues();
+
+    if (!vals.vid_nombre || !vals.vid_path) {
+        Gb.define('notification', { message: 'El título y la URL m3u8 son obligatorios.' });
+        return;
+    }
+
+    const payload = {
+        vid_nombre: vals.vid_nombre,
+        vid_path: vals.vid_path,
+        vid_id_thumbnail: vals.vid_id_thumbnail || 0,
+        vid_capitulo: vals.vid_capitulo || '',
+        vid_descripcion: vals.vid_descripcion || '',
+        vid_tags: vals.vid_tags || '',
+        vid_id_serie: vals.cbx_series || null,
+        vid_id_temporada: vals.cbx_temporadas || null
+    };
+
+    try {
+        const res = await funProtectedFetch(urlVideosSubirExterno, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || (data && data.error > 0)) {
+            const errMsg = data && data.msg ? data.msg : 'No se pudo registrar el video externo.';
+            throw new Error(errMsg);
+        }
+
+        Gb.define('notification', { message: data.msg || 'Video externo registrado correctamente.' });
+
+        if (typeof formCmp.reset === 'function') {
+            formCmp.reset();
+        }
+
+        const win = Gb.getEl('win_videos_subir_externo') || Gb.getComponent('win_videos_subir_externo');
+        if (win && typeof win.close === 'function') {
+            win.close();
+        }
+
+        funVideosSubirCons();
+    } catch (err) {
+        console.error('Error al registrar video externo:', err);
+        Gb.define('notification', { message: `Error al registrar video externo: ${err.message}` });
+    }
+}
+
+
 const funRenderComboSeries = (data) => {
-    
+
 }
 
 const funVidThumbnailSubir = async () => {

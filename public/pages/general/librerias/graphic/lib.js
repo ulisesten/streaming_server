@@ -2192,9 +2192,9 @@ class VideoPlayer {
         if (data.vid_views !== undefined) this.setViews(data.vid_views || 0);
         if (data.vid_likes !== undefined) this.setLikes(data.vid_likes || 0);
         if (data.vid_dislikes !== undefined) this.setDislikes(data.vid_dislikes || 0);
-        if (data.vid_path && baseUrl) {
-            this.setSrc(`${baseUrl}/${data.vid_path.replace('/hls/videos', '')}`);
-        }
+        //if (data.vid_path) {
+        //    this.setSrc(data.vid_path.replace('/hls/videos', ''));
+        //}
     }
 
     _fireOnPlay() {

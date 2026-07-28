@@ -3,6 +3,7 @@ const sqlEject = require("../../../../../librerias/sql_server/sql_eject");
 const urlVideo = 'https://sodastream.fun/video';
 const path = require("node:path");
 const fs = require("node:fs");
+const { nanoid } = require('nanoid');
 const videos_dto = require("../dto/videos_dto");
 const settings = require("../../../../../core/configuration");
 
@@ -261,6 +262,38 @@ class VideosDomain {
 
         const dao = await sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
         res.json(videos_dto.general_response(dao));
+    }
+
+
+    /**
+     * @brief Inserta un video proveniente de una fuente externa (URL m3u8 y thumbnail externo).
+     *        No realiza subida física de archivos. Reutiliza la misma entrada CAT_VIDEOS_INS
+     *        del stored procedure procCatVideosProc que insert_video, pasando la URL m3u8
+     *        como vid_path y el thu_id seleccionado como vid_id_thumbnail.
+     * @returns Resultado del stored procedure del video (con vid_id generado).
+     */
+    async insert_external_video(req) {
+        const vid_id_usuario = req.user.usu_id;
+        const id_length = settings.getPublicIdLength();
+
+        req.vid_id_public = nanoid(id_length);
+
+        const parametros = {
+            tipoRegistro: "CAT_VIDEOS_INS",
+            vid_id_public: req.vid_id_public,
+            vid_id_usuario: vid_id_usuario,
+            vid_nombre: req.body.vid_nombre,
+            vid_path: req.body.vid_path,
+            vid_descripcion: req.body.vid_descripcion || "",
+            vid_tags: req.body.vid_tags || "",
+            //vid_id_serie: req.body.vid_id_serie,
+            //vid_id_temporada: req.body.vid_id_temporada,
+            //vid_temporada: req.body.vid_temporada,
+            //vid_capitulo: req.body.vid_capitulo,
+            vid_id_thumbnail: req.body.vid_id_thumbnail || 0
+        };
+
+        return sqlEject.store_eject("procCatVideosProc", parametros, "soda_stream");
     }
 
 

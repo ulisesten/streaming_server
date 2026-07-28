@@ -67,6 +67,32 @@ videos.post('/', authService.verify.bind(authService), videos_service.progress_h
     }
 })
 
+/// Registrar video de fuente externa (solo URL m3u8 y thumbnail externo, sin subida física)
+videos.post('/external', authService.verify.bind(authService), async (req, res) => {
+    try {
+        if (!req.body.vid_path || !req.body.vid_nombre) {
+            reject(res, 400, "Faltan datos obligatorios (vid_nombre, vid_path)");
+            return;
+        }
+
+        const result = await videos_domain.insert_external_video(req);
+
+        const dto_result = videos_dto.subir_video_response(result);
+
+        telegram_bot.sendNewVideoNotification({
+            vid_title: req.body.vid_nombre,
+            vid_id_public: req.vid_id_public,
+            vid_thumbnail: dto_result.data['vid_thumbnail']
+        });
+
+        res.json(dto_result);
+
+    } catch (exc) {
+        console.error('[EXTERNAL UPLOAD] Excepción:', exc)
+        reject(res, 500, "Error en el proceso");
+    }
+})
+
 /// Actualizar vistas de video
 videos.put('/:vid_id/views', videos_domain.insert_view.bind(videos_domain))
 

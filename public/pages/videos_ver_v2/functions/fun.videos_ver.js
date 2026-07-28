@@ -51,7 +51,18 @@ const funCargarVideo = async () => {
         const videoData = result.data;
         currentVidId = videoData.vid_id;
 
-        Gb.getComponent('video_player').setData(videoData, url_hls_base);
+
+        
+        //Gb.getComponent('video_player').setData(videoData, url_hls_base);
+        if(videoData.vid_path.includes('https://')) {
+            Gb.getComponent('video_player').setData(videoData);
+            Gb.getComponent('video_player').setSrc(videoData.vid_path);
+        } else {
+            const vid_path = `${url_hls_base}/${videoData.vid_path.replace('/hls/videos/', '')}`;
+            console.log("Video path updated to:", videoData.vid_path);
+            Gb.getComponent('video_player').setData(videoData);
+            Gb.getComponent('video_player').setSrc(vid_path);
+        }
         Gb.getComponent('video_player').opt.onPlay = () => {
             funIncrementarVistas(currentVidId);
         };

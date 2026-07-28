@@ -20,6 +20,17 @@ Gb.define('toolbar',{
             }
         },
         {
+            type: '-'
+        },
+        {
+            type: 'button',
+            text: 'Externo nuevo',
+            id: 'tlb_video_subir_externo',
+            onClick: function() {
+                Gb.getEl('win_videos_subir_externo').open();
+            }
+        },
+        {
             type: 'button',
             text: 'Nueva Serie',
             id: 'tlb_serie_nueva',
