@@ -58,6 +58,11 @@ const funConstruirPaginaTV = (videoData) => {
     const container = Gb.getComponent('container_tv').getEl();
     container.innerHTML = '';
 
+    if (videoData.vid_path && videoData.vid_path.startsWith('http://')) {
+        funMostrarErrorTV('Solo Disponible en la App');
+        return;
+    }
+
     const playerSection = document.createElement('div');
     playerSection.classList.add('g_tv_player_section');
 

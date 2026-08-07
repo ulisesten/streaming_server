@@ -61,7 +61,7 @@ const funVideosSubir = async () => {
     }, 1000);
 
     try {
-        const res = await funProtectedFetch(urlVideosSubir, {
+        const res = await funProtectedFormFetch(urlVideosSubir, {
             method: 'POST',
             body: fd,
             headers: {

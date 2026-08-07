@@ -54,7 +54,11 @@ const funCargarVideo = async () => {
 
         
         //Gb.getComponent('video_player').setData(videoData, url_hls_base);
-        if(videoData.vid_tipo == 2 || videoData.vid_path.includes('https://')) {
+        if (videoData.vid_path && videoData.vid_path.startsWith('http://')) {
+            Gb.getComponent('video_player').setData(videoData);
+            Gb.getComponent('video_player').setTitle('Solo Disponible en la App');
+            Gb.define('notification', { message: 'Solo Disponible en la App' });
+        } else if(videoData.vid_tipo == 2 || (videoData.vid_path && videoData.vid_path.includes('https://'))) {
             Gb.getComponent('video_player').setData(videoData);
             Gb.getComponent('video_player').setSrc(videoData.vid_path);
         } else {

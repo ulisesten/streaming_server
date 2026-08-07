@@ -30,13 +30,12 @@ const funRefrescarToken = async function() {
 const funProtectedFetch = async (url, opt = {}) => {
     let csrfToken = funObtenerCookie('csrf_token');
     const __body = opt.body ? opt.body : null;
-    const isFormData = __body instanceof FormData;
 
     const baseHeaders = {
         'X-CSRF-Token': csrfToken,
         ...opt.headers
     };
-    if (!isFormData) {
+    if (__body != null) {
         baseHeaders['Content-Type'] = 'application/json';
     }
 
@@ -48,31 +47,76 @@ const funProtectedFetch = async (url, opt = {}) => {
     });
 
     if (response.status !== 401) {
-      return response;
+        return response;
     }
 
     const refreshSuccess = await funRefrescarToken();
 
-    if (!refreshSuccess || isFormData) {
-      window.location.href = `${url_login}?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
-      return null;
+    if (!refreshSuccess) {
+        window.location.href = `${url_login}?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+        return null;
     }
 
     csrfToken = funObtenerCookie('csrf_token');
 
     const retryHeaders = {
-      'X-CSRF-Token': csrfToken,
-      ...opt.headers
+        'X-CSRF-Token': csrfToken,
+        ...opt.headers
     };
-    if (!isFormData) {
-      retryHeaders['Content-Type'] = 'application/json';
+    if (__body != null) {
+        retryHeaders['Content-Type'] = 'application/json';
     }
 
     response = await fetch(url, {
-      method: opt.method || 'GET',
-      credentials: 'include',
-      body: __body,
-      headers: retryHeaders
+        method: opt.method || 'GET',
+        credentials: 'include',
+        body: __body,
+        headers: retryHeaders
+    });
+
+    return response;
+}
+
+
+const funProtectedFormFetch = async (url, opt = {}) => {
+    let csrfToken = funObtenerCookie('csrf_token');
+    const __body = opt.body ? opt.body : null;
+
+    const baseHeaders = {
+        'X-CSRF-Token': csrfToken,
+        ...opt.headers
+    };
+
+    let response = await fetch(url, {
+        method: opt.method || 'POST',
+        credentials: 'include',
+        body: __body,
+        headers: baseHeaders
+    });
+
+    if (response.status !== 401) {
+        return response;
+    }
+
+    const refreshSuccess = await funRefrescarToken();
+
+    if (!refreshSuccess) {
+        window.location.href = `${url_login}?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+        return null;
+    }
+
+    csrfToken = funObtenerCookie('csrf_token');
+
+    const retryHeaders = {
+        'X-CSRF-Token': csrfToken,
+        ...opt.headers
+    };
+
+    response = await fetch(url, {
+        method: opt.method || 'POST',
+        credentials: 'include',
+        body: __body,
+        headers: retryHeaders
     });
 
     return response;
