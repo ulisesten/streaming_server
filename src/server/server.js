@@ -14,6 +14,7 @@ const videos = require('./app/routes/api/v1/videos/routes.js');
 const series = require('./app/routes/api/v1/series/');
 const seasons = require('./app/routes/api/v1/seasons/');
 const genres = require('./app/routes/api/v1/genres/');
+const releases = require('./app/routes/api/v1/releases/');
 const email = require('./app/routes/api/v1/email/');
 
 
@@ -65,6 +66,7 @@ app.use('/api/v1/videos', videos);
 app.use('/api/v1/series', series);
 app.use('/api/v1/seasons', seasons);
 app.use('/api/v1/genres', genres);
+app.use('/api/v1/app', releases);
 app.use('/api/v1/email', email);
 
 
