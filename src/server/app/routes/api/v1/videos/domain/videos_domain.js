@@ -8,6 +8,17 @@ const videos_dto = require("../dto/videos_dto");
 const settings = require("../../../../../core/configuration");
 
 
+class SpConsultas {
+    //! CONS
+    static CAT_SERIES_VIDEOS_CONS = 1;
+    static CAT_VIDEO_BY_ID_CONS = 2;
+    static CAT_VID_THUMNAIL_CONS = 3;
+    static CAT_VIDEOS_CONS = 4;
+    static CAT_VIDEOS_TABLE_FORMAT_CONS = 5;
+    static CAT_THUMBNAILS_CONS = 6;
+}
+
+
 /**
  * @brief esta clase hace cosas locochonas
  */
@@ -17,7 +28,7 @@ class VideosDomain {
         const vid_id = req.params.vid_id;
 
         const parametros = {
-            tipoConsulta: "CAT_SERIES_VIDEOS_CONS",
+            tipoConsulta: SpConsultas.CAT_SERIES_VIDEOS_CONS,
             vid_id: vid_id
         };
 
@@ -32,7 +43,7 @@ class VideosDomain {
         const vid_id = req.params.vid_id;
         
         const parametros = {
-            tipoConsulta: "CAT_VIDEO_BY_ID_CONS",
+            tipoConsulta: SpConsultas.CAT_VIDEO_BY_ID_CONS,
             vid_id_public: vid_id
         };
 
@@ -64,7 +75,7 @@ class VideosDomain {
         const ext = req.params.ext;
 
         const parametros = {
-            tipoConsulta: "CAT_VID_THUMNAIL_CONS",
+            tipoConsulta: SpConsultas.CAT_VID_THUMNAIL_CONS,
             thu_id_public: thu_id_public
         };
 
@@ -139,7 +150,7 @@ class VideosDomain {
      */
     async get_videos(req, res) {
         const parametros = {
-            tipoConsulta: "CAT_VIDEOS_CONS"
+            tipoConsulta: SpConsultas.CAT_VIDEOS_CONS
         };
 
         const dao = await sqlEject.store_eject("procCatVideosCons", parametros, "soda_stream");
@@ -155,7 +166,7 @@ class VideosDomain {
      */
     async get_table_format_videos(req, res) {
         const parametros = {
-            tipoConsulta: "CAT_VIDEOS_TABLE_FORMAT_CONS",
+            tipoConsulta: SpConsultas.CAT_VIDEOS_TABLE_FORMAT_CONS,
             usuario_alta: 1
         };
 
@@ -300,7 +311,7 @@ class VideosDomain {
     /// Obtener thumbnails para combobox
     async get_cat_thumbnails(req, res) {
         const parametros = {
-            tipoConsulta: "CAT_THUMBNAILS_CONS"
+            tipoConsulta: SpConsultas.CAT_THUMBNAILS_CONS
         };
 
         const dao = await sqlEject.store_eject("procCatVideosCons", parametros, "soda_stream");
