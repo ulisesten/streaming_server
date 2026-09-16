@@ -7,6 +7,7 @@ const funUsersSignin = async function() {
     try {
         const response = await fetch(urlUsersSignin, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },

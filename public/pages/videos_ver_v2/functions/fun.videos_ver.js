@@ -43,12 +43,13 @@ const funCargarVideo = async () => {
         const response = await fetch(url);
         const result = await response.json();
 
-        if (!result || !result.data) {
+        /* cws devuelve un array de filas; el server Node envolvía en { data }. */
+        const videoData = Array.isArray(result) ? result[0]
+                         : (result && result.data ? result.data : result);
+        if (!videoData) {
             Gb.getComponent('video_player').setTitle("Video no encontrado");
             return;
         }
-
-        const videoData = result.data;
         currentVidId = videoData.vid_id;
 
 

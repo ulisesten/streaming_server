@@ -136,7 +136,9 @@ const funCargarInfoUsuario = async function(cb) {
         }
 
         const result = await response.json();
-        const data = result.data;
+        /* cws /users/me responde el objeto plano; el server Node lo envolvía
+         * en { data }. Aceptamos ambas formas. */
+        const data = result.data ?? result;
 
         cb(data)
 

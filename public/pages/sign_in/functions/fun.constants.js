@@ -1,4 +1,4 @@
-const urlUsersSignin = '/api/v2/users/signin';
+const urlUsersSignin = 'https://cws.sodastream.fun/api/v1/users/signin';
 
 const funGetSigninRedirect = function() {
     const params = new URLSearchParams(window.location.search);
