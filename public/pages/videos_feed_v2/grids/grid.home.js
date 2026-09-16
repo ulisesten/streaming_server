@@ -25,22 +25,29 @@ Gb.define('card_grid', {
 
 const funCargarFeed = async function(search) {
     try {
-        let fetchUrl = url_videos_feed;
+        let response;
+
         if (search) {
+            /* Búsqueda: sigue en el server Node (cws /popular no filtra). */
             const params = new URLSearchParams({ search });
-            fetchUrl += `?${params.toString()}`;
+            response = await funProtectedFetch(`${url_videos_feed}?${params.toString()}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+            if (!response || !response.ok) {
+                console.error('No se pudo cargar el feed');
+                return;
+            }
+        } else {
+            /* Listado público y directo desde cws (array de filas). */
+            response = await fetch(url_videos_popular);
+            if (!response.ok) {
+                console.error('No se pudo cargar el feed:', response.status);
+                return;
+            }
         }
 
-        const response = await funProtectedFetch(fetchUrl, {
-            method: 'GET',
-            credentials: 'include'
-        });
-
-        if (!response || !response.ok) {
-            console.error('No se pudo cargar el feed');
-            return;
-        }
-
+        /* CardGrid.onLoadData acepta el array directo (cws) o { data } (Node). */
         const result = await response.json();
         Gb.getComponent('grid.home').loadData(result);
     } catch (err) {

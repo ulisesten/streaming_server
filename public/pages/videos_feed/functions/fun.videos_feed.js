@@ -115,17 +115,19 @@ const funHttpRequest = async function(url, method = 'GET', callback, body = null
 const funCargarFeed = async function() {
     const feedContainer = document.getElementById("video-feed");
     
-    const response = await fetch(url_videos_feed);
+    const response = await fetch(url_videos_popular);
+    /* cws responde el array directo; el server Node lo envolvía en { data }. */
     const result = await response.json();
+    const videos = Array.isArray(result) ? result : (result && result.data ? result.data : []);
 
-    if (!result || !result.data || result.data.length === 0) {
+    if (!videos || videos.length === 0) {
         feedContainer.innerHTML = "<p>No hay videos disponibles.</p>";
         return;
     }
 
     feedContainer.innerHTML = "";
 
-    result.data.forEach(video => {
+    videos.forEach(video => {
         funCrearVideoCard(video, feedContainer);
     });
 }
