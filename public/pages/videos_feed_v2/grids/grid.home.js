@@ -40,7 +40,7 @@ const funCargarFeed = async function(search) {
             }
         } else {
             /* Listado público y directo desde cws (array de filas). */
-            response = await fetch(url_videos_popular);
+            response = await fetch(url_videos_cws);
             if (!response.ok) {
                 console.error('No se pudo cargar el feed:', response.status);
                 return;

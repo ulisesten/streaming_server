@@ -39,5 +39,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         ); 
     });
     funCargarFeed();
+    funCargarPopulares();
     
 });

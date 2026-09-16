@@ -6,6 +6,10 @@ Gb.define('tabber', {
         {
             title: 'Videos',
             item: Gb.getComponent('grid.home')
+        },
+        {
+            title: 'Populares',
+            item: Gb.getComponent('grid.populares')
         }
     ]
 });

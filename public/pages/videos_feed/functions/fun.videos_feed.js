@@ -115,7 +115,7 @@ const funHttpRequest = async function(url, method = 'GET', callback, body = null
 const funCargarFeed = async function() {
     const feedContainer = document.getElementById("video-feed");
     
-    const response = await fetch(url_videos_popular);
+    const response = await fetch(url_videos_cws);
     /* cws responde el array directo; el server Node lo envolvía en { data }. */
     const result = await response.json();
     const videos = Array.isArray(result) ? result : (result && result.data ? result.data : []);
