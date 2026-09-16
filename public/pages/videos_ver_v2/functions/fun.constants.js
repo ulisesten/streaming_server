@@ -1,5 +1,5 @@
 let urlApi = '';
-const urlApiCws = 'https://cws.sodastream.fun';
+var urlApiCws = 'https://cws.sodastream.fun';
 
 // Detalle de video: implementado en cws.
 const url_videos_ver = `${urlApiCws}/api/v1/videos`;
